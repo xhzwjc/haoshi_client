@@ -12,23 +12,27 @@
   </view>
 
   <view class="service-section">
-    <view class="service-grid">
-      <view class="grid-item" wx:for="{{serviceGrid}}" wx:key="index" bindtap="onGridItemTap" data-service-id="{{item.serviceId}}" data-name="{{item.name}}">
-        <view class="grid-icon-wrap" style="background-color: {{item.bgColor}}">
-          <image class="grid-icon" src="{{item.icon}}" mode="aspectFit"></image>
-        </view>
-        <text class="grid-text">{{item.name}}</text>
-      </view>
-      
-      <view class="grid-item" bindtap="onMoreServiceTap">
-        <view class="grid-icon-wrap" style="background-color: #4DD0C8">
-          <image class="grid-icon" src="/images/icon_more.png" mode="aspectFit"></image>
-        </view>
-        <text class="grid-text">更多服务</text>
-      </view>
+  <view class="section-header">
+    <view class="section-title">家政服务</view>
+  </view>
 
+  <view class="service-grid">
+    <view class="grid-item" wx:for="{{serviceGrid}}" wx:key="index" bindtap="onGridItemTap" data-service-id="{{item.serviceId}}" data-name="{{item.name}}">
+      <view class="grid-icon-wrap" style="background-color: {{item.bgColor}}">
+        <image class="grid-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      </view>
+      <text class="grid-text">{{item.name}}</text>
+    </view>
+
+    <view class="grid-item" bindtap="onMoreServiceTap">
+      <view class="grid-icon-wrap" style="background-color: #4DD0C8">
+        <image class="grid-icon" src="/images/icon_more.png" mode="aspectFit"></image>
+      </view>
+      <text class="grid-text">更多服务</text>
     </view>
   </view>
+
+</view>
 
   <view class="recommend-section">
     <view class="section-header">
