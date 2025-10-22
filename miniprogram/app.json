@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/service-list/service-list",
+    "pages/booking/booking",
+    "pages/order/order",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "家政服务",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#333333",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab_home.png",
+        "selectedIconPath": "images/tab_home.png"
+      },
+      {
+        "pagePath": "pages/service-list/service-list",
+        "text": "服务",
+        "iconPath": "images/tab_service.png",
+        "selectedIconPath": "images/tab_service.png"
+      },
+      {
+        "pagePath": "pages/order/order",
+        "text": "订单",
+        "iconPath": "images/tab_order.png",
+        "selectedIconPath": "images/tab_order.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab_profile.png",
+        "selectedIconPath": "images/tab_profile.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

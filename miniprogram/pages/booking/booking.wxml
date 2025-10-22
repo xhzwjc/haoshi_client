@@ -1,0 +1,65 @@
+<view class="page-booking">
+  <view class="progress-bar">
+    <view class="step active">
+      <view class="step-num">1</view>
+      <view class="step-text">填写信息</view>
+    </view>
+    <view class="step-line"></view>
+    <view class="step">
+      <view class="step-num">2</view>
+      <view class="step-text">选择时间</view>
+    </view>
+    <view class="step-line"></view>
+    <view class="step">
+      <view class="step-num">3</view>
+      <view class="step-text">确认支付</view>
+    </view>
+  </view>
+
+  <view class="service-info-card">
+    <view class="card-header">
+      <view class="card-title">{{service.name || '加载中...'}}</view>
+      <view class="price">{{service.price || '...'}}</view>
+    </view>
+    <view class="card-desc">{{service.description || '专业团队, 品质保证'}}</view>
+  </view>
+
+  <form bindsubmit="formSubmit">
+    <view class="form-section">
+      <view class="form-item">
+        <view class="item-label required">服务地址</view>
+        <view class="item-content location">
+          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" />
+          <image class="location-icon" src="/images/icon_location.png" mode="widthFix"></image>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="item-label required">联系人</view>
+        <view class="item-content">
+          <input name="contact_name" placeholder="请输入联系人姓名" placeholder-class="ph" />
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="item-label required">联系电话</view>
+        <view class="item-content">
+          <input name="contact_phone" type="number" placeholder="请输入手机号码" placeholder-class="ph" />
+        </view>
+      </view>
+
+      <view class="form-item remark">
+        <view class="item-label">服务备注</view>
+        <view class="item-content">
+          <textarea name="remarks" placeholder="请输入特殊需求或备注信息 (选填)" placeholder-class="ph" auto-height />
+        </view>
+      </view>
+    </view>
+
+    <view class="bottom-bar">
+      <button class="submit-btn" form-type="submit">下一步</button>
+    </view>
+  </form>
+  
+  <image class="help-btn" src="/images/icon_help.png"></image>
+</view>

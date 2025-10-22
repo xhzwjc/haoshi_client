@@ -1,0 +1,172 @@
+/* pages/booking/booking.wxss */
+page {
+  background-color: #F7F8FA;
+}
+
+/* 1. 顶部进度条 */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #fff;
+  padding: 32rpx 48rpx;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #999;
+}
+.step-num {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background-color: #EBEDF0;
+  color: #C8C9CC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+.step-text {
+  font-size: 26rpx;
+}
+.step-line {
+  flex: 1;
+  height: 4rpx;
+  background-color: #EBEDF0;
+  margin: 0 16rpx;
+  position: relative;
+  top: -20rpx;
+}
+.step.active .step-num {
+  background-color: #409EFF;
+  color: #fff;
+}
+.step.active .step-text {
+  color: #409EFF;
+  font-weight: bold;
+}
+
+/* 2. 服务信息卡片 */
+.service-info-card {
+  background-color: #fff;
+  margin: 32rpx;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+.card-desc {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 3. 填写表单 */
+.form-section {
+  background-color: #fff;
+  margin: 32rpx;
+  border-radius: 16rpx;
+  padding: 0 32rpx;
+}
+.form-item {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+.form-item:last-child {
+  border-bottom: none;
+}
+.form-item.remark {
+  align-items: flex-start;
+  padding: 32rpx 0;
+}
+.item-label {
+  font-size: 28rpx;
+  color: #333;
+  width: 160rpx;
+  position: relative;
+}
+.item-label.required::before {
+  content: '*';
+  color: #FA5151;
+  position: absolute;
+  left: -16rpx;
+  top: 4rpx;
+}
+.item-content {
+  flex: 1;
+  font-size: 28rpx;
+}
+.item-content input,
+.item-content textarea {
+  width: 100%;
+  height: 100rpx;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.item-content textarea {
+  height: 160rpx;
+  padding: 32rpx 0;
+}
+.ph { /* placeholder 样式 */
+  color: #C8C9CC;
+}
+.item-content.location {
+  display: flex;
+  align-items: center;
+}
+.location-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: 16rpx;
+}
+
+/* 4. 提交按钮 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.05);
+  box-sizing: border-box;
+}
+.submit-btn {
+  background-color: #CCCCCC; /* 原型图中的灰色 */
+  color: #fff;
+  border-radius: 48rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+.submit-btn:not([disabled]) {
+  /* 假设表单有效时变色 */
+  /* background-color: #409EFF; */
+}
+
+/* 帮助按钮 */
+.help-btn {
+  position: fixed;
+  right: 32rpx;
+  bottom: 180rpx; /* 避开提交按钮 */
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+}

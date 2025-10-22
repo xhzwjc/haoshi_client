@@ -1,0 +1,53 @@
+<view class="page-service-list">
+  <view class="search-bar-wrap">
+    <view class="search-bar">
+      <image class="search-icon" src="/images/icon_search.png" mode="widthFix"></image>
+      <input class="search-input" placeholder="搜索服务..." bindinput="onSearchInput" />
+    </view>
+  </view>
+
+  <view class="filter-tabs-wrap">
+    <view class="filter-tabs">
+      <view
+        class="tab-item {{activeTab === index ? 'active' : ''}}"
+        wx:for="{{tabs}}"
+        wx:key="index"
+        bindtap="onTabClick"
+        data-index="{{index}}"
+      >
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="service-scroll-list" scroll-y>
+    <view class="list-content">
+      
+      <view class="service-card" wx:for="{{allServices}}" wx:key="_id">
+        <view class="card-left">
+          <view class="card-title">
+            {{item.name}}
+            <text class="hot-tag" wx:if="{{item.is_hot}}">热门</text>
+          </view>
+          <view class="card-desc">{{item.description}}</view>
+          <view class="card-footer">
+            <view class="rating-box">
+              <text class="rating-star">★</text>
+              <text class="rating-text">{{item.rating}}</text>
+              <text>已售 {{item.sales}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="card-right">
+          <view class="price-box">
+            <text class="price">{{item.price}}</text>
+            <text class="price-unit">/{{item.unit}}</text>
+          </view>
+          <button class="book-btn-list" bindtap="onBookNowTap" data-service-id="{{item._id}}">立即预约</button>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <image class="help-btn" src="/images/icon_help.png"></image>
+</view>

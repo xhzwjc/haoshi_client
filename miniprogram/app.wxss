@@ -1,0 +1,63 @@
+/* app.wxss */
+page {
+  background-color: #F7F8FA;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
+    Segoe UI, Arial, Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft Yahei',
+    sans-serif;
+  color: #333;
+  font-size: 28rpx;
+}
+
+.container {
+  padding: 0 32rpx;
+}
+
+/* 热门标签 */
+.hot-tag {
+  display: inline-block;
+  background-color: #FFF1F0;
+  color: #FA5151;
+  font-size: 20rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+  margin-left: 12rpx;
+  font-weight: bold;
+}
+
+/* 价格 */
+.price {
+  font-size: 32rpx;
+  color: #FA5151;
+  font-weight: bold;
+}
+.price::before {
+  content: '¥';
+  font-size: 24rpx;
+  margin-right: 2rpx;
+}
+.price-unit {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 4rpx;
+}
+
+/* 评分 */
+.rating-box {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #999;
+}
+.rating-star {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
+  /* 实际应使用star图片 */
+  color: #FFB200; 
+  font-size: 28rpx;
+  line-height: 1;
+}
+.rating-text {
+  color: #FFB200;
+  margin-right: 12rpx;
+}

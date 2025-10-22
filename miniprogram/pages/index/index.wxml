@@ -1,0 +1,68 @@
+<view class="page-index">
+  <view class="banner-container">
+    <view class="banner-content">
+      <view class="banner-title">新用户立减30元</view>
+      <view class="banner-sub">首单优惠, 限时抢购</view>
+    </view>
+  </view>
+
+  <view class="notification-bar">
+    <image class="noti-icon" src="/images/icon_notification.png" mode="widthFix"></image>
+    <text>平台通知: 春节期间服务安排公告</text>
+  </view>
+
+  <view class="service-section">
+    <view class="service-grid">
+      <view class="grid-item" wx:for="{{serviceGrid}}" wx:key="index" bindtap="onGridItemTap" data-service-id="{{item.serviceId}}" data-name="{{item.name}}">
+        <view class="grid-icon-wrap" style="background-color: {{item.bgColor}}">
+          <image class="grid-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        </view>
+        <text class="grid-text">{{item.name}}</text>
+      </view>
+      
+      <view class="grid-item" bindtap="onMoreServiceTap">
+        <view class="grid-icon-wrap" style="background-color: #4DD0C8">
+          <image class="grid-icon" src="/images/icon_more.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-text">更多服务</text>
+      </view>
+
+    </view>
+  </view>
+
+  <view class="recommend-section">
+    <view class="section-header">
+      <view class="section-title">热门推荐</view>
+      <view class="section-more" bindtap="onViewAllTap">
+        查看全部
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+
+    <view class="recommend-list">
+      <view class="service-card" wx:for="{{hotServices}}" wx:key="_id">
+        <view class="card-left">
+          <view class="card-title">
+            {{item.name}}
+            <text class="hot-tag" wx:if="{{item.is_hot}}">热门</text>
+          </view>
+          <view class="card-desc">{{item.description}}</view>
+          <view class="card-footer">
+            <view class="rating-box">
+              <text class="rating-star">★</text>
+              <text class="rating-text">{{item.rating}}</text>
+              <text>已售 {{item.sales}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="card-right">
+          <view class="price">{{item.price}}</view>
+          <button class="book-btn" bindtap="onBookNowTap" data-service-id="{{item._id}}">预约</button>
+        </view>
+      </view>
+      
+    </view>
+  </view>
+  
+  <image class="help-btn" src="/images/icon_help.png"></image>
+</view>
