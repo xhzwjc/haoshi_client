@@ -12,9 +12,5 @@ App({
       });
     }
 
-    // 全局变量，用于处理首页 -> 列表 -> 预约的导航
-    this.globalData = {
-      navigateToBookingInfo: null 
-    };
   }
 })

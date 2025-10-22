@@ -1,5 +1,4 @@
 // pages/index/index.js
-const app = getApp();
 const db = wx.cloud.database(); // 获取数据库引用
 
 Page({
@@ -76,29 +75,16 @@ Page({
   },
 
   /**
-   * 统一的预约跳转逻辑
-   */
-  navigateToBooking: function(serviceId) {
-    if (!serviceId) return;
-
-    // 1. 设置全局标志位，带上服务ID
-    app.globalData.navigateToBookingInfo = {
-      serviceId: serviceId
-    };
-
-    // 2. 切换到服务列表Tab
-    // service-list 页面将在 onShow 时检查这个标志位
-    wx.switchTab({
-      url: '/pages/service-list/service-list'
-    });
-  },
-
-  /**
    * 点击服务网格
    */
   onGridItemTap: function(e) {
     const serviceId = e.currentTarget.dataset.serviceId;
-    this.navigateToBooking(serviceId);
+    if (!serviceId) return;
+    
+    // 直接跳转到 booking 页面
+    wx.navigateTo({
+      url: `/pages/booking/booking?serviceId=${serviceId}`
+    });
   },
 
   /**
@@ -106,9 +92,13 @@ Page({
    */
   onBookNowTap: function(e) {
     const serviceId = e.currentTarget.dataset.serviceId;
-    this.navigateToBooking(serviceId);
-  },
+    if (!serviceId) return;
 
+    // 直接跳转到 booking 页面
+    wx.navigateTo({
+      url: `/pages/booking/booking?serviceId=${serviceId}`
+    });
+  },
   /**
    * 点击 "更多服务"
    */

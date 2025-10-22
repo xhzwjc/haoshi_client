@@ -1,1 +1,127 @@
-<view>我的页面</view>
+<view class="page-profile">
+  <view class="profile-header">
+    <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+    <view class="title-bar" style="height: {{titleBarHeight}}px">我的</view>
+    
+    <view class="user-info-container">
+      <view class="user-info">
+        <image class="avatar" src="/images/default_avatar.png"></image>
+        <view class="user-details">
+          <view class="user-name">{{userInfo.name || '张三'}}</view>
+          <view class="user-phone">{{userInfo.phone || '138****5678'}}</view>
+        </view>
+      </view>
+      <view class="edit-btn">
+        编辑 <image class="arrow-icon" src="/images/icon_arrow_right_white.png" mode="widthFix"></image>
+      </view>
+    </view>
+
+    <view class="stats-bar">
+      <view class="stat-item">
+        <view class="stat-value">{{userInfo.coupons || 5}}</view>
+        <view class="stat-label">优惠券</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{userInfo.favorites || 12}}</view>
+        <view class="stat-label">收藏</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{userInfo.historyOrders || 8}}</view>
+        <view class="stat-label">历史订单</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-group">
+    <view class="menu-item">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_user.png"></image>
+        <text class="menu-label">个人信息</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">编辑资料</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+    <view class="menu-item">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_location.png"></image>
+        <text class="menu-label">地址管理</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">3个地址</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+    <view class="menu-item">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_coupon.png"></image>
+        <text class="menu-label">优惠券</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">5张可用</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+    <view class="menu-item">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_fav.png"></image>
+        <text class="menu-label">我的收藏</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">12个服务</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+    <view class="menu-item">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_refund.png"></image>
+        <text class="menu-label">退款记录</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">查看全部</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-group">
+    <view class="group-title">帮助与反馈</view>
+    <button class="menu-item" open-type="contact"> 
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_master_gray.png"></image>
+        <text class="menu-label">联系客服</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">400-123-4567</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </button>
+    <button class="menu-item" open-type="feedback">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_feedback.png"></image>
+        <text class="menu-label">意见反馈</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">帮助我们改进</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </button>
+    <view class="menu-item">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/icon_profile_faq.png"></image>
+        <text class="menu-label">常见问题</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-desc">使用帮助</text>
+        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+      </view>
+    </view>
+  </view>
+
+  <view class="settings-btn-container">
+    <button class="settings-btn">设置</button>
+  </view>
+
+  <image class="help-btn" src="/images/icon_help.png"></image>
+</view>

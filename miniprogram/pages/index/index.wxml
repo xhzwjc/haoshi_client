@@ -25,7 +25,7 @@
     </view>
 
     <view class="grid-item" bindtap="onMoreServiceTap">
-      <view class="grid-icon-wrap" style="background-color: #4DD0C8">
+      <view class="grid-icon-wrap" style="background-color: #ececec">
         <image class="grid-icon" src="/images/icon_more.png" mode="aspectFit"></image>
       </view>
       <text class="grid-text">更多服务</text>

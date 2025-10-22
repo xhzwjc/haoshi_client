@@ -1,1 +1,155 @@
 /* pages/profile/profile.wxss */
+page {
+  background-color: #F7F8FA;
+}
+.page-profile {
+  padding-bottom: 150rpx; /* 避开tabbar和帮助按钮 */
+}
+
+/* 1. 顶部 */
+.profile-header {
+  background: linear-gradient(180deg, #5A9BFF 0%, #409EFF 100%);
+  color: #fff;
+  padding: 0 32rpx;
+  padding-bottom: 32rpx;
+  margin-bottom: 96rpx; /* 为统计栏留出重叠空间 */
+}
+.title-bar {
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: bold;
+  line-height: 44px; /* 默认胶囊高度 */
+}
+.user-info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32rpx;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255,255,255,0.5);
+  margin-right: 24rpx;
+}
+.user-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+.user-phone {
+  font-size: 28rpx;
+  opacity: 0.8;
+}
+.edit-btn {
+  font-size: 26rpx;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+}
+.arrow-icon {
+  width: 24rpx;
+  height: 24rpx;
+  margin-left: 8rpx;
+}
+
+/* 2. 统计栏 */
+.stats-bar {
+  display: flex;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx 0;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+  position: relative;
+  top: 32rpx; /* 关键：重叠在蓝色背景上 */
+}
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+.stat-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 3. & 4. 菜单组 */
+.menu-group {
+  background-color: #fff;
+  margin: 32rpx;
+  border-radius: 16rpx;
+  padding: 0 32rpx;
+}
+.group-title {
+  font-size: 26rpx;
+  color: #999;
+  padding: 32rpx 0;
+}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 112rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+  background-color: #fff; /* 覆盖button默认样式 */
+  line-height: normal; /* 覆盖button默认样式 */
+  padding: 0; /* 覆盖button默认样式 */
+  border-radius: 0; /* 覆盖button默认样式 */
+}
+.menu-item::after {
+  border: none; /* 覆盖button默认边框 */
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+.menu-icon {
+  width: 44rpx;
+  height: 44rpx;
+  margin-right: 24rpx;
+}
+.menu-label {
+  font-size: 28rpx;
+  color: #333;
+}
+.menu-right {
+  display: flex;
+  align-items: center;
+}
+.menu-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-right: 8rpx;
+}
+
+/* 5. 设置按钮 */
+.settings-btn-container {
+  margin: 32rpx;
+}
+.settings-btn {
+  background-color: #fff;
+  color: #333;
+  font-size: 28rpx;
+}
+
+/* 帮助图标 */
+.help-btn {
+  position: fixed;
+  right: 32rpx;
+  bottom: 150rpx; /* 避开tabbar */
+  width: 80rpx;
+  height: 80rpx;
+}

@@ -31,21 +31,6 @@ Page({
     // this.loadAllServices(); // 从数据库加载所有服务
   },
 
-  onShow: function() {
-    // **核心导航逻辑**
-    // 检查全局标志位
-    const bookingInfo = app.globalData.navigateToBookingInfo;
-    if (bookingInfo && bookingInfo.serviceId) {
-      // 清除标志位，防止重复跳转
-      app.globalData.navigateToBookingInfo = null; 
-      
-      // 跳转到预约页
-      wx.navigateTo({
-        url: `/pages/booking/booking?serviceId=${bookingInfo.serviceId}`
-      });
-    }
-  },
-
   /**
    * 加载所有服务
    */

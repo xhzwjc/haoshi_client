@@ -158,11 +158,12 @@
   background-color: #333;
   color: #fff;
   border-radius: 32rpx;
-  padding: 0 32rpx;
+  padding: 0 10rpx;
   height: 64rpx;
   line-height: 64rpx;
   font-size: 26rpx;
-  margin-top: 16rpx;
+  margin-top: 46rpx;
+  width: 110rpx !important;
 }
 
 /* 帮助按钮 */

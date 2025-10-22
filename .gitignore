@@ -1,0 +1,10 @@
+# 小程序项目忽略文件
+project.private.config.json
+cloudfunctions/*/node_modules/
+cloudfunctions/*/package-lock.json
+cloudfunctions/*/cio*
+miniprogram/images
+*.log
+.DS_Store
+Thumbs.db
+node_modules/
