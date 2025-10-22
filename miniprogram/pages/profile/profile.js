@@ -38,5 +38,17 @@ Page({
         userInfo: res.result.data
       });
     }).catch(console.error);
-  }
+  },
+
+  // 添加联系客服函数
+  contactCustomerService: function() {
+    wx.makePhoneCall({
+    phoneNumber: '400-123-4567'
+    })
+    },
+    
+    // 添加意见反馈函数
+    submitFeedback: function() {
+    wx.openFeedbackShare()
+    }
 });

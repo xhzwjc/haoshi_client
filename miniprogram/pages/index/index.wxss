@@ -157,7 +157,7 @@
 .book-btn {
   background-color: #333;
   color: #fff;
-  border-radius: 32rpx;
+  border-radius: 20rpx;
   padding: 0 10rpx;
   height: 64rpx;
   line-height: 64rpx;

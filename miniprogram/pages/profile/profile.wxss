@@ -153,3 +153,18 @@ page {
   width: 80rpx;
   height: 80rpx;
 }
+
+/* 添加菜单项view样式 */
+.menu-item-view {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 112rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+  background-color: #fff;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  /* 添加点击效果 */
+  touch-action: manipulation;
+  }

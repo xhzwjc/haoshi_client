@@ -87,7 +87,7 @@
 
   <view class="menu-group">
     <view class="group-title">帮助与反馈</view>
-    <button class="menu-item" open-type="contact"> 
+    <view class="menu-item-view" bindtap="contactCustomerService">
       <view class="menu-left">
         <image class="menu-icon" src="/images/icon_master_gray.png"></image>
         <text class="menu-label">联系客服</text>
@@ -96,8 +96,8 @@
         <text class="menu-desc">400-123-4567</text>
         <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
-    </button>
-    <button class="menu-item" open-type="feedback">
+    </view>
+    <view class="menu-item-view" bindtap="submitFeedback">
       <view class="menu-left">
         <image class="menu-icon" src="/images/icon_profile_feedback.png"></image>
         <text class="menu-label">意见反馈</text>
@@ -106,8 +106,8 @@
         <text class="menu-desc">帮助我们改进</text>
         <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
-    </button>
-    <view class="menu-item">
+    </view>
+    <view class="menu-item-view">
       <view class="menu-left">
         <image class="menu-icon" src="/images/icon_profile_faq.png"></image>
         <text class="menu-label">常见问题</text>
