@@ -82,7 +82,7 @@ Page({
     formSubmit: function(e) {
         const formData = e.detail.value;
         const serviceData = this.data.service;
-        const phoneReg = /^1[3-9]\d{9}$/;
+        // const phoneReg = /^1[3-9]\d{9}$/;
 
         // 基础校验 (使用表单数据，而不是 this.data)
         if (!formData.address) {
@@ -96,9 +96,9 @@ Page({
         }
 
         // 手机号码格式校验
-        if (!phoneReg.test(formData.contact_phone)) {
-            return wx.showToast({ title: '联系电话格式不正确', icon: 'none' });
-        }
+        // if (!phoneReg.test(formData.contact_phone)) {
+        //     return wx.showToast({ title: '联系电话格式不正确', icon: 'none' });
+        // }
         
         // 确保 price 是数字类型
         const servicePrice = parseFloat(serviceData.price);

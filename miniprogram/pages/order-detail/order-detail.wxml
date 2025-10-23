@@ -1,0 +1,84 @@
+<view class="page-order-detail">
+    <block wx:if="{{loading}}">
+        <view class="loading-state">
+            <text>订单加载中...</text>
+        </view>
+    </block>
+
+    <block wx:else>
+        <view class="status-card">
+            <view class="status-main">{{orderDetail.status_text || '待服务'}}</view>
+            <view class="status-tip">{{orderDetail.status_tip || '服务已提交，等待人员接单'}}</view>
+        </view>
+
+        <view class="section-card service-info">
+            <view class="section-title">
+                <text>{{orderDetail.service_name || '服务名称'}}</text>
+                <text class="price-value">¥{{orderDetail.total_fee_fmt}}</text>
+            </view>
+            <view class="info-list">
+                <view class="info-item">
+                    <text class="label">服务时间</text>
+                    <text class="value">{{orderDetail.service_date}} {{orderDetail.service_time_slot}}</text>
+                </view>
+                <view class="info-item">
+                    <text class="label">服务地址</text>
+                    <text class="value long-text">{{orderDetail.address}}</text>
+                </view>
+                <view class="info-item">
+                    <text class="label">联系人</text>
+                    <text class="value">{{orderDetail.contact_name}}</text>
+                </view>
+                <view class="info-item">
+                    <text class="label">联系电话</text>
+                    <text class="value">{{orderDetail.contact_phone}}</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="section-card price-detail">
+            <view class="section-title">费用明细</view>
+            <view class="info-list">
+                <view class="info-item">
+                    <text class="label">服务费</text>
+                    <text class="value">¥{{orderDetail.service_price_fmt}}</text>
+                </view>
+                <view class="info-item total-row">
+                    <text class="label total-label">订单总价</text>
+                    <text class="value total-price">¥{{orderDetail.total_fee_fmt}}</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="section-card order-data">
+            <view class="section-title">订单信息</view>
+            <view class="info-list">
+                <view class="info-item">
+                    <text class="label">订单编号</text>
+                    <text class="value">{{orderDetail._id}}</text>
+                    <text class="copy-btn" data-content="{{orderDetail._id}}" bindtap="copyContent">复制</text>
+                </view>
+                <view class="info-item">
+                    <text class="label">下单时间</text>
+                    <text class="value">{{orderDetail.created_at_fmt}}</text>
+                </view>
+                <view class="info-item">
+                    <text class="label">备注信息</text>
+                    <text class="value long-text">{{orderDetail.remarks || '无'}}</text>
+                </view>
+            </view>
+        </view>
+    </block>
+    
+    <view class="bottom-bar action-bar">
+        <block wx:for="{{getActions(orderDetail.status)}}" wx:key="text">
+            <button 
+                class="action-btn {{item.type === 'primary' ? 'primary-btn' : (item.type === 'warn' ? 'warn-btn' : 'default-btn')}}"
+                data-action="{{item.text}}"
+                bindtap="handleAction"
+            >
+                {{item.text}}
+            </button>
+        </block>
+    </view>
+</view>

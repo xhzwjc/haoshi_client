@@ -6,13 +6,13 @@ Page({
         bookingData: null, // 完整的订单数据 (包含时间/地址等)
         orderSummary: {
             service_name: '加载中...',
-            service_desc: '...', // 新增：服务描述
+            service_desc: '...', // 服务描述
             service_date: '...',
             service_time_slot: '...',
             address: '...',
-            contact_name: '...', // 新增：联系人
-            contact_phone: '...', // 新增：电话
-            total_price_display: '0.00', // 优化：用于展示的格式化价格
+            contact_name: '...', // 联系人
+            contact_phone: '...', // 电话
+            total_price_display: '0.00', // 用于展示的格式化价格
             total_price: 0
         }
     },
@@ -26,7 +26,8 @@ Page({
                 bookingData: bookingData,
                 orderSummary: {
                     service_name: bookingData.service_name,
-                    service_desc: bookingData.service_description || '专业服务，品质保障', // 从 bookingData 提取描述
+                    // 从服务数据中提取描述，如果不存在则使用默认值
+                    service_desc: bookingData.service_description || '全屋深度清洁，包含厨房卫生清洁', 
                     service_date: bookingData.service_date,
                     service_time_slot: bookingData.service_time_slot,
                     address: bookingData.address,
@@ -43,7 +44,6 @@ Page({
      * 上一步：返回选择时间页面
      */
     onPrevStep: function() {
-        // 优化：确保返回时携带必要信息，或者直接使用 wx.navigateBack()
         wx.navigateBack();
     },
 
@@ -63,7 +63,6 @@ Page({
             total_fee: this.data.orderSummary.total_price, // 实际支付金额
             status: 'pending', // 初始状态为待处理/待支付
             created_at: db.serverDate()
-            // 实际支付集成后，这里会调用 wx.cloud.callFunction({name: 'pay'})
         };
 
         // 模拟支付成功，直接保存订单
@@ -72,7 +71,6 @@ Page({
         }).then(res => {
             wx.hideLoading();
             
-            // 模拟支付成功提示和跳转
             wx.showModal({
                 title: '支付成功',
                 content: '您的订单已成功提交，请等待服务人员确认！',
@@ -80,7 +78,6 @@ Page({
                 confirmText: '查看订单',
                 success: (modalRes) => {
                     if (modalRes.confirm) {
-                        // 跳转到订单详情或订单列表
                         wx.redirectTo({
                             url: `/pages/order-detail/order-detail?id=${res._id}` // 假设存在订单详情页
                         });

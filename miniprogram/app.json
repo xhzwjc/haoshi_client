@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/service-list/service-list",
     "pages/order/order",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/order-detail/order-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,21 +1,5 @@
 <view class="page-booking">
-    <view class="progress-bar">
-        <view class="step finished">
-            <view class="step-num">1</view>
-            <view class="step-text">填写信息</view>
-        </view>
-        <view class="step-line active-line"></view>
-        <view class="step finished">
-            <view class="step-num">2</view>
-            <view class="step-text">选择时间</view>
-        </view>
-        <view class="step-line active-line"></view>
-        <view class="step active">
-            <view class="step-num">3</view>
-            <view class="step-text">确认支付</view>
-        </view>
-    </view>
-
+    
     <view class="section-card total-summary">
         <view class="summary-header">订单金额</view>
         <view class="total-price-display">
@@ -72,11 +56,8 @@
         </view>
     </view>
 
-    <view class="bottom-bar step-nav">
-        <button class="prev-btn" bindtap="onPrevStep">上一步</button>
-        <button class="next-btn confirm-btn" bindtap="onConfirmPay">
-            确认支付 ¥{{orderSummary.total_price_display}}
-        </button>
+    <view class="bottom-bar">
+        <button class="confirm-btn full-width" bindtap="onConfirmPay">确认支付</button>
     </view>
     
     <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>

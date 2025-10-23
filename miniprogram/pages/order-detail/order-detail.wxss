@@ -1,0 +1,154 @@
+/* /pages/order-detail/order-detail.wxss */
+
+/* === 基础设置 === */
+.page-order-detail {
+  padding-bottom: 120rpx; /* 留给底部按钮 */
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+/* === 通用卡片样式 === */
+.section-card {
+  background-color: #fff;
+  margin: 20rpx 30rpx;
+  padding: 30rpx;
+  border-radius: 12rpx; 
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.03);
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.price-value {
+  font-size: 36rpx;
+  color: #FF5722;
+}
+
+/* === 订单状态卡片 === */
+.status-card {
+  background-color: #1677FF; /* 主题色背景 */
+  color: #fff;
+  padding: 60rpx 30rpx;
+  margin: 0;
+  border-radius: 0 0 20rpx 20rpx; /* 底部圆角 */
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+.status-main {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+.status-tip {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+
+/* === 信息列表样式 (通用) === */
+.info-list {
+  /* 继承卡片 padding */
+}
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 18rpx 0;
+  font-size: 28rpx;
+  border-bottom: 1rpx solid #f4f4f4; 
+  align-items: center;
+}
+.info-item:last-child {
+  border-bottom: none;
+}
+.label {
+  color: #999;
+  flex-shrink: 0;
+  margin-right: 30rpx;
+}
+.value {
+  color: #333;
+  text-align: right;
+  word-break: break-all;
+  flex-grow: 1;
+}
+.value.long-text {
+  max-width: 70%;
+}
+
+/* 费用明细特殊样式 */
+.price-detail .total-row {
+  margin-top: 15rpx;
+  border-top: 1rpx dashed #eee;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+.price-detail .total-label {
+  color: #333;
+}
+.price-detail .total-price {
+  color: #FF5722;
+}
+
+/* 订单编号复制按钮 */
+.order-data .info-item {
+  position: relative;
+  padding-right: 120rpx; /* 留出复制按钮位置 */
+}
+.order-data .value {
+  margin-right: 20rpx; /* 与复制按钮保持距离 */
+}
+.copy-btn {
+  position: absolute;
+  right: 0;
+  color: #1677FF;
+  font-size: 24rpx;
+  padding: 6rpx 12rpx;
+  border: 1rpx solid #1677FF;
+  border-radius: 8rpx;
+  line-height: 1;
+}
+
+/* === 底部操作栏 === */
+.bottom-bar.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end; /* 按钮靠右 */
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 5rpx rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+}
+.action-btn {
+  width: 200rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+  border-radius: 10rpx;
+  margin: 0;
+  padding: 0;
+}
+.default-btn {
+  background-color: #fff;
+  color: #333;
+  border: 1rpx solid #ccc;
+}
+.warn-btn {
+  background-color: #fff;
+  color: #FF5722;
+  border: 1rpx solid #FF5722;
+}
+.primary-btn {
+  background-color: #FF5722; /* 突出操作使用橙色 */
+  color: #fff;
+  border: none;
+}
