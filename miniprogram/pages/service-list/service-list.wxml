@@ -23,7 +23,7 @@
   <scroll-view class="service-scroll-list" scroll-y>
     <view class="list-content">
       
-      <view class="service-card" wx:for="{{allServices}}" wx:key="_id">
+      <view class="service-card" wx:for="{{filterdServices}}" wx:key="_id">
         <view class="card-left">
           <view class="card-title">
             {{item.name}}

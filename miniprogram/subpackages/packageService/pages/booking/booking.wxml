@@ -29,7 +29,7 @@
       <view class="form-item">
         <view class="item-label required">服务地址</view>
         <view class="item-content location">
-          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" />
+          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" maxlength="100" />
           <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix"></image>
         </view>
       </view>
@@ -37,7 +37,7 @@
       <view class="form-item">
         <view class="item-label required">联系人</view>
         <view class="item-content">
-          <input name="contact_name" placeholder="请输入联系人姓名" placeholder-class="ph" />
+          <input name="contact_name" placeholder="请输入联系人姓名" placeholder-class="ph" maxlength="10" />
         </view>
       </view>
 
@@ -51,7 +51,7 @@
       <view class="form-item remark">
         <view class="item-label">服务备注</view>
         <view class="item-content">
-          <textarea name="remarks" placeholder="请输入特殊需求或备注信息 (选填)" placeholder-class="ph" auto-height />
+          <textarea name="remarks" placeholder="请输入特殊需求或备注信息 (选填)" placeholder-class="ph" auto-height maxlength="100" />
         </view>
       </view>
     </view>

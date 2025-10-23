@@ -54,6 +54,8 @@ Page({
   formSubmit: function(e) {
     const formData = e.detail.value;
 
+    const phoneReg = /^1[3-9]\d{9}$/;
+
     // 基础校验
     if (!formData.address) {
       return wx.showToast({ title: '请输入服务地址', icon: 'none' });
@@ -63,6 +65,10 @@ Page({
     }
     if (!formData.contact_phone) {
       return wx.showToast({ title: '请输入联系电话', icon: 'none' });
+    }
+
+    if (!phoneReg.test(formData.contact_phone)) {
+      return wx.showToast({ title: '联系电话格式不正确', icon: 'none' });
     }
 
     wx.showLoading({ title: '提交中...' });

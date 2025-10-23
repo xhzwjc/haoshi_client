@@ -147,13 +147,14 @@ page {
   box-sizing: border-box;
 }
 .submit-btn {
-  background-color: #CCCCCC; /* 原型图中的灰色 */
+  background-color: #535358;
   color: #fff;
   border-radius: 48rpx;
   height: 96rpx;
   line-height: 96rpx;
   font-size: 32rpx;
   font-weight: bold;
+  padding: 0;
 }
 .submit-btn:not([disabled]) {
   /* 假设表单有效时变色 */
