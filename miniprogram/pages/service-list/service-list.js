@@ -6,10 +6,10 @@ Page({
         tabs: [
             { name: '全部' },
             { name: '保洁清洗' },
-            { name: '母婴护理' },
-            { name: '维修安装' },
+            // { name: '母婴护理' },
+            // { name: '维修安装' },
             { name: '装修翻新' },
-            { name: '搬家服务' },
+            // { name: '搬家服务' },
         ],
         activeTab: 0,
         // allServices 占位数据保留，但会被数据库加载的数据覆盖

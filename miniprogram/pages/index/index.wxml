@@ -60,7 +60,8 @@
           </view>
         </view>
         <view class="card-right">
-          <view class="price">{{item.price}}</view>
+          <text class="price">{{item.price}}</text>
+          <text class="price-unit">/{{item.unit}}</text>
           <button class="book-btn" bindtap="onBookNowTap" data-service-id="{{item._id}}">预约</button>
         </view>
       </view>

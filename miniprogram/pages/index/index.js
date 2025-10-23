@@ -6,13 +6,14 @@ Page({
     // 固定的服务网格数据
     // 你需要将 icon 路径替换为你的图片
     serviceGrid: [
+      { name: '全屋清洁', icon: '/packageCommon/images/icon_move.png', bgColor: '#EEFCFF', serviceId: 'a235246468f875370029b2476ea6131c' },
       { name: '洗玻璃', icon: '/packageCommon/images/icon_glass.png', bgColor: '#ECF5FF', serviceId: 'a235246468f875370029b2476ea6134c' },
       { name: '开荒保洁', icon: '/packageCommon/images/icon_clean.png', bgColor: '#F4F0FF', serviceId: 'a235246468f875370029b2476ea6132c' },
       { name: '铲墙皮', icon: '/packageCommon/images/icon_wall.png', bgColor: '#FEF6EC', serviceId: 'a235246468f875370029b2476ea6135c' },
       { name: '油烟机清洗', icon: '/packageCommon/images/icon_hood.png', bgColor: '#EEFAF3', serviceId: 'a235246468f875370029b2476ea6133c' },
-      { name: '月嫂服务', icon: '/packageCommon/images/icon_nanny.png', bgColor: '#FFF2F4', serviceId: 'a235246468f875370029b2476ea6136c' },
-      { name: '家电维修', icon: '/packageCommon/images/icon_repair.png', bgColor: '#FEF0F0', serviceId: 'a235246468f875370029b2476ea6137c' },
-      { name: '搬家服务', icon: '/packageCommon/images/icon_move.png', bgColor: '#EEFCFF', serviceId: 'a235246468f875370029b2476ea6138c' }
+      // { name: '月嫂服务', icon: '/packageCommon/images/icon_nanny.png', bgColor: '#FFF2F4', serviceId: 'a235246468f875370029b2476ea6136c' },
+      // { name: '家电维修', icon: '/packageCommon/images/icon_repair.png', bgColor: '#FEF0F0', serviceId: 'a235246468f875370029b2476ea6137c' },
+      // { name: '搬家服务', icon: '/packageCommon/images/icon_move.png', bgColor: '#EEFCFF', serviceId: 'a235246468f875370029b2476ea6138c' }
       // "更多服务" 在wxml中单独处理
     ],
     // 热门推荐，从数据库动态获取
@@ -76,6 +77,7 @@ Page({
                     rating: item.rate, // 数据库字段为 rate
                     sales: item.sold,   // 数据库字段为 sold
                     cover: item.cover, // 用于封面图
+                    unit: item.unit,
                 }))
               });
             }
