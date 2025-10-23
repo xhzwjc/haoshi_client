@@ -1,0 +1,159 @@
+/* /subpackages/packageService/pages/confirm-pay/confirm-pay.wxss */
+
+/* === 页面基础和进度条 === */
+.page-booking {
+  padding-bottom: 120rpx; 
+  background-color: #f7f7f7; /* 设置灰色背景，突出白色卡片 */
+  min-height: 100vh;
+}
+/* 进度条样式 (沿用 select-time/booking 的样式) */
+.progress-bar {
+  display: flex;
+  /* ... 保留原有布局和间距 */
+  background-color: #fff;
+  /* ... */
+}
+/* 修正进度条完成状态样式 */
+.progress-bar .step-num.finished {
+  background-color: #1677FF;
+  color: #fff;
+  /* 假设 WXML 中已用 ✓ 替代数字 */
+  font-size: 24rpx; 
+}
+.progress-bar .step-line.active-line {
+  background-color: #1677FF;
+}
+
+/* === 通用卡片样式 === */
+.section-card {
+  background-color: #fff;
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  border-radius: 12rpx; /* 增加圆角，更现代 */
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.03);
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1px solid #eee;
+}
+
+/* === 订单总览卡片 (total-summary) - 美化核心 === */
+.total-summary {
+  text-align: center;
+  padding: 40rpx 30rpx;
+  margin-bottom: 30rpx;
+}
+.summary-header {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 15rpx;
+}
+.total-price-display {
+  font-size: 72rpx; /* 放大金额 */
+  font-weight: bold;
+  color: #FF5722;
+}
+.total-price-display .unit {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-right: 5rpx;
+}
+
+/* === 详情列表 (detail-section) - 美化 === */
+.detail-section .info-list {
+  /* 移除不必要的 border */
+}
+.detail-section .info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  border-bottom: 1rpx solid #f4f4f4; /* 细分隔线 */
+}
+.detail-section .info-item:last-child {
+  border-bottom: none;
+}
+.detail-section .label {
+  color: #999;
+  flex-shrink: 0;
+  margin-right: 30rpx;
+}
+.detail-section .value {
+  color: #333;
+  text-align: right;
+  word-break: break-all;
+}
+.detail-section .value.long-text {
+  max-width: 70%; /* 限制长文本宽度 */
+}
+
+
+/* === 支付方式选择 (pay-method-section) - 美化 === */
+.pay-method-section {
+  padding: 30rpx;
+}
+.pay-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1px solid #eee;
+}
+.pay-item:last-child {
+  border-bottom: none;
+}
+.pay-item .pay-icon {
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 20rpx;
+}
+.pay-item .pay-name {
+  font-size: 30rpx;
+  color: #333;
+  flex-grow: 1;
+}
+.pay-item .check-icon {
+  width: 36rpx;
+  height: 36rpx;
+  opacity: 0.2; /* 默认未选中时稍暗 */
+}
+.pay-item.selected .check-icon {
+  opacity: 1; /* 选中时完全显示 */
+  /* 假设 icon_checked_blue.png 是主题色图标 */
+}
+
+
+/* === 底部操作栏 (沿用 select-time 样式) === */
+.bottom-bar.step-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  /* ... 保持原有样式 ... */
+}
+.prev-btn {
+  /* ... 保持原有样式 ... */
+}
+.confirm-btn {
+  flex: 2;
+  background-color: #FF5722; /* 确认支付按钮使用橙色/醒目色 */
+  color: #fff;
+  font-weight: bold;
+  /* 移除 next-btn class，仅使用 confirm-btn */
+}
+
+/* 帮助按钮 */
+.help-btn {
+  position: fixed;
+  bottom: 150rpx; /* 放在底部操作栏上方 */
+  right: 20rpx;
+  width: 80rpx;
+  height: 80rpx;
+  z-index: 999;
+  border-radius: 50%;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}

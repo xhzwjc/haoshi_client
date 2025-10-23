@@ -1,0 +1,62 @@
+<view class="page-booking">
+    <view class="progress-bar">
+        <view class="step finished">
+            <view class="step-num">1</view>
+            <view class="step-text">填写信息</view>
+        </view>
+        <view class="step-line active-line"></view>
+        
+        <view class="step active">
+            <view class="step-num">2</view>
+            <view class="step-text">选择时间</view>
+        </view>
+        <view class="step-line"></view>
+        <view class="step">
+            <view class="step-num">3</view>
+            <view class="step-text">确认支付</view>
+        </view>
+    </view>
+
+    <view class="service-info-card">
+        <view class="card-header">
+            <view class="card-title">{{service.name || '服务名称'}}</view>
+            <view class="price">¥{{service.price || '...'}}</view>
+        </view>
+        <view class="card-desc">{{service.description || '专业团队, 品质保证'}}</view>
+    </view>
+
+    <view class="form-section">
+        <view class="form-item">
+            <view class="item-label required">选择日期</view>
+            <picker mode="date" value="{{selectedDate}}" start="{{today}}" bindchange="onDateSelect">
+                <view class="item-content date-picker">
+                    <text class="date-text {{selectedDate ? '' : 'ph'}}">
+                        {{selectedDate || '选择服务日期'}}
+                    </text>
+                    <image class="calendar-icon" src="/packageCommon/images/icon_calendar.png" mode="widthFix"></image>
+                </view>
+            </picker>
+        </view>
+
+        <view class="form-item time-slot-group">
+            <view class="item-label required">选择时段</view>
+            <view class="time-slots-container">
+                <view
+                    class="time-slot-item {{item.time === selectedTime ? 'active' : ''}} {{!item.available ? 'disabled' : ''}}"
+                    wx:for="{{timeSlots}}"
+                    wx:key="time"
+                    data-time="{{item.time}}"
+                    bindtap="onTimeSlotSelect"
+                >
+                    <image src="/packageCommon/images/icon_clock.png" mode="widthFix" class="clock-icon"></image>
+                    {{item.time}}
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <view class="bottom-bar step-nav">
+        <button class="prev-btn" bindtap="onPrevStep">上一步</button>
+        <button class="next-btn" bindtap="onNextStep">下一步</button>
+    </view>
+</view>

@@ -47,7 +47,9 @@
     {
       "root": "subpackages/packageService",
       "pages": [
-        "pages/booking/booking"
+        "pages/booking/booking",
+        "pages/select-time/select-time",
+        "pages/confirm-pay/confirm-pay"
       ]
     }
   ],

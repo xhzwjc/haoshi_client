@@ -1,0 +1,83 @@
+<view class="page-booking">
+    <view class="progress-bar">
+        <view class="step finished">
+            <view class="step-num">1</view>
+            <view class="step-text">填写信息</view>
+        </view>
+        <view class="step-line active-line"></view>
+        <view class="step finished">
+            <view class="step-num">2</view>
+            <view class="step-text">选择时间</view>
+        </view>
+        <view class="step-line active-line"></view>
+        <view class="step active">
+            <view class="step-num">3</view>
+            <view class="step-text">确认支付</view>
+        </view>
+    </view>
+
+    <view class="section-card total-summary">
+        <view class="summary-header">订单金额</view>
+        <view class="total-price-display">
+            <text class="unit">¥</text>{{orderSummary.total_price_display}}
+        </view>
+    </view>
+    
+    <view class="section-card detail-section">
+        <view class="section-title">订单详情</view>
+        <view class="info-list">
+            <view class="info-item">
+                <text class="label">服务名称</text>
+                <text class="value">{{orderSummary.service_name}}</text>
+            </view>
+            <view class="info-item">
+                <text class="label">服务描述</text>
+                <text class="value long-text">{{orderSummary.service_desc}}</text>
+            </view>
+            <view class="info-item">
+                <text class="label">服务时间</text>
+                <text class="value">{{orderSummary.service_date}} {{orderSummary.service_time_slot}}</text>
+            </view>
+            <view class="info-item">
+                <text class="label">服务地址</text>
+                <text class="value long-text">{{orderSummary.address}}</text>
+            </view>
+        </view>
+    </view>
+    
+    <view class="section-card detail-section">
+        <view class="section-title">联系人信息</view>
+        <view class="info-list">
+            <view class="info-item">
+                <text class="label">联系人</text>
+                <text class="value">{{orderSummary.contact_name}}</text>
+            </view>
+            <view class="info-item">
+                <text class="label">联系电话</text>
+                <text class="value">{{orderSummary.contact_phone}}</text>
+            </view>
+            <view class="info-item">
+                <text class="label">备注</text>
+                <text class="value long-text">{{bookingData.remarks || '无'}}</text>
+            </view>
+        </view>
+    </view>
+    
+    <view class="section-card pay-method-section">
+        <view class="section-title">选择支付方式</view>
+        <view class="pay-item selected">
+            <image class="pay-icon" src="/packageCommon/images/icon_wechat_pay.png" mode="aspectFit"></image>
+            <text class="pay-name">微信支付</text>
+            <image class="check-icon" src="/packageCommon/images/icon_checked_blue.png" mode="aspectFit"></image>
+        </view>
+    </view>
+
+    <view class="bottom-bar step-nav">
+        <button class="prev-btn" bindtap="onPrevStep">上一步</button>
+        <button class="next-btn confirm-btn" bindtap="onConfirmPay">
+            确认支付 ¥{{orderSummary.total_price_display}}
+        </button>
+    </view>
+    
+    <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
+</view>
