@@ -24,15 +24,15 @@
         
         <view class="card-body">
           <view class="info-line" wx:if="{{item.address}}">
-            <image class="info-icon" src="/images/icon_location_gray.png" mode="widthFix"></image>
+            <image class="info-icon" src="/packageCommon/images/icon_location_gray.png" mode="widthFix"></image>
             <text>{{item.address}}</text>
           </view>
           <view class="info-line" wx:if="{{item.service_time}}">
-            <image class="info-icon" src="/images/icon_time_gray.png" mode="widthFix"></image>
+            <image class="info-icon" src="/packageCommon/images/icon_time_gray.png" mode="widthFix"></image>
             <text>{{item.service_time}}</text>
           </view>
           <view class="info-line" wx:if="{{item.master_info}}">
-            <image class="info-icon" src="/images/icon_master_gray.png" mode="widthFix"></image>
+            <image class="info-icon" src="/packageCommon/images/icon_master_gray.png" mode="widthFix"></image>
             <text>{{item.master_info}}</text>
           </view>
         </view>
@@ -55,10 +55,10 @@
     </block>
     
     <view class="empty-state" wx:else>
-      <image class="empty-icon" src="/images/icon_empty.png"></image>
+      <image class="empty-icon" src="/packageCommon/images/icon_empty.png"></image>
       <text>暂无相关订单</text>
     </view>
   </scroll-view>
 
-  <image class="help-btn" src="/images/icon_help.png"></image>
+  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

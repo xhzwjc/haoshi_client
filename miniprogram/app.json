@@ -2,7 +2,6 @@
   "pages": [
     "pages/index/index",
     "pages/service-list/service-list",
-    "pages/booking/booking",
     "pages/order/order",
     "pages/profile/profile"
   ],
@@ -21,29 +20,38 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "images/tab_home.png",
-        "selectedIconPath": "images/tab_home_active.png"
+        "iconPath": "/packageCommon/images/tab_home.png",
+        "selectedIconPath": "/packageCommon/images/tab_home_active.png"
       },
       {
         "pagePath": "pages/service-list/service-list",
         "text": "服务",
-        "iconPath": "images/tab_service.png",
-        "selectedIconPath": "images/tab_service_active.png"
+        "iconPath": "/packageCommon/images/tab_service.png",
+        "selectedIconPath": "/packageCommon/images/tab_service_active.png"
       },
       {
         "pagePath": "pages/order/order",
         "text": "订单",
-        "iconPath": "images/tab_order.png",
-        "selectedIconPath": "images/tab_order_active.png"
+        "iconPath": "/packageCommon/images/tab_order.png",
+        "selectedIconPath": "/packageCommon/images/tab_order_active.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "images/tab_profile.png",
-        "selectedIconPath": "images/tab_profile_active.png"
+        "iconPath": "/packageCommon/images/tab_profile.png",
+        "selectedIconPath": "/packageCommon/images/tab_profile_active.png"
       }
     ]
   },
+  "subpackages": [
+    {
+      "root": "subpackages/packageService",
+      "pages": [
+        "pages/booking/booking"
+      ]
+    }
+  ],
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }

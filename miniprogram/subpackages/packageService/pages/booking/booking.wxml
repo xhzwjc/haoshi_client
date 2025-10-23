@@ -30,7 +30,7 @@
         <view class="item-label required">服务地址</view>
         <view class="item-content location">
           <input name="address" placeholder="请输入详细地址" placeholder-class="ph" />
-          <image class="location-icon" src="/images/icon_location.png" mode="widthFix"></image>
+          <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix"></image>
         </view>
       </view>
 
@@ -61,5 +61,5 @@
     </view>
   </form>
   
-  <image class="help-btn" src="/images/icon_help.png"></image>
+  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

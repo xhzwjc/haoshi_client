@@ -1,7 +1,7 @@
 <view class="page-service-list">
   <view class="search-bar-wrap">
     <view class="search-bar">
-      <image class="search-icon" src="/images/icon_search.png" mode="widthFix"></image>
+      <image class="search-icon" src="/packageCommon/images/icon_search.png" mode="widthFix"></image>
       <input class="search-input" placeholder="搜索服务..." bindinput="onSearchInput" />
     </view>
   </view>
@@ -49,5 +49,5 @@
     </view>
   </scroll-view>
 
-  <image class="help-btn" src="/images/icon_help.png"></image>
+  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

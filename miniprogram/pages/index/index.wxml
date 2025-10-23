@@ -7,7 +7,7 @@
   </view>
 
   <view class="notification-bar">
-    <image class="noti-icon" src="/images/icon_notification.png" mode="widthFix"></image>
+    <image class="noti-icon" src="/packageCommon/images/icon_notification.png" mode="widthFix"></image>
     <text>平台通知: 春节期间服务安排公告</text>
   </view>
 
@@ -26,7 +26,7 @@
 
     <view class="grid-item" bindtap="onMoreServiceTap">
       <view class="grid-icon-wrap" style="background-color: #ffffff">
-        <image class="grid-icon" src="/images/icon_more.png" mode="aspectFit"></image>
+        <image class="grid-icon" src="/packageCommon/images/icon_more.png" mode="aspectFit"></image>
       </view>
       <text class="grid-text">更多服务</text>
     </view>
@@ -39,7 +39,7 @@
       <view class="section-title">热门推荐</view>
       <view class="section-more" bindtap="onViewAllTap">
         查看全部
-        <image class="arrow-icon" src="/images/icon_arrow_right.png" mode="widthFix"></image>
+        <image class="arrow-icon" src="/packageCommon/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
     </view>
 
@@ -68,5 +68,5 @@
     </view>
   </view>
   
-  <image class="help-btn" src="/images/icon_help.png"></image>
+  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

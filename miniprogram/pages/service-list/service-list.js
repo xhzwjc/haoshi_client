@@ -78,7 +78,7 @@ Page({
   onBookNowTap: function(e) {
     const serviceId = e.currentTarget.dataset.serviceId;
     wx.navigateTo({
-      url: `/pages/booking/booking?serviceId=${serviceId}`
+      url: `/subpackages/packageService/pages/booking/booking?serviceId=${serviceId}`
     });
   }
 });

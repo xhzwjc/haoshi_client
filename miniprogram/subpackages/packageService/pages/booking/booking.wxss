@@ -1,4 +1,4 @@
-/* pages/booking/booking.wxss */
+/* subpackages/packageService/pages/booking/booking.wxss */
 page {
   background-color: #F7F8FA;
 }
@@ -159,7 +159,6 @@ page {
   /* 假设表单有效时变色 */
   /* background-color: #409EFF; */
 }
-
 /* 帮助按钮 */
 .help-btn {
   position: fixed;

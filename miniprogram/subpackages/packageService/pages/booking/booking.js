@@ -1,4 +1,4 @@
-// pages/booking/booking.js
+// subpackages/packageService/pages/booking/booking.js
 const db = wx.cloud.database();
 
 Page({

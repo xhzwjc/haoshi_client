@@ -6,13 +6,13 @@ Page({
     // 固定的服务网格数据
     // 你需要将 icon 路径替换为你的图片
     serviceGrid: [
-      { name: '洗玻璃', icon: '/images/icon_glass.png', bgColor: '#ECF5FF', serviceId: 'service_glass' },
-      { name: '开荒保洁', icon: '/images/icon_clean.png', bgColor: '#F4F0FF', serviceId: 'service_clean' },
-      { name: '铲墙皮', icon: '/images/icon_wall.png', bgColor: '#FEF6EC', serviceId: 'service_wall' },
-      { name: '油烟机清洗', icon: '/images/icon_hood.png', bgColor: '#EEFAF3', serviceId: 'service_hood' },
-      { name: '月嫂服务', icon: '/images/icon_nanny.png', bgColor: '#FFF2F4', serviceId: 'service_nanny' },
-      { name: '家电维修', icon: '/images/icon_repair.png', bgColor: '#FEF0F0', serviceId: 'service_repair' },
-      { name: '搬家服务', icon: '/images/icon_move.png', bgColor: '#EEFCFF', serviceId: 'service_move' }
+      { name: '洗玻璃', icon: '/packageCommon/images/icon_glass.png', bgColor: '#ECF5FF', serviceId: 'service_glass' },
+      { name: '开荒保洁', icon: '/packageCommon/images/icon_clean.png', bgColor: '#F4F0FF', serviceId: 'service_clean' },
+      { name: '铲墙皮', icon: '/packageCommon/images/icon_wall.png', bgColor: '#FEF6EC', serviceId: 'service_wall' },
+      { name: '油烟机清洗', icon: '/packageCommon/images/icon_hood.png', bgColor: '#EEFAF3', serviceId: 'service_hood' },
+      { name: '月嫂服务', icon: '/packageCommon/images/icon_nanny.png', bgColor: '#FFF2F4', serviceId: 'service_nanny' },
+      { name: '家电维修', icon: '/packageCommon/images/icon_repair.png', bgColor: '#FEF0F0', serviceId: 'service_repair' },
+      { name: '搬家服务', icon: '/packageCommon/images/icon_move.png', bgColor: '#EEFCFF', serviceId: 'service_move' }
       // "更多服务" 在wxml中单独处理
     ],
     // 热门推荐，从数据库动态获取
@@ -83,7 +83,7 @@ Page({
     
     // 直接跳转到 booking 页面
     wx.navigateTo({
-      url: `/pages/booking/booking?serviceId=${serviceId}`
+      url: `/subpackages/packageService/pages/booking/booking?serviceId=${serviceId}`
     });
   },
 
@@ -96,7 +96,7 @@ Page({
 
     // 直接跳转到 booking 页面
     wx.navigateTo({
-      url: `/pages/booking/booking?serviceId=${serviceId}`
+      url: `/subpackages/packageService/pages/booking/booking?serviceId=${serviceId}`
     });
   },
   /**
