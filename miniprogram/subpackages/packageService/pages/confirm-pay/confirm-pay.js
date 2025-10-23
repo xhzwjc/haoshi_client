@@ -41,10 +41,67 @@ Page({
     },
 
     /**
-     * 上一步：返回选择时间页面
+     * 【核心修改】上一步/返回按钮逻辑：弹出确认框，并根据选择执行操作。
      */
     onPrevStep: function() {
-        wx.navigateBack();
+        if (!this.data.bookingData) {
+            return wx.navigateBack(); 
+        }
+
+        // 弹出确认模态框
+        wx.showModal({
+            title: '退出确认',
+            // 提示用户订单将被保存到待支付列表
+            content: '您确定要退出当前付款流程吗？退出后订单将保存到“待支付”列表。',
+            cancelText: '退出',      // 对应您的“退出”按钮
+            confirmText: '继续付款', // 对应您的“继续付款”按钮
+            success: (res) => {
+                if (res.confirm) {
+                    // 用户点击“继续付款”：关闭弹窗，停留在当前页面
+                    console.log('用户选择继续付款');
+                } else {
+                    // 用户点击“退出”：保存订单为 pending 并跳转到订单列表
+                    this.saveOrderAsPendingAndExit();
+                }
+            }
+        });
+    },
+
+    /**
+     * 【新增方法】保存订单为待支付状态并跳转到待支付列表
+     */
+    saveOrderAsPendingAndExit: function() {
+        wx.showLoading({ title: '保存中...' });
+
+        const finalData = {
+            ...this.data.bookingData,
+            total_fee: this.data.orderSummary.total_price,
+            status: 'pending', // 订单状态设为 'pending'
+            created_at: db.serverDate()
+        };
+
+        db.collection('bookings').add({
+            data: finalData
+        }).then(res => {
+            wx.hideLoading();
+            
+            wx.showToast({
+                title: '订单已保存到待支付',
+                icon: 'success', 
+                duration: 1500,
+                success: () => {
+                    // 跳转到订单列表页，并选中 '待支付' Tab
+                    wx.reLaunch({ 
+                        url: `/pages/order/order?status=pending` 
+                    });
+                }
+            });
+        }).catch(err => {
+            wx.hideLoading();
+            console.error('订单保存失败:', err);
+            wx.showToast({ title: '订单保存失败，已返回', icon: 'none' });
+            wx.navigateBack(); 
+        });
     },
 
     /**
@@ -60,8 +117,8 @@ Page({
         // 构造要写入数据库的最终数据
         const finalData = {
             ...this.data.bookingData,
-            total_fee: this.data.orderSummary.total_price, // 实际支付金额
-            status: 'pending', // 初始状态为待处理/待支付
+            total_fee: this.data.orderSummary.total_price,
+            status: 'paid', // 支付成功，状态设为 'paid' (待服务)
             created_at: db.serverDate()
         };
 
@@ -73,13 +130,18 @@ Page({
             
             wx.showModal({
                 title: '支付成功',
-                content: '您的订单已成功提交，请等待服务人员确认！',
+                content: '您的订单已成功提交，状态：待服务！',
                 showCancel: false,
                 confirmText: '查看订单',
                 success: (modalRes) => {
                     if (modalRes.confirm) {
+                        const detailUrl = `/pages/order-detail/order-detail?id=${res._id}`;
                         wx.redirectTo({
-                            url: `/pages/order-detail/order-detail?id=${res._id}` // 假设存在订单详情页
+                            url: detailUrl, 
+                            fail: (e) => {
+                                console.error('跳转订单详情失败:', e);
+                                wx.showToast({ title: '跳转失败，请查看控制台错误', icon: 'none' });
+                            }
                         });
                     }
                 }

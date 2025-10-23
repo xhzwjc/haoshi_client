@@ -56,8 +56,19 @@
         </view>
     </view>
 
-    <view class="bottom-bar">
-        <button class="confirm-btn full-width" bindtap="onConfirmPay">确认支付</button>
+    <view class="bottom-bar action-group">
+        <button 
+            class="btn-cancel" 
+            bindtap="onPrevStep"
+        >
+            返回/取消
+        </button>
+        <button 
+            class="confirm-btn flex-grow" 
+            bindtap="onConfirmPay"
+        >
+            确认支付 ¥{{orderSummary.total_price_display}}
+        </button>
     </view>
     
     <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>

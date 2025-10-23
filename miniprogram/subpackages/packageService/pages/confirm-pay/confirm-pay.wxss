@@ -2,7 +2,8 @@
 
 /* === 页面基础样式 === */
 .page-booking {
-  padding-bottom: 150rpx; /* 增加底部留白，适应单按钮 */
+  /* 增加底部留白，适应双按钮布局 */
+  padding-bottom: 180rpx; 
   background-color: #f7f7f7; 
   min-height: 100vh;
 }
@@ -14,7 +15,7 @@
 /* === 通用卡片样式 === */
 .section-card {
   background-color: #fff;
-  margin: 0 30rpx 20rpx 30rpx; /* 左右增加边距，使卡片悬浮感更强 */
+  margin: 0 30rpx 20rpx 30rpx;
   padding: 30rpx;
   border-radius: 12rpx; 
   box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.03);
@@ -32,7 +33,7 @@
 .total-summary {
   text-align: center;
   padding: 40rpx 30rpx;
-  margin-top: 20rpx; /* 顶部增加间隔 */
+  margin-top: 20rpx;
 }
 .summary-header {
   font-size: 28rpx;
@@ -108,43 +109,50 @@
 }
 
 
-/* === 底部操作栏 (只保留确认支付) === */
+/* === 【核心修改】底部操作栏 (双按钮) === */
 .bottom-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
+  display: flex; /* 启用 Flex 布局 */
   padding: 20rpx 30rpx;
   background-color: #fff;
   box-shadow: 0 -2rpx 5rpx rgba(0, 0, 0, 0.08);
   z-index: 1000;
+  align-items: center;
+  gap: 20rpx; /* 增加按钮间距 */
 }
 .bottom-bar button {
-  height: 96rpx; /* 增加高度 */
+  height: 96rpx; 
   line-height: 96rpx;
-  font-size: 36rpx; /* 增加字号 */
+  font-size: 34rpx; /* 略微减小字号以适应双按钮 */
   border-radius: 12rpx; 
   margin: 0;
   padding: 0;
 }
-/* 铺满宽度 */
-.confirm-btn.full-width {
-  flex: 1; /* 占据所有空间 */
-  background-color: #FF5722; /* 使用醒目的橙色 */
+
+/* 确认支付按钮 */
+.bottom-bar .confirm-btn.flex-grow {
+  flex: 1; /* 占据剩余主要空间 */
+  background-color: #FF5722; 
   color: #fff;
   font-weight: bold;
 }
-/* 移除 prev-btn 样式 */
-.prev-btn {
-  display: none;
+
+/* 返回/取消按钮 (新样式) */
+.bottom-bar .btn-cancel {
+  flex-basis: 35%; /* 给予取消按钮一定宽度 */
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
 }
 
 
-/* 帮助按钮 (如果不需要，请在 WXML 中移除) */
+/* 帮助按钮 */
 .help-btn {
   position: fixed;
-  bottom: 150rpx; 
+  bottom: 190rpx; /* 调整位置，避免被双按钮遮挡 */
   right: 20rpx;
   width: 80rpx;
   height: 80rpx;

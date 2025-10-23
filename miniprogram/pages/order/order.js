@@ -1,124 +1,157 @@
 // pages/order/order.js
-// 假设 db 已经通过 app.js 初始化
-// const db = wx.cloud.database(); 
+const db = wx.cloud.database();
+const _ = db.command; // 引入数据库操作符
 
 Page({
   data: {
     tabs: [
       { name: '全部', status: 'all' },
-      { name: '待服务', status: 'pending' },
+      { name: '待支付', status: 'pending' },
+      { name: '待服务', status: 'paid' },
       { name: '进行中', status: 'running' },
       { name: '已完成', status: 'completed' },
       { name: '已取消', status: 'cancelled' },
     ],
     activeTab: 0,
-    allOrders: [ // 静态数据，用于演示
-      {
-        service_name: '深度保洁套餐',
-        order_no: 'ORD20251021001',
-        status: 'completed',
-        status_text: '已完成',
-        address: '京山县城区幸福路123号',
-        service_time: '2025-10-18 14:00-16:00',
-        master_info: '张师傅 138****5678',
-        payment: 299
-      },
-      {
-        service_name: '油烟机清洗',
-        order_no: 'ORD20251021002',
-        status: 'pending',
-        status_text: '待服务',
-        address: '京山县城区建设路456号',
-        service_time: '2025-10-22 10:00-12:00',
-        master_info: '李师傅 139****1234',
-        payment: 120
-      },
-      {
-        service_name: '开荒保洁',
-        order_no: 'ORD20251021003',
-        status: 'running',
-        status_text: '服务中',
-        address: '京山县新市镇和平路789号',
-        service_time: '2025-10-21 08:00-10:00',
-        master_info: '王师傅 137****9876',
-        payment: 199
-      },
-      {
-        service_name: '洗玻璃服务',
-        order_no: 'ORD20251021004',
-        status: 'cancelled',
-        status_text: '已取消',
-        address: '京山县城区幸福路123号',
-        service_time: '2025-10-15 14:00-16:00',
-        master_info: '', // 取消的订单可能没有师傅信息
-        payment: 80
-      }
-    ],
-    filteredOrders: [] // 真正显示的列表
+    filteredOrders: [], // 存储查询和格式化后的订单列表
+    loading: false,     // 加载状态
   },
 
   onLoad: function (options) {
-    this.filterOrders(); // 页面加载时，默认显示"全部"
-    // this.loadOrders(); // 真实场景应调用此函数
+    // 检查是否有传入状态参数（例如从其他页面跳转过来）
+    const initialStatus = options.status;
+    let initialIndex = 0;
+    if (initialStatus) {
+      initialIndex = this.data.tabs.findIndex(tab => tab.status === initialStatus) || 0;
+    }
+    
+    this.setData({
+      activeTab: initialIndex
+    }, () => {
+      this.loadOrders(); // 页面加载时，根据初始Tab加载数据
+    });
   },
 
-  /**
-   * 真实加载订单数据
-   * 推荐使用云函数
-   */
-  loadOrders: function() {
-    wx.showLoading({ title: '加载中...' });
-    const currentStatus = this.data.tabs[this.data.activeTab].status;
-  
-    wx.cloud.callFunction({
-      name: 'getOrders', // 你创建的云函数名
-      data: {
-        status: currentStatus // 向云函数传递参数
-      }
-    }).then(res => {
-      wx.hideLoading();
-      if (res.result.code === 0) {
-        this.setData({
-          // 注意：这里不再需要 allOrders 和 filteredOrders 了
-          // filteredOrders: res.result.data 
-          
-          // 为了演示，我还是用旧的逻辑
-          allOrders: res.result.data,
-        });
-        this.filterOrders(); // 假设云函数返回了所有订单，还是在本地过滤
-      } else {
-        wx.showToast({ title: '加载失败', icon: 'none' });
-      }
-    }).catch(err => {
-      wx.hideLoading();
-      console.error(err);
-      wx.showToast({ title: '网络错误', icon: 'none' });
-    });
+  onShow: function() {
+    // 考虑到用户可能从详情页返回，或者数据状态发生变化，建议在 onShow 刷新数据
+    // this.loadOrders(); 
+    // 为了性能考虑，如果您确定订单数据不常变，可以不在这里调用
   },
   
   onTabClick: function(e) {
     const index = e.currentTarget.dataset.index;
+    if (this.data.activeTab === index) return;
+
     this.setData({
       activeTab: index
+    }, () => {
+      this.loadOrders(); // 切换 Tab 后加载新数据
     });
-    this.loadOrders();
-    this.filterOrders();
   },
 
   /**
-   * 根据当前 activeTab 筛选订单
+   * 真实加载订单数据 (使用数据库查询)
    */
-  filterOrders: function() {
+  loadOrders: function() {
+    this.setData({ loading: true });
     const currentStatus = this.data.tabs[this.data.activeTab].status;
-    if (currentStatus === 'all') {
-      this.setData({
-        filteredOrders: this.data.allOrders
+    
+    let condition = {};
+    if (currentStatus !== 'all') {
+      // 如果不是“全部”，则根据状态查询
+      condition.status = currentStatus;
+    } 
+    
+    db.collection('bookings')
+      .where(condition)
+      .orderBy('created_at', 'desc') // 按创建时间倒序排列
+      .get()
+      .then(res => {
+        const rawOrders = res.data || [];
+        
+        // 格式化数据，使 WXML 可以直接使用
+        const formattedOrders = rawOrders.map(order => {
+          const payment = parseFloat(order.total_fee) || 0; // 假设 total_fee 是实际付款金额
+          
+          // 状态显示逻辑（可根据实际项目状态进行调整）
+          let statusText = '未知';
+          if (order.status === 'pending') statusText = '待支付';
+          else if (order.status === 'paid') statusText = '待服务'; // 支付成功，等待接单
+          else if (order.status === 'running') statusText = '进行中';
+          else if (order.status === 'completed') statusText = '已完成';
+          else if (order.status === 'cancelled') statusText = '已取消';
+          
+          return {
+            ...order,
+            // 【重要】 WXML 中直接使用的字段
+            payment_fmt: payment.toFixed(2), // 格式化金额
+            order_no: order._id, // 暂时用云数据库的 _id 作为订单号展示
+            status_text: statusText, 
+            service_name: order.service_name || '家政服务',
+            // master_info 和 service_time 等字段需要确保在 order 对象中存在
+            master_info: order.master_info || '待分配',
+          };
+        });
+
+        this.setData({
+          filteredOrders: formattedOrders,
+          loading: false
+        });
+        wx.hideLoading();
+      })
+      .catch(err => {
+        console.error('加载订单失败:', err);
+        this.setData({ loading: false });
+        wx.hideLoading();
+        wx.showToast({ title: '加载失败', icon: 'none' });
       });
-    } else {
-      const filtered = this.data.allOrders.filter(order => order.status === currentStatus);
-      this.setData({
-        filteredOrders: filtered
-      });
+  },
+  
+  /**
+   * 跳转到订单详情页
+   */
+  toOrderDetail: function(e) {
+      const orderId = e.currentTarget.dataset.id;
+      if (orderId) {
+          wx.navigateTo({
+              url: `/pages/order-detail/order-detail?id=${orderId}`
+          });
+      }
+  },
+
+  handleListAction: function(e) {
+    const { action, id } = e.currentTarget.dataset;
+    
+    // 阻止事件冒泡，避免点击按钮时同时触发卡片的 toOrderDetail
+    e.stopPropagation(); 
+    
+    if (action === '去付款') {
+        wx.showToast({ title: '跳转到支付页...', icon: 'none' });
+        // 实际应跳转到重新支付页面：wx.navigateTo({ url: `/subpackages/.../confirm-pay/confirm-pay?id=${id}` })
+        return;
     }
-  }
+    if (action === '取消订单') {
+      // 【！！！核心修改：替换错误的 '...' ！！！】
+      wx.showModal({ 
+          title: '确认取消', 
+          content: `确定取消订单 ${id} 吗?`, 
+          // 建议加上 success/fail 回调，这里仅作为示例
+          success: (res) => {
+              if (res.confirm) {
+                  // 用户点击确定，执行取消逻辑
+                  wx.showToast({ title: '开始执行取消...', icon: 'none' });
+                  // TODO: 调用云函数或数据库更新订单状态为 'cancelled'
+              }
+          }
+      });
+      return;
+    }
+    if (action === '评价') {
+         wx.showToast({ title: '跳转到评价页...', icon: 'none' });
+         return;
+    }
+
+    // ... 其他操作 (联系客服等) 逻辑
+    wx.showToast({ title: `对订单 ${id} 执行 ${action}`, icon: 'none' });
+}
 });

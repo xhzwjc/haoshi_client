@@ -14,24 +14,34 @@
   </view>
 
   <scroll-view class="order-list-scroll" scroll-y>
-    <block wx:if="{{filteredOrders.length > 0}}">
-      <view class="order-card" wx:for="{{filteredOrders}}" wx:key="order_no">
+    <view class="loading-state" wx:if="{{loading}}">
+        <text>订单数据加载中...</text>
+    </view>
+    
+    <block wx:elif="{{filteredOrders.length > 0}}">
+      <view 
+        class="order-card" 
+        wx:for="{{filteredOrders}}" 
+        wx:key="_id" 
+        data-id="{{item._id}}" 
+        bindtap="toOrderDetail" 
+      >
         <view class="card-header">
           <view class="service-name">{{item.service_name}}</view>
           <view class="status-tag status-{{item.status}}">{{item.status_text}}</view>
         </view>
-        <view class="order-no">订单号: {{item.order_no}}</view>
+        <view class="order-no">订单编号: {{item._id}}</view> 
         
         <view class="card-body">
           <view class="info-line" wx:if="{{item.address}}">
             <image class="info-icon" src="/packageCommon/images/icon_location_gray.png" mode="widthFix"></image>
             <text>{{item.address}}</text>
           </view>
-          <view class="info-line" wx:if="{{item.service_time}}">
+          <view class="info-line" wx:if="{{item.service_date && item.service_time_slot}}">
             <image class="info-icon" src="/packageCommon/images/icon_time_gray.png" mode="widthFix"></image>
-            <text>{{item.service_time}}</text>
+            <text>{{item.service_date}} {{item.service_time_slot}}</text>
           </view>
-          <view class="info-line" wx:if="{{item.master_info}}">
+          <view class="info-line" wx:if="{{item.master_info && item.master_info !== '待分配'}}">
             <image class="info-icon" src="/packageCommon/images/icon_master_gray.png" mode="widthFix"></image>
             <text>{{item.master_info}}</text>
           </view>
@@ -39,17 +49,52 @@
 
         <view class="card-footer">
           <view class="payment-info">
-            实付: <text class="price">¥{{item.payment}}</text>
+            实付: <text class="price">{{item.payment_fmt}}</text>
           </view>
+          
           <view class="card-actions">
-            <button class="btn btn-plain" wx:if="{{item.status === 'pending'}}">联系客服</button>
-            <button class="btn btn-plain" wx:if="{{item.status === 'pending'}}">取消订单</button>
+            <block wx:if="{{item.status === 'pending'}}">
+              <button 
+                  class="btn btn-plain" 
+                  data-action="取消订单" 
+                  data-id="{{item._id}}" 
+                  bindtap="handleListAction"
+              >
+                  取消订单
+              </button>
+              <button 
+                  class="btn btn-dark" 
+                  data-action="去付款" 
+                  data-id="{{item._id}}" 
+                  bindtap="handleListAction"
+              >
+                  去付款
+              </button>
+            </block>
             
-            <button class="btn btn-dark" wx:if="{{item.status === 'completed'}}">评价</button>
+            <block wx:elif="{{item.status === 'completed'}}">
+              <button 
+                  class="btn btn-dark" 
+                  data-action="评价" 
+                  data-id="{{item._id}}" 
+                  bindtap="handleListAction"
+              >
+                  评价
+              </button>
+            </block>
+
+            <block wx:elif="{{item.status === 'paid' || item.status === 'running'}}">
+                <button 
+                    class="btn btn-plain" 
+                    data-action="联系客服" 
+                    data-id="{{item._id}}" 
+                    bindtap="handleListAction"
+                >
+                    联系客服
+                </button>
+            </block>
             
-            <button class="btn btn-plain" wx:if="{{item.status !== 'running'}}">查看详情</button>
-            <button class="btn btn-plain" wx:if="{{item.status === 'running'}}">查看详情</button>
-          </view>
+            </view>
         </view>
       </view>
     </block>
