@@ -1,100 +1,173 @@
 // pages/service-list/service-list.js
 const db = wx.cloud.database();
+const PAGE_SIZE = 10; // 定义每页加载数量
 
 Page({
     data: {
         tabs: [
             { name: '全部' },
             { name: '保洁清洗' },
-            // { name: '母婴护理' },
-            // { name: '维修安装' },
             { name: '装修翻新' },
-            // { name: '搬家服务' },
         ],
         activeTab: 0,
-        // allServices 占位数据保留，但会被数据库加载的数据覆盖
-        allServices: [], 
-        filterdServices: [] // 真正显示的服务列表
+        allServices: [],
+        filterdServices: [], // 真正显示的服务列表
+
+        // 【修改/新增】分页和加载状态
+        loading: false,         // 首次加载状态 (用于控制列表中央 Loading)
+        isPulling: false,       // 下拉刷新动画状态 (对应 scroll-view 的 refresher-triggered)
+        isReachingBottom: false,// 上拉加载中状态 (用于控制列表底部 Loading)
+        page: 1,                // 当前页码
+        pageSize: PAGE_SIZE,    // 每页数量
+        hasMore: true,          // 是否还有更多数据
+        bottomText: '正在加载...', // 底部提示文案
     },
 
     onLoad: function (options) {
-        // 将 onLoad 接收的 options 传递给 loadAllServices
-        this.loadAllServices(options); 
+        this.options = options;
+        // 首次加载时，不使用 isPulling 标志
+        this.loadServicesForCurrentTab(options);
+    },
+
+    // 【新增】监听 scroll-view 的下拉刷新事件
+    onRefresherRefresh: function() {
+        if (this.data.loading) return;
+        this.setData({
+            isPulling: true, // 触发下拉动画
+            isReachingBottom: false,
+        });
+        // 传入 isRefresher = true
+        this.loadServicesForCurrentTab(this.options, true);
     },
 
     /**
-     * 辅助函数：根据分类名称筛选服务
+     * 【新增】监听 scroll-view 滚动到底部事件 (上拉加载)
+     */
+    onScrollToLower: function() {
+        if (!this.data.hasMore || this.data.isReachingBottom) {
+            console.log('没有更多数据或正在加载中');
+            return;
+        }
+        
+        this.setData({
+            isReachingBottom: true,
+            bottomText: '正在加载...'
+        });
+        
+        // 调用加载下一页的函数
+        this.loadServicesForCurrentTab(null, false, true);
+    },
+
+    /**
+     * 辅助函数：切换 Tab 时重置状态并加载数据
      * @param {string} categoryName - 要筛选的分类名称 (如 '保洁清洗')
      */
     filterServices: function(categoryName) {
-        const all = this.data.allServices;
-        let filtered = [];
-
-        if (categoryName === '全部') {
-            // 切换到“全部”Tab，显示所有服务
-            filtered = all;
-        } else {
-            // 切换到特定分类 Tab，根据 category 字段精确匹配
-            filtered = all.filter(service => {
-                // 确保服务的 category 字段值必须等于 Tab 的名称
-                return service.category === categoryName;
-            });
-        }
-      
         this.setData({
-            filterdServices: filtered
+            page: 1, // 切换 Tab 时重置页码
+            hasMore: true, // 重置 hasMore
+            filterdServices: [], // 清空当前列表
+            bottomText: '正在加载...',
+        }, () => {
+            this.loadServicesForCurrentTab();
         });
-        // 调试信息
-        console.log(`Tab: ${categoryName}, 筛选结果数量: ${filtered.length}`);
     },
 
     /**
-     * 加载所有服务
+     * 加载当前选中 Tab 的服务列表
      * @param {object} options - 从 onLoad 接收的启动参数
+     * @param {boolean} isRefresher - 是否是下拉刷新触发
+     * @param {boolean} isScrollToLower - 是否是上拉加载触发
      */
-    loadAllServices: function(options) {
-        wx.showLoading({ title: '加载中...' });
-        db.collection('services').get({
-            success: res => {
-                // 1. 进行数据映射，使数据库字段与前端占位数据字段兼容
-                const mappedServices = res.data.map(item => ({
+    loadServicesForCurrentTab: function(options = {}, isRefresher = false, isScrollToLower = false) {
+        if (this.data.loading && !isRefresher && !isScrollToLower) return;
+
+        // 确定要加载的页码和跳过的数量
+        let currentPage = this.data.page;
+        if (isRefresher || !isScrollToLower) {
+            // 下拉刷新和非上拉加载（如切换 Tab 或首次加载）从第一页开始
+            currentPage = 1; 
+        }
+
+        const skip = (currentPage - 1) * this.data.pageSize;
+        const limit = this.data.pageSize;
+        
+        // 只有首次加载且列表为空时显示中央 Loading
+        if (!isRefresher && !isScrollToLower && currentPage === 1) {
+            this.setData({ loading: true });
+            wx.showLoading({ title: '加载中...' }); // 保持全局 Loading 提示
+        }
+
+        // 确定筛选条件
+        const currentTabName = this.data.tabs[this.data.activeTab].name;
+        let whereCondition = {};
+        if (currentTabName !== '全部') {
+            whereCondition = { category: currentTabName };
+        }
+        
+        db.collection('services')
+            .where(whereCondition)
+            .skip(skip)
+            .limit(limit)
+            .get()
+            .then(res => {
+                const newServices = res.data;
+                const mappedServices = newServices.map(item => ({
                     _id: item._id,
                     name: item.name,
-                    description: item.desc || '',  // 数据库 'desc' 映射为 'description'
+                    description: item.desc || '',
                     price: item.price,
                     unit: item.unit,
-                    rating: item.rate || 0,        // 数据库 'rate' 映射为 'rating'
-                    sales: item.sold || 0,         // 数据库 'sold' 映射为 'sales'
-                    category: item.category,       // 数据库 'category' 用于分类筛选
+                    rating: item.rate || 0,
+                    sales: item.sold || 0,
+                    category: item.category,
                     is_hot: item.hot || false,
                     cover: item.cover
                 }));
+
+                let list = isRefresher || (!isScrollToLower && currentPage === 1) 
+                    ? mappedServices // 刷新或首次加载：覆盖列表
+                    : this.data.filterdServices.concat(mappedServices); // 上拉加载：追加数据
+                
+                const hasMore = mappedServices.length === limit;
                 
                 this.setData({
-                    allServices: mappedServices,
-                    // 默认先设置为 mappedServices，对应 '全部' Tab
-                    filterdServices: mappedServices 
+                    filterdServices: list,
+                    page: currentPage + 1,
+                    hasMore: hasMore,
+                    loading: false,
+                    isPulling: false, // 停止下拉刷新动画
+                    isReachingBottom: false,
+                    bottomText: hasMore ? '上拉加载更多' : (list.length > 0 ? '我是有底线的' : ''),
                 });
-                wx.hideLoading();
-                
-                // 2. 检查是否有 URL 带来的分类参数，用于初始定位 Tab
-                if (options && options.category) {
+
+                wx.hideLoading(); // 隐藏全局 loading
+                if (isRefresher) {
+                    wx.showToast({ title: '刷新成功', icon: 'success', duration: 800 });
+                }
+
+                // 2. 检查是否有 URL 带来的分类参数，用于初始定位 Tab (仅在 onLoad 时处理)
+                if (!isRefresher && !isScrollToLower && options && options.category) {
                     const categoryName = options.category;
                     const tabIndex = this.data.tabs.findIndex(tab => tab.name === categoryName);
 
-                    if (tabIndex !== -1) {
-                        // 初始设置 activeTab 并执行筛选
+                    if (tabIndex !== -1 && tabIndex !== this.data.activeTab) {
                         this.setData({ activeTab: tabIndex });
-                        this.filterServices(categoryName);
+                        // 因为 loadServicesForCurrentTab 已经完成加载，这里不需要额外操作
                     }
                 }
-            },
-            fail: err => {
+            })
+            .catch(err => {
                 console.error('加载服务列表失败: ', err);
                 wx.hideLoading();
+                this.setData({ 
+                    loading: false, 
+                    isPulling: false, 
+                    isReachingBottom: false,
+                    bottomText: '加载失败，请重试'
+                });
                 wx.showToast({ title: '加载失败', icon: 'none' });
-            }
-        });
+            });
     },
 
     /**
@@ -102,33 +175,31 @@ Page({
      */
     onTabClick: function(e) {
         const index = e.currentTarget.dataset.index;
-        // 获取当前点击的 Tab 名称
-        const categoryName = this.data.tabs[index].name;
-
-        // 1. 切换 Tab 选中状态
+        if (this.data.activeTab === index) return;
+        
         this.setData({
             activeTab: index
         });
         
-        // 2. 调用筛选函数，更新服务列表
-        this.filterServices(categoryName);
+        this.filterServices(this.data.tabs[index].name);
     },
 
     /**
      * 搜索输入
+     * 【注意】：由于列表已改为分页加载，这里搜索将不再基于全量数据，而是基于当前已加载的列表进行筛选。
+     * 如果要实现全量搜索，需要额外调用云函数或使用数据库搜索。
      */
     onSearchInput: function(e) {
         const keyword = e.detail.value.trim().toLowerCase();
         
         if (!keyword) {
-             // 搜索关键字为空时，恢复当前选中 Tab 的筛选结果
-             const categoryName = this.data.tabs[this.data.activeTab].name;
-             return this.filterServices(categoryName);
+             // 搜索关键字为空时，重新加载当前 Tab 的数据 (保证列表回到分页状态)
+             this.loadServicesForCurrentTab();
+             return;
         }
 
-        // 基于全部服务 allServices 进行搜索
-        const searched = this.data.allServices.filter(service => {
-            // 搜索逻辑：匹配服务名称或描述
+        // 基于当前已加载的列表进行搜索（如果用户切换 Tab，filterdServices 会是新 Tab 的分页结果）
+        const searched = this.data.filterdServices.filter(service => {
             return service.name.toLowerCase().includes(keyword) || 
                    (service.description && service.description.toLowerCase().includes(keyword));
         });

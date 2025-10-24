@@ -20,32 +20,57 @@
     </view>
   </view>
 
-  <scroll-view class="service-scroll-list" scroll-y>
+  <scroll-view 
+    class="service-scroll-list" 
+    scroll-y
+    refresher-enabled="{{true}}" 
+    refresher-triggered="{{isPulling}}" 
+    bindrefresherrefresh="onRefresherRefresh"
+    bindscrolltolower="onScrollToLower"
+  >
     <view class="list-content">
       
-      <view class="service-card" wx:for="{{filterdServices}}" wx:key="_id">
-        <view class="card-left">
-          <view class="card-title">
-            {{item.name}}
-            <text class="hot-tag" wx:if="{{item.is_hot}}">热门</text>
-          </view>
-          <view class="card-desc">{{item.description}}</view>
-          <view class="card-footer">
-            <view class="rating-box">
-              <text class="rating-star">★</text>
-              <text class="rating-text">{{item.rating}}</text>
-              <text>已售 {{item.sales}}</text>
+      <view class="loading-state" wx:if="{{loading && filterdServices.length === 0}}">
+          <view class="loading-spinner"></view>
+          <text>服务列表加载中...</text>
+      </view>
+
+      <block wx:elif="{{filterdServices.length > 0}}">
+        <view class="service-card" wx:for="{{filterdServices}}" wx:key="_id">
+          <view class="card-left">
+            <view class="card-title">
+              {{item.name}}
+              <text class="hot-tag" wx:if="{{item.is_hot}}">热门</text>
+            </view>
+            <view class="card-desc">{{item.description}}</view>
+            <view class="card-footer">
+              <view class="rating-box">
+                <text class="rating-star">★</text>
+                <text class="rating-text">{{item.rating}}</text>
+                <text>已售 {{item.sales}}</text>
+              </view>
             </view>
           </view>
-        </view>
-        <view class="card-right">
-          <view class="price-box">
-            <text class="price">{{item.price}}</text>
-            <text class="price-unit">/{{item.unit}}</text>
+          <view class="card-right">
+            <view class="price-box">
+              <text class="price">{{item.price}}</text>
+              <text class="price-unit">/{{item.unit}}</text>
+            </view>
+            <button class="book-btn-list" bindtap="onBookNowTap" data-service-id="{{item._id}}">立即预约</button>
           </view>
-          <button class="book-btn-list" bindtap="onBookNowTap" data-service-id="{{item._id}}">立即预约</button>
         </view>
+        
+        <view class="load-more-text">
+            <view class="loading-spinner" wx:if="{{isReachingBottom}}"></view>
+            <text>{{bottomText}}</text>
+        </view>
+      </block>
+
+      <view class="empty-state" wx:else>
+        <image class="empty-icon" src="/packageCommon/images/icon_empty.png" mode="widthFix"></image>
+        <text>当前分类暂无服务</text>
       </view>
+      
     </view>
   </scroll-view>
 
