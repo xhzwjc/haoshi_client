@@ -139,6 +139,15 @@
   display: flex;
   align-items: center;
 }
+/* 【新增/修复】热门标签样式 */
+.card-title .hot-tag {
+    font-size: 20rpx;
+    color: #FA5151;
+    border: 1rpx solid #FA5151;
+    padding: 4rpx 8rpx;
+    border-radius: 6rpx;
+    margin-left: 16rpx;
+}
 .card-desc {
   font-size: 26rpx;
   color: #666;
@@ -148,12 +157,50 @@
   font-size: 24rpx;
   color: #999;
 }
+.rating-box { /* 补充评分盒子样式 */
+    display: flex;
+    align-items: center;
+}
+.rating-star { /* 补充星星样式 */
+    color: #FFC000;
+    margin-right: 8rpx;
+}
+.rating-text { /* 补充评分文本样式 */
+    color: #333;
+    font-weight: bold;
+    margin-right: 20rpx;
+}
+
+/* 【修改】右侧容器：增加固定宽度和 flex-shrink: 0 保证按钮对齐 */
 .card-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-left: 32rpx;
+  width: 200rpx; 
+  flex-shrink: 0;
 }
+
+/* 【新增】价格容器：确保价格和单位在一行，且右对齐 */
+.price-box {
+    display: flex; 
+    align-items: baseline;
+    color: #FA5151;
+    width: 100%;
+    justify-content: flex-end; 
+    white-space: nowrap; /* 防止换行 */
+}
+
+.price {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+.price-unit {
+  font-size: 24rpx;
+  margin-left: 4rpx;
+  color: #999;
+}
+
 .book-btn {
   background-color: #333;
   color: #fff;

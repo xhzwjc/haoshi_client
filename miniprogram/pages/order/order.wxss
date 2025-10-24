@@ -174,7 +174,7 @@ page {
 .btn {
   /* 1. 覆盖原生button默认样式 */
   min-width: auto !important; /* 取消最小宽度限制（关键） */
-  width: 150rpx !important; /* 宽度由内容决定 */
+  width: 160rpx !important;
   box-sizing: border-box !important; /* 确保padding不撑大宽度 */
   
   /* 2. 极致压缩内边距 */
@@ -182,8 +182,8 @@ page {
   margin: 0 !important; /* 彻底移除边距 */
   
   /* 3. 固定基础样式 */
-  font-size: 22rpx !important; /* 略微缩小字体，进一步省空间 */
-  height: 48rpx !important; /* 降低按钮高度，更紧凑 */
+  font-size: 24rpx !important; /* 略微缩小字体，进一步省空间 */
+  height: 49rpx !important; /* 降低按钮高度，更紧凑 */
   line-height: 48rpx !important; /* 与高度一致，垂直居中 */
   border-radius: 24rpx !important; /* 对应高度的圆角 */
   white-space: nowrap !important; /* 文字不换行 */
