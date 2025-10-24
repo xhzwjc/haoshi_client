@@ -20,7 +20,10 @@
     <view class="service-info-card">
         <view class="card-header">
             <view class="card-title">{{service.name || '服务名称'}}</view>
-            <view class="price">¥{{service.price || '...'}}</view>
+            <view class="price-wrap">
+              <text class="price">{{service.price || '...'}}</text>
+              <text class="price-unit">/{{service.unit}}</text>
+            </view>
         </view>
         <view class="card-desc">{{service.description || '专业团队, 品质保证'}}</view>
     </view>

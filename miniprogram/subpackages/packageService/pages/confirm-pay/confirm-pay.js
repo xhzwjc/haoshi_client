@@ -20,7 +20,7 @@ Page({
     onLoad: function (options) {
         if (options.data) {
             const bookingData = JSON.parse(decodeURIComponent(options.data));
-            const price = parseFloat(bookingData.service_price) || 0; // 确保价格是数字
+            // const price = parseFloat(bookingData.service_price) || 0; // 确保价格是数字
             
             this.setData({
                 bookingData: bookingData,
@@ -33,8 +33,9 @@ Page({
                     address: bookingData.address,
                     contact_name: bookingData.contact_name, // 提取联系人
                     contact_phone: bookingData.contact_phone, // 提取电话
-                    total_price_display: price.toFixed(2), // 格式化价格
-                    total_price: price 
+                    total_price_display: bookingData.service_price, // 格式化价格
+                    total_price: bookingData.service_price,
+                    service_unit: bookingData.service_unit
                 }
             });
         }
@@ -52,9 +53,9 @@ Page({
         wx.showModal({
             title: '退出确认',
             // 提示用户订单将被保存到待支付列表
-            content: '您确定要退出当前付款流程吗？退出后订单将保存到“待支付”列表。',
+            content: '您确定要退出当前预约流程吗？退出后订单将保存到“待支付”列表。',
             cancelText: '退出',      // 对应您的“退出”按钮
-            confirmText: '继续付款', // 对应您的“继续付款”按钮
+            confirmText: '继续预约', // 对应您的“继续付款”按钮
             success: (res) => {
                 if (res.confirm) {
                     // 用户点击“继续付款”：关闭弹窗，停留在当前页面

@@ -1,9 +1,10 @@
 <view class="page-booking">
     
     <view class="section-card total-summary">
-        <view class="summary-header">订单金额</view>
+        <view class="summary-header">价格范围</view>
         <view class="total-price-display">
             <text class="unit">¥</text>{{orderSummary.total_price_display}}
+            <text class="unit">/</text>{{orderSummary.service_unit}}
         </view>
     </view>
     
@@ -67,7 +68,8 @@
             class="confirm-btn flex-grow" 
             bindtap="onConfirmPay"
         >
-            确认支付 ¥{{orderSummary.total_price_display}}
+            立即预约
+            <!-- 立即预约 ¥{{orderSummary.total_price_display}} -->
         </button>
     </view>
     

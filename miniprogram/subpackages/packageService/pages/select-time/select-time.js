@@ -6,7 +6,8 @@ Page({
       service: {
           name: '',
           description: '',
-          price: 0
+          price: 0,
+          unit: '次'
       },
       // 时间选择相关
       today: '',           // 必须用于 picker 的 start 属性
@@ -33,6 +34,7 @@ Page({
               service: {
                   name: bookingData.service_name,
                   price: bookingData.service_price,
+                  unit: bookingData.service_unit,
                   description: bookingData.service_description || '专业团队,  品质保证'
               }
           });

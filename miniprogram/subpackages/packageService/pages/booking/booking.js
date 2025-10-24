@@ -101,13 +101,13 @@ Page({
         // }
         
         // 确保 price 是数字类型
-        const servicePrice = parseFloat(serviceData.price);
+        // const servicePrice = parseFloat(serviceData.price);
 
         // 1. 构建要传递到下一步的订单基础数据
         const bookingBaseData = {
             service_id: this.data.serviceId,
             service_name: serviceData.name,
-            service_price: servicePrice,
+            service_price: serviceData.price,
             service_unit: serviceData.unit,
             service_description: serviceData.description, // 传入描述
             

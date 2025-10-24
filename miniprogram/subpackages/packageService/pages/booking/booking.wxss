@@ -60,14 +60,38 @@ page {
 }
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-between; /* 确保标题左、价格右 */
+  align-items: baseline; /* 对齐价格和标题的基线（更美观） */
   margin-bottom: 16rpx;
 }
 .card-title {
   font-size: 32rpx;
   font-weight: bold;
+  /* 防止标题过长挤压价格，最多显示2行，超出省略 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
+/* 新增：价格容器样式（核心） */
+.price-wrap {
+  display: flex; /* 让 price 和 price-unit 同行显示 */
+  align-items: baseline; /* 价格和单位垂直对齐（避免高低不一） */
+  white-space: nowrap; /* 强制不换行 */
+  text-align: right; /* 兜底右对齐 */
+}
+.price {
+  font-size: 36rpx; /* 价格字体可稍大，突出显示 */
+  font-weight: bold;
+  color: #FA5151; /* 可选：价格标红 */
+}
+.price-unit {
+  font-size: 24rpx; /* 单位字体比价格小，更协调 */
+  color: #666;
+  margin-left: 4rpx; /* 价格和单位之间留一点间距 */
+}
+
 .card-desc {
   font-size: 26rpx;
   color: #666;
@@ -147,7 +171,7 @@ page {
   box-sizing: border-box;
 }
 .submit-btn {
-  background-color: #535358;
+  background-color: #1677FF;
   color: #fff;
   border-radius: 48rpx;
   height: 96rpx;
