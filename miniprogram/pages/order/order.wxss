@@ -227,3 +227,10 @@ page {
   width: 80rpx;
   height: 80rpx;
 }
+
+.list-footer-text {
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  padding: 20rpx 0;
+}
