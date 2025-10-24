@@ -14,8 +14,8 @@
   </view>
 
   <scroll-view class="order-list-scroll" scroll-y>
-    <view class="loading-state" wx:if="{{loading}}">
-        <text>订单数据加载中...</text>
+    <view class="loading-state" wx:if="{{loading && filteredOrders.length === 0}}">
+      <text>订单数据加载中...</text>
     </view>
     
     <block wx:elif="{{filteredOrders.length > 0}}">
@@ -49,49 +49,44 @@
 
         <view class="card-footer">
           <view class="payment-info">
-            实付: <text class="price">{{item.payment_fmt}}</text>
+            <text wx:if="{{item.is_range}}">报价:</text>
+            <text wx:else>实付:</text>
+            <text class="price">
+              <text wx:if="{{!item.is_range}}">¥</text>{{item.payment_fmt}}
+            </text>
           </view>
           
           <view class="card-actions">
-            <block wx:if="{{item.status === 'pending'}}">
-              <button 
-                  class="btn btn-plain" 
-                  data-action="取消订单" 
-                  data-id="{{item._id}}" 
-                  bindtap="handleListAction"
-              >
-                  取消订单
-              </button>
-              <button 
-                  class="btn btn-dark" 
-                  data-action="去付款" 
-                  data-id="{{item._id}}" 
-                  bindtap="handleListAction"
-              >
-                  去付款
-              </button>
+            <block wx:if="{{item.status === 10}}">
+              <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
             </block>
             
-            <block wx:elif="{{item.status === 'completed'}}">
-              <button 
-                  class="btn btn-dark" 
-                  data-action="评价" 
-                  data-id="{{item._id}}" 
-                  bindtap="handleListAction"
-              >
-                  评价
-              </button>
+            <block wx:if="{{item.status === 20}}">
+                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
+                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
             </block>
 
-            <block wx:elif="{{item.status === 'paid' || item.status === 'running'}}">
-                <button 
-                    class="btn btn-plain" 
-                    data-action="联系客服" 
-                    data-id="{{item._id}}" 
-                    bindtap="handleListAction"
-                >
-                    联系客服
-                </button>
+            <block wx:if="{{item.status === 30}}">
+                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
+            </block>
+
+            <block wx:if="{{item.status === 35}}">
+                <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" bindtap="handleListAction">金额有误</button>
+                <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" bindtap="handleListAction">确认金额</button>
+            </block>
+            
+            <block wx:if="{{item.status === 40}}">
+                <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" bindtap="handleListAction">立即支付</button>
+            </block>
+            
+            <block wx:if="{{item.status === 50}}">
+              <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
+              <button class="btn btn-dark" data-action="评价" data-id="{{item._id}}" bindtap="handleListAction">评价</button> 
+            </block>
+
+            <block wx:if="{{item.status === 60}}">
+              <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
+              <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" bindtap="handleListAction">查看详情</button>
             </block>
             
             </view>

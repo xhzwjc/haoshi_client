@@ -7,14 +7,22 @@
 
     <block wx:else>
         <view class="status-card">
-            <view class="status-main">{{orderDetail.status_text || '待服务'}}</view>
-            <view class="status-tip">{{orderDetail.status_tip || '服务已提交，等待人员接单'}}</view>
+            <view class="status-main">{{orderDetail.status_text}}</view>
+            <view class="status-tip">{{orderDetail.status_tip}}</view>
         </view>
 
         <view class="section-card service-info">
             <view class="section-title">
                 <text>{{orderDetail.service_name || '服务名称'}}</text>
-                <text class="price-value">¥{{orderDetail.total_fee_fmt}}</text>
+                
+                <text class="price-value">
+                    <block wx:if="{{orderDetail.is_final_price}}">
+                        <text>实付: ¥{{orderDetail.price_display}}</text>
+                    </block>
+                    <block wx:else>
+                        <text>价格范围: ¥{{orderDetail.price_display}}</text>
+                    </block>
+                </text>
             </view>
             <view class="info-list">
                 <view class="info-item">
@@ -35,17 +43,32 @@
                 </view>
             </view>
         </view>
+        
+        <view class="section-card master-info" wx:if="{{orderDetail.status >= 20}}">
+            <view class="section-title">师傅信息</view>
+            <view class="info-list">
+                <view class="info-item">
+                    <text class="label">师傅姓名</text>
+                    <text class="value">{{orderDetail.master_info || '等待分配'}}</text>
+                </view>
+                <view class="info-item" wx:if="{{orderDetail.master_phone}}">
+                    <text class="label">联系电话</text>
+                    <text class="value">{{orderDetail.master_phone}}</text>
+                    <text class="copy-btn" bindtap="handleAction" data-action="联系师傅">拨打</text> 
+                </view>
+            </view>
+        </view>
 
-        <view class="section-card price-detail">
+        <view class="section-card price-detail" wx:if="{{orderDetail.is_final_price}}">
             <view class="section-title">费用明细</view>
             <view class="info-list">
                 <view class="info-item">
                     <text class="label">服务费</text>
-                    <text class="value">¥{{orderDetail.service_price_fmt}}</text>
+                    <text class="value">¥{{orderDetail.price_display}}</text>
                 </view>
-                <view class="info-item total-row">
-                    <text class="label total-label">订单总价</text>
-                    <text class="value total-price">¥{{orderDetail.total_fee_fmt}}</text>
+                <view class="info-item total-fee">
+                    <text class="label">合计应付</text>
+                    <text class="value total-price">¥{{orderDetail.price_display}}</text>
                 </view>
             </view>
         </view>
@@ -70,7 +93,7 @@
         </view>
     </block>
     
-    <view class="bottom-bar action-bar">
+    <view class="bottom-bar action-bar" wx:if="{{!loading}}">
         <block wx:for="{{getActions(orderDetail.status)}}" wx:key="text">
             <button 
                 class="action-btn {{item.type === 'primary' ? 'primary-btn' : (item.type === 'warn' ? 'warn-btn' : 'default-btn')}}"

@@ -5,36 +5,36 @@ Page({
     data: {
         bookingData: null, // 完整的订单数据 (包含时间/地址等)
         orderSummary: {
+            // (省略...)
             service_name: '加载中...',
-            service_desc: '...', // 服务描述
+            service_desc: '...', 
             service_date: '...',
             service_time_slot: '...',
             address: '...',
-            contact_name: '...', // 联系人
-            contact_phone: '...', // 电话
-            total_price_display: '0.00', // 用于展示的格式化价格
-            total_price: 0
+            contact_name: '...', 
+            contact_phone: '...', 
+            total_price_display: '0.00', // (这是价格范围，如 "100-250")
+            service_unit: '次'
         }
     },
 
     onLoad: function (options) {
+        // (您的 onLoad 逻辑是正确的，保留)
         if (options.data) {
             const bookingData = JSON.parse(decodeURIComponent(options.data));
-            // const price = parseFloat(bookingData.service_price) || 0; // 确保价格是数字
             
             this.setData({
                 bookingData: bookingData,
                 orderSummary: {
                     service_name: bookingData.service_name,
-                    // 从服务数据中提取描述，如果不存在则使用默认值
-                    service_desc: bookingData.service_description || '全屋深度清洁，包含厨房卫生清洁', 
+                    service_desc: bookingData.service_description || '...', 
                     service_date: bookingData.service_date,
                     service_time_slot: bookingData.service_time_slot,
                     address: bookingData.address,
-                    contact_name: bookingData.contact_name, // 提取联系人
-                    contact_phone: bookingData.contact_phone, // 提取电话
-                    total_price_display: bookingData.service_price, // 格式化价格
-                    total_price: bookingData.service_price,
+                    contact_name: bookingData.contact_name, 
+                    contact_phone: bookingData.contact_phone, 
+                    // 【重要】 total_price_display 现在是 价格范围 字符串
+                    total_price_display: bookingData.service_price, // e.g., "100-250"
                     service_unit: bookingData.service_unit
                 }
             });
@@ -42,107 +42,73 @@ Page({
     },
 
     /**
-     * 【核心修改】上一步/返回按钮逻辑：弹出确认框，并根据选择执行操作。
+     * 【修改】上一步/返回按钮逻辑：
+     * (新流程: 预约第一步退出，不创建订单)
      */
     onPrevStep: function() {
-        if (!this.data.bookingData) {
-            return wx.navigateBack(); 
-        }
-
-        // 弹出确认模态框
         wx.showModal({
-            title: '退出确认',
-            // 提示用户订单将被保存到待支付列表
-            content: '您确定要退出当前预约流程吗？退出后订单将保存到“待支付”列表。',
-            cancelText: '退出',      // 对应您的“退出”按钮
-            confirmText: '继续预约', // 对应您的“继续付款”按钮
+            title: '确认退出',
+            content: '您确定要退出预约吗？（信息不会被保存）',
+            cancelText: '继续预约',
+            confirmText: '确认退出',
             success: (res) => {
                 if (res.confirm) {
-                    // 用户点击“继续付款”：关闭弹窗，停留在当前页面
-                    console.log('用户选择继续付款');
-                } else {
-                    // 用户点击“退出”：保存订单为 pending 并跳转到订单列表
-                    this.saveOrderAsPendingAndExit();
+                    // 用户点击“确认退出”：直接返回上一页
+                    wx.navigateBack();
                 }
+                // else: 用户点击“继续预约”，关闭弹窗，停留
             }
         });
     },
 
     /**
-     * 【新增方法】保存订单为待支付状态并跳转到待支付列表
+     * (删除 saveOrderAsPendingAndExit 方法, 新流程不再需要)
      */
-    saveOrderAsPendingAndExit: function() {
-        wx.showLoading({ title: '保存中...' });
-
-        const finalData = {
-            ...this.data.bookingData,
-            total_fee: this.data.orderSummary.total_price,
-            status: 'pending', // 订单状态设为 'pending'
-            created_at: db.serverDate()
-        };
-
-        db.collection('bookings').add({
-            data: finalData
-        }).then(res => {
-            wx.hideLoading();
-            
-            wx.showToast({
-                title: '订单已保存到待支付',
-                icon: 'success', 
-                duration: 1500,
-                success: () => {
-                    // 跳转到订单列表页，并选中 '待支付' Tab
-                    wx.reLaunch({ 
-                        url: `/pages/order/order?status=pending` 
-                    });
-                }
-            });
-        }).catch(err => {
-            wx.hideLoading();
-            console.error('订单保存失败:', err);
-            wx.showToast({ title: '订单保存失败，已返回', icon: 'none' });
-            wx.navigateBack(); 
-        });
-    },
-
+    
     /**
-     * 确认支付 (核心逻辑: 保存订单到数据库)
+     * 【修改】 确认预约 (核心逻辑: 保存订单为 待接单)
      */
     onConfirmPay: function() {
         if (!this.data.bookingData) {
             return wx.showToast({ title: '订单数据丢失', icon: 'error' });
         }
 
-        wx.showLoading({ title: '支付中...' });
+        wx.showLoading({ title: '提交预约...' });
 
         // 构造要写入数据库的最终数据
         const finalData = {
             ...this.data.bookingData,
-            total_fee: this.data.orderSummary.total_price,
-            status: 'paid', // 支付成功，状态设为 'paid' (待服务)
+            
+            // 【修改】 记录价格范围，而非固定价格
+            price_range: this.data.orderSummary.total_price_display, // e.g., "100-250"
+            service_unit: this.data.orderSummary.service_unit,
+            
+            final_price: null, // 【新增】 最终价格尚未确定
+            
+            status: 10, // 【核心修改】 状态设为 10 (待接单)
+            
             created_at: db.serverDate()
         };
 
-        // 模拟支付成功，直接保存订单
+        // (清理 bookingData 中可能存在的、与 service 相关的冗余字段，如 service_price)
+        delete finalData.service_price; 
+        // ... (其他清理)
+
         db.collection('bookings').add({
             data: finalData
         }).then(res => {
             wx.hideLoading();
             
             wx.showModal({
-                title: '支付成功',
-                content: '您的订单已成功提交，状态：待服务！',
+                title: '预约成功',
+                content: '您的预约已提交，请等待家政接单！',
                 showCancel: false,
                 confirmText: '查看订单',
                 success: (modalRes) => {
                     if (modalRes.confirm) {
-                        const detailUrl = `/pages/order-detail/order-detail?id=${res._id}`;
-                        wx.redirectTo({
-                            url: detailUrl, 
-                            fail: (e) => {
-                                console.error('跳转订单详情失败:', e);
-                                wx.showToast({ title: '跳转失败，请查看控制台错误', icon: 'none' });
-                            }
+                        // 【修改】 跳转到订单列表页，并选中 '进行中' Tab (因为 10 属于进行中)
+                        wx.reLaunch({ 
+                            url: `/pages/order/order?status=running` 
                         });
                     }
                 }
@@ -150,7 +116,7 @@ Page({
 
         }).catch(err => {
             wx.hideLoading();
-            wx.showToast({ title: '订单提交失败，请重试', icon: 'none' });
+            wx.showToast({ title: '预约提交失败', icon: 'none' });
             console.error('提交订单失败:', err);
         });
     }

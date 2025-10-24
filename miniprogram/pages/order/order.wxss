@@ -46,13 +46,15 @@ page {
 .order-list-scroll {
   flex: 1;
   height: 0;
-  padding-bottom: 120rpx; /* 避开tabbar */
+  padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
 }
 .order-card {
   background-color: #fff;
   margin: 24rpx;
   border-radius: 16rpx;
   padding: 32rpx;
+  /* 新增：防止卡片内元素溢出 */
+  overflow: hidden;
 }
 .card-header {
   display: flex;
@@ -70,10 +72,22 @@ page {
   border-radius: 4rpx;
   background-color: #f2f2f2;
 }
+/* 保留旧样式 */
 .status-tag.status-completed { color: #999; background-color: #F7F8FA; }
 .status-tag.status-pending { color: #409EFF; background-color: #ECF5FF; }
 .status-tag.status-running { color: #FA5151; background-color: #FFF1F0; }
 .status-tag.status-cancelled { color: #999; background-color: #F7F8FA; }
+
+/* 【新增】 适配新状态码的颜色 */
+.status-tag.status-10 { color: #409EFF; background-color: #ECF5FF; } /* 待接单 */
+.status-tag.status-20 { color: #07C160; background-color: #F0FFF8; } /* 待服务 */
+.status-tag.status-30 { color: #FA5151; background-color: #FFF1F0; } /* 服务中 */
+.status-tag.status-35 { color: #ED6A0C; background-color: #FFFBE8; } /* 待确认金额 (警告色) */
+.status-tag.status-40 { color: #FF5722; background-color: #FFF0EB; } /* 待支付 (强调色) */
+.status-tag.status-50 { color: #409EFF; background-color: #ECF5FF; } /* 待评价 */
+.status-tag.status-60 { color: #999; background-color: #F7F8FA; } /* 已完成 */
+.status-tag.status-0 { color: #999; background-color: #F7F8FA; }  /* 已取消 */
+.status-tag.status--1 { color: #999; background-color: #F7F8FA; } /* 已拒单 */
 
 .order-no {
   font-size: 24rpx;
@@ -105,42 +119,67 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* 新增：按钮区域超出时自动换行，不顶出屏幕 */
+  flex-wrap: wrap;
+  gap: 12rpx 0; /* 换行后上下间距 */
 }
 .payment-info {
   font-size: 26rpx;
   color: #666;
+  display: flex;
+  align-items: baseline;
+  flex-shrink: 0;
+  margin-right: 10rpx;
 }
 .payment-info .price {
   font-size: 30rpx;
   color: #FA5151;
   font-weight: bold;
+  margin-left: 6rpx;
 }
 .card-actions {
   display: flex;
-}
-.btn {
-  font-size: 26rpx;
-  height: 60rpx;
-  line-height: 60rpx;
-  padding: 0 12rpx !important;
-  border-radius: 20rpx;
-  margin-left: 16rpx;
-  width: 150rpx !important;
+  flex-shrink: 0;
+  gap: 8rpx; /* 按钮间距（最小化） */
+  /* 新增：按钮太多时换行 */
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-.btn + .btn {
-  margin-left: 5rpx;
+/* 【核心强制修改：彻底自适应宽度】 */
+.btn {
+  /* 1. 覆盖原生button默认样式 */
+  min-width: auto !important; /* 取消最小宽度限制（关键） */
+  width: 150rpx !important; /* 宽度由内容决定 */
+  box-sizing: border-box !important; /* 确保padding不撑大宽度 */
+  
+  /* 2. 极致压缩内边距 */
+  padding: 0 10rpx !important; /* 左右仅10rpx内边距（四字刚好） */
+  margin: 0 !important; /* 彻底移除边距 */
+  
+  /* 3. 固定基础样式 */
+  font-size: 22rpx !important; /* 略微缩小字体，进一步省空间 */
+  height: 48rpx !important; /* 降低按钮高度，更紧凑 */
+  line-height: 48rpx !important; /* 与高度一致，垂直居中 */
+  border-radius: 24rpx !important; /* 对应高度的圆角 */
+  white-space: nowrap !important; /* 文字不换行 */
+  flex-shrink: 0 !important;
+}
+
+/* 覆盖小程序button默认边框和背景 */
+.btn::after {
+  border: none !important; /* 移除原生button的默认边框阴影 */
 }
 
 .btn-plain {
-  background-color: #fff;
-  border: 1rpx solid #ccc;
-  color: #333;
+  background-color: #fff !important;
+  border: 1rpx solid #ccc !important;
+  color: #333 !important;
 }
 .btn-dark {
-  background-color: #333;
-  color: #fff;
-  border: 1rpx solid #333;
+  background-color: #333 !important;
+  color: #fff !important;
+  border: 1rpx solid #333 !important;
 }
 .empty-state {
   display: flex;
@@ -160,7 +199,7 @@ page {
 .help-btn {
   position: fixed;
   right: 32rpx;
-  bottom: 150rpx; /* 避开tabbar */
+  bottom: calc(120rpx + env(safe-area-inset-bottom));
   width: 80rpx;
   height: 80rpx;
 }
