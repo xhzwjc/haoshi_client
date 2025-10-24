@@ -1,14 +1,15 @@
 <view class="page-index">
   <view class="banner-container">
+    <image class="banner-bg" src="/packageCommon/images/icon_banner_notification.png" mode="aspectFill"></image>
     <view class="banner-content">
-      <view class="banner-title">新用户立减30元</view>
-      <view class="banner-sub">首单优惠, 限时抢购</view>
+      <view class="banner-title">精选优质家政人员，上门更安心</view>
+      <view class="banner-sub">专业服务，透明报价，满意为止</view>
     </view>
   </view>
 
   <view class="notification-bar">
     <image class="noti-icon" src="/packageCommon/images/icon_notification.png" mode="widthFix"></image>
-    <text>平台通知: 春节期间服务安排公告</text>
+    <text>温馨提示：请保持电话畅通，便于师傅联系您。</text>
   </view>
 
   <view class="service-section">
