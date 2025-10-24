@@ -1,8 +1,49 @@
 /* /pages/order-detail/order-detail.wxss */
 
+/* === 【新增】全屏居中加载状态样式 === */
+.loading-state {
+  position: fixed; /* 固定定位，覆盖全屏 */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 垂直居中 */
+  align-items: center; /* 水平居中 */
+  /* 使用白色背景，更简洁美观，且覆盖页面内容 */
+  background-color: #fff; 
+  z-index: 9999; /* 确保在所有内容之上 */
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 加载动效 (Spinner) */
+.loading-state::before {
+  content: '';
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid #e5e5e5; /* 灰色背景边框 */
+  /* 使用主题色（或一个鲜明的颜色）作为旋转部分 */
+  border-top-color: #1677FF; 
+  border-radius: 50%;
+  animation: loading-rotate 0.8s linear infinite; /* 旋转动画 */
+  margin-bottom: 20rpx; /* 与文字保持距离 */
+}
+
+/* 旋转动画定义 */
+@keyframes loading-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ==================================== */
+
+
 /* === 基础设置 === */
 .page-order-detail {
-  padding-bottom: 120rpx; /* 留给底部按钮 */
+  /* 适配安全区 */
+  padding-bottom: calc(120rpx + env(safe-area-inset-bottom)); 
   background-color: #f7f7f7;
   min-height: 100vh;
 }
@@ -124,6 +165,7 @@
   justify-content: flex-end; /* 按钮靠右 */
   gap: 20rpx;
   padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom)); /* 适配安全区 */
   background-color: #fff;
   box-shadow: 0 -2rpx 5rpx rgba(0, 0, 0, 0.08);
   z-index: 1000;

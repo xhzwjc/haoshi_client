@@ -41,6 +41,12 @@
             <image class="info-icon" src="/packageCommon/images/icon_time_gray.png" mode="widthFix"></image>
             <text>{{item.service_date}} {{item.service_time_slot}}</text>
           </view>
+          
+          <view class="remark-box" wx:if="{{item.remarks}}">
+            <text class="remark-label">备注：</text>
+            <text class="remark-content">{{item.remarks}}</text>
+          </view>
+          
           <view class="info-line" wx:if="{{item.master_info && item.master_info !== '待分配'}}">
             <image class="info-icon" src="/packageCommon/images/icon_master_gray.png" mode="widthFix"></image>
             <text>{{item.master_info}}</text>

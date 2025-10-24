@@ -112,6 +112,30 @@ page {
   margin-right: 16rpx;
   opacity: 0.6;
 }
+
+/* 【新增：备注信息样式】 */
+.remark-box {
+  background-color: #FFFBEB; /* 柔和的淡黄色 */
+  border: 1rpx solid #FFECB3; /* 浅黄色边框 */
+  color: #CC9A00; /* 略深的黄色字体 */
+  font-size: 24rpx; /* 较小的字体 */
+  padding: 16rpx; 
+  border-radius: 8rpx;
+  margin-top: 16rpx; /* 与上方信息行间隔 */
+  margin-bottom: 16rpx; /* 与下方分隔线/其他信息行保持间距 */
+  display: flex;
+  line-height: 1.4;
+  word-break: break-all;
+}
+.remark-label {
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.remark-content {
+  flex-grow: 1;
+}
+
+
 .card-footer {
   border-top: 1rpx solid #F0F0F0;
   padding-top: 24rpx;
