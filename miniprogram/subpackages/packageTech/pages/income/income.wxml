@@ -1,0 +1,55 @@
+<view class="page-income">
+  
+  <view class="income-summary-card">
+    <view class="title">累计总收入 (元)</view>
+    <view class="total-income">¥{{summary.totalIncome}}</view>
+    
+    <view class="stats-row">
+      <view class="stat-item">
+        <view class="value">{{summary.monthIncome}}</view>
+        <view class="label">本月收入</view>
+      </view>
+      <view class="divider"></view>
+      <view class="stat-item">
+        <view class="value">{{summary.completedOrders}}</view>
+        <view class="label">完成订单数</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-actions">
+    <picker mode="selector" range="{{monthRange}}" bindchange="onMonthChange" value="{{activeMonthIndex}}">
+      <view class="month-selector">
+        <text>{{monthRange[activeMonthIndex]}}</text>
+        <image class="arrow-icon" src="/packageCommon/images/icon_arrow_down_gray.png"></image>
+      </view>
+    </picker>
+    <view class="withdraw-btn" bindtap="goToWithdraw">
+      <image src="/packageCommon/images/icon_bank_white.png"></image>
+      <text>提现</text>
+    </view>
+  </view>
+
+  <view class="detail-list">
+    <view class="loading-state" wx:if="{{loading}}">
+        <text>正在加载明细...</text>
+    </view>
+    
+    <block wx:elif="{{incomeDetails.length > 0}}">
+      <view class="detail-item" wx:for="{{incomeDetails}}" wx:key="id">
+        <view class="left">
+          <view class="desc">{{item.description}}</view>
+          <view class="time">{{item.time}}</view>
+        </view>
+        <view class="right">
+          <view class="amount {{item.type === 'income' ? 'income' : 'expense'}}">{{item.amountText}}</view>
+          <view class="status">{{item.statusText}}</view>
+        </view>
+      </view>
+    </block>
+    
+    <view class="empty-state" wx:else>
+      <text>所选月份暂无收入明细</text>
+    </view>
+  </view>
+</view>

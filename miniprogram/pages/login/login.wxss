@@ -1,0 +1,203 @@
+/* 引入外部图标库（需要您在项目 app.wxss 或公共wxss中配置实际路径） */
+/* @import "/style/iconfont.wxss"; */
+
+page {
+  background-color: #f7f9fb;
+}
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 40rpx;
+}
+
+/* 头部 */
+.header-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 0 100rpx;
+}
+
+.app-logo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 20rpx;
+  /* ⚠️ 请替换为您自己的 logo 图片路径 */
+  background-color: #409EFF; 
+}
+
+.app-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.app-slogan {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 身份选择区域 */
+.role-selection-area {
+  width: 100%;
+}
+
+.selection-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  display: block;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 30rpx 40rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 30rpx;
+  transition: transform 0.2s;
+}
+.role-card:active {
+  transform: scale(0.98);
+}
+
+.icon-circle {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 30rpx;
+  background-color: #f0f8ff;
+}
+
+.role-card .iconfont {
+  font-size: 48rpx;
+  color: #409EFF; /* 默认蓝色 */
+}
+
+/* 客户端颜色 */
+.client-card .icon-circle { background-color: #e6f7ff; }
+.client-card .iconfont { color: #409EFF; } 
+
+/* 家政端颜色 */
+.technician-card .icon-circle { background-color: #fffbe6; }
+.technician-card .iconfont { color: #fcc200; } 
+
+.role-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.role-desc {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.role-card .icon-arrow-right {
+  font-size: 32rpx;
+  color: #ccc;
+  margin-left: 20rpx;
+}
+
+/* === 模态框样式（自定义，替代 wx.showModal） === */
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.login-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.modal-title {
+  text-align: center;
+  padding: 30rpx 0;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20rpx 40rpx;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+  margin-bottom: 20rpx;
+}
+
+.input-label {
+  font-size: 30rpx;
+  color: #666;
+  width: 100rpx;
+  flex-shrink: 0;
+}
+
+.modal-body input {
+  flex-grow: 1;
+  height: 70rpx;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.input-placeholder {
+  color: #ccc;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid #eee;
+}
+
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 25rpx 0;
+  font-size: 32rpx;
+}
+
+.cancel-btn {
+  color: #999;
+  border-right: 1rpx solid #eee;
+}
+
+.confirm-btn {
+  color: #409EFF;
+  font-weight: bold;
+}

@@ -1,0 +1,141 @@
+/* pages/order-list/order-list.wxss */
+@import "/app.wxss"; /* Import global styles */
+
+page { background-color: #F7F8FA; }
+.page-order-list {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* 1. Tabs */
+.tabs-container {
+  background-color: #fff;
+  border-bottom: 1rpx solid #F0F0F0;
+  flex-shrink: 0;
+}
+.tabs {
+  display: flex;
+  align-items: center;
+}
+.tab-item {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+  height: 88rpx;
+  line-height: 88rpx;
+  position: relative;
+}
+.tab-item.active {
+  color: #333;
+  font-weight: bold;
+}
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 6rpx;
+  background-color: #4CAF50; /* Use technician theme color */
+  border-radius: 3rpx;
+}
+.badge {
+  position: absolute;
+  top: 10rpx;
+  right: 15rpx;
+  background-color: #FA5151;
+  color: #fff;
+  font-size: 20rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 6rpx;
+  box-sizing: border-box;
+}
+
+/* 2. Order List Scroll Area */
+.order-scroll-list {
+  flex: 1;
+  height: 0; /* Important for flex scroll */
+  background-color: #F7F8FA;
+}
+.list-container {
+   padding-bottom: 40rpx; /* Space at the bottom */
+}
+
+/* Order Card Styling */
+.order-card {
+  background-color: #fff;
+  margin: 24rpx;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+}
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.service-name { font-size: 30rpx; font-weight: bold; max-width: 450rpx;} /* Limit width */
+.order-no {
+  font-size: 24rpx; color: #999;
+  border-bottom: 1rpx solid #f0f0f0;
+  padding-bottom: 24rpx; margin-bottom: 24rpx;
+}
+.info-line { display: flex; align-items: center; font-size: 26rpx; color: #333; margin-bottom: 16rpx; }
+.info-icon { width: 28rpx; height: 28rpx; margin-right: 16rpx; opacity: 0.6; }
+.remark-box {
+  background-color: #FFFBEB; border: 1rpx solid #FFECB3; color: #CC9A00;
+  font-size: 24rpx; padding: 12rpx 16rpx; border-radius: 8rpx;
+  margin-top: 16rpx; display: flex; line-height: 1.4; word-break: break-all;
+}
+.remark-label { font-weight: bold; flex-shrink: 0; margin-right: 8rpx; }
+.remark-content { flex-grow: 1; }
+
+.card-footer {
+  margin-top: 24rpx; padding-top: 24rpx; border-top: 1rpx solid #f0f0f0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.price-info { display: flex; align-items: baseline; }
+.price-label { font-size: 24rpx; color: #666; margin-right: 8rpx; }
+.price { font-size: 32rpx; color: #FF5722; font-weight: bold; }
+.actions { display: flex; gap: 16rpx; }
+.btn {
+    font-size: 26rpx; height: 60rpx; line-height: 60rpx;
+    padding: 0 28rpx; border-radius: 30rpx; margin: 0;
+}
+.btn-plain { background: #fff; border: 1rpx solid #ccc; color: #333; }
+.btn-dark { background: #333; color: #fff; border: none; }
+
+/* Loading and Empty States */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.loading-state {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  min-height: 400rpx; font-size: 28rpx; color: #999;
+}
+.loading-spinner {
+    width: 40rpx; height: 40rpx; border: 4rpx solid rgba(0, 0, 0, 0.1);
+    border-left-color: #333; border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin-bottom: 20rpx;
+}
+.load-more-text {
+    display: flex; justify-content: center; align-items: center;
+    padding: 30rpx 0; font-size: 26rpx; color: #999;
+}
+.load-more-text .loading-spinner {
+    width: 28rpx; height: 28rpx; border-width: 3rpx;
+    margin-right: 12rpx; margin-bottom: 0;
+}
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 100rpx 0; color: #999; font-size: 28rpx; text-align: center;
+}
+.empty-state .empty-icon { width: 180rpx; height: 180rpx; margin-bottom: 20rpx; opacity: 0.6;}
+
+/* Help Button */
+.help-btn {
+  position: fixed; right: 32rpx; bottom: 40rpx;
+  width: 80rpx; height: 80rpx; z-index: 100;
+}

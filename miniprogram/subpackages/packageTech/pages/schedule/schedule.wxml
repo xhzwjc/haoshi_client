@@ -1,0 +1,67 @@
+<view class="page-schedule">
+  
+  <view class="calendar-card">
+    <view class="calendar-header">
+      <view class="month-selector">
+        <text class="arrow" bindtap="prevMonth">＜</text>
+        <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
+        <text class="arrow" bindtap="nextMonth">＞</text>
+      </view>
+      <view class="date-jump" bindtap="goToToday">今天</view>
+    </view>
+    
+    <view class="week-days">
+      <text wx:for="{{weekNames}}" wx:key="*this">{{item}}</text>
+    </view>
+    
+    <view class="dates">
+      <view 
+        class="date-item {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isScheduled ? 'scheduled' : ''}} {{item.isDayOff ? 'dayoff' : ''}}"
+        wx:for="{{calendarDates}}" 
+        wx:key="date"
+        data-date="{{item.date}}"
+        bindtap="onDateSelect"
+      >
+        <text>{{item.day}}</text>
+        <view class="status-dot" wx:if="{{item.hasOrders}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="schedule-detail">
+    <view class="detail-header">
+      <text class="date-text">{{selectedDateText}} 排班设置</text>
+      <text class="status-text status-{{currentStatus.value}}">{{currentStatus.label}}</text>
+    </view>
+    
+    <view class="status-options">
+      <view 
+        class="option-item {{status === currentStatus.value ? 'active' : ''}}"
+        wx:for="{{scheduleOptions}}"
+        wx:for-item="option"
+        wx:for-index="status"
+        wx:key="status"
+        bindtap="onStatusChange"
+        data-status="{{status}}"
+      >
+        <text class="option-label">{{option.label}}</text>
+        <text class="option-desc">{{option.desc}}</text>
+      </view>
+    </view>
+
+    <view class="today-orders" wx:if="{{todayOrders.length > 0}}">
+      <view class="order-title">今日任务 ({{todayOrders.length}})</view>
+      <view class="order-list">
+        <view class="order-item" wx:for="{{todayOrders}}" wx:key="_id">
+          <text class="time">{{item.time}}</text>
+          <text class="service">{{item.service}}</text>
+          <text class="status-tag status-{{item.status}}">{{item.status_text}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="no-orders" wx:else>
+      <text>当日无待处理订单</text>
+    </view>
+
+  </view>
+</view>

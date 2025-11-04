@@ -1,0 +1,208 @@
+/* pages/index/index.wxss */
+page { background-color: #F7F8FA; }
+.page-index { padding-bottom: 150rpx; } /* Space for help button */
+
+/* 1. Custom Header */
+.header-bg {
+  background: linear-gradient(180deg, #4CAF50 0%, #8BC34A 100%); /* Green gradient */
+  color: #fff;
+  padding: 0 32rpx 120rpx 32rpx; /* Bottom padding creates space for overlap */
+  position: relative;
+}
+.title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center title */
+  position: relative;
+  font-size: 34rpx;
+  font-weight: bold;
+}
+.profile-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.technician-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30rpx;
+}
+.info-left .name-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.info-left .name { font-size: 40rpx; font-weight: bold; margin-right: 16rpx; }
+.info-left .badge { background: #FFC107; color: #333; font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 6rpx; font-weight: bold; }
+.info-left .rating-served { font-size: 26rpx; opacity: 0.9; }
+.info-left .rating { margin-right: 10rpx; }
+.avatar { width: 120rpx; height: 120rpx; border-radius: 50%; border: 4rpx solid rgba(255,255,255,0.6); }
+.header-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40rpx;
+  text-align: center;
+}
+.header-stats .stat-item .value { font-size: 36rpx; font-weight: bold; margin-bottom: 8rpx; }
+.header-stats .stat-item .label { font-size: 24rpx; opacity: 0.8; }
+
+/* Content Area */
+.content-area {
+  margin-top: -100rpx; /* Overlap with header */
+  position: relative;
+  z-index: 1;
+  padding: 0 24rpx;
+}
+
+/* Card Base Style */
+.card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+}
+
+/* 2. Notification Card */
+.notification-card {
+  display: flex;
+  align-items: center;
+  background-color: #FFF7E6; /* Light orange background */
+  border: 1rpx solid #FFE4BA;
+}
+.noti-icon { width: 48rpx; height: 48rpx; margin-right: 20rpx; flex-shrink: 0; }
+.noti-text { flex-grow: 1; }
+.noti-text .title { font-size: 28rpx; color: #D97706; font-weight: bold; margin-bottom: 4rpx; }
+.noti-text .desc { font-size: 24rpx; color: #EA580C; }
+.noti-btn {
+  background-color: #333;
+  color: #fff;
+  font-size: 24rpx;
+  padding: 0 24rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  border-radius: 28rpx;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin: 40rpx 0 24rpx 8rpx; /* Adjust margin */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.quick-title { margin-top: 40rpx; } /* Adjust top margin for quick functions */
+
+/* 3. Quick Functions */
+.quick-functions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24rpx;
+}
+.func-item {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to start */
+  position: relative; /* For badge positioning */
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+}
+.func-item image { width: 56rpx; height: 56rpx; margin-bottom: 16rpx; }
+.func-item text { font-size: 30rpx; font-weight: bold; }
+.func-item .sub-label { font-size: 24rpx; color: #999; margin-top: 8rpx; font-weight: normal; }
+.badge-dot {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  background-color: #FA5151;
+  color: #fff;
+  font-size: 20rpx;
+  min-width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 6rpx;
+  box-sizing: border-box;
+}
+
+/* 4. Today's Data */
+.today-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+.today-stats .stat-item { flex: 1; }
+.today-stats .stat-item image { width: 52rpx; height: 52rpx; margin-bottom: 12rpx; }
+.today-stats .stat-item .value { font-size: 34rpx; font-weight: bold; margin-bottom: 6rpx; }
+.today-stats .stat-item .label { font-size: 24rpx; color: #666; }
+
+/* 5. Recent Orders */
+.recent-title .view-all {
+  font-size: 26rpx;
+  color: #999;
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+}
+.recent-title .arrow-icon { width: 24rpx; height: 24rpx; margin-left: 8rpx; }
+
+.order-card-mini { /* Slightly different style from main order list */
+  padding: 24rpx; /* Less padding */
+}
+.order-card-mini .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx; }
+.order-card-mini .service-name { font-size: 28rpx; font-weight: bold; }
+.order-card-mini .order-time, .order-card-mini .order-address {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+.order-card-mini .icon { width: 28rpx; height: 28rpx; margin-right: 12rpx; opacity: 0.7; }
+.order-card-mini .order-address .text-ellipsis {
+    max-width: 500rpx; /* Limit address width */
+}
+.order-card-mini .card-footer {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.order-card-mini .price-label { font-size: 24rpx; color: #666;}
+.order-card-mini .price { font-size: 30rpx; color: #333; font-weight: bold; margin-left: 8rpx; }
+.order-card-mini .actions { display: flex; gap: 16rpx; }
+.order-card-mini .btn {
+  font-size: 24rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 24rpx;
+  border-radius: 28rpx;
+  margin: 0;
+}
+.order-card-mini .btn-plain { background: #fff; border: 1rpx solid #ccc; color: #333; }
+.order-card-mini .btn-dark { background: #333; color: #fff; border: none; }
+.empty-recent { text-align: center; color: #999; font-size: 26rpx; padding: 40rpx 0; }
+
+/* Help Button */
+.help-btn {
+  position: fixed;
+  right: 32rpx;
+  bottom: 40rpx; /* Adjust position */
+  width: 80rpx;
+  height: 80rpx;
+  z-index: 100;
+}

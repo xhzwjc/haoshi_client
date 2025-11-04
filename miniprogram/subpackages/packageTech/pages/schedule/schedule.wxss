@@ -1,0 +1,159 @@
+/* pages/schedule/schedule.wxss */
+page { background-color: #F7F8FA; }
+.page-schedule { padding: 24rpx; }
+
+/* 1. 日历卡片 */
+.calendar-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+  margin-bottom: 24rpx;
+}
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.month-selector {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+.arrow {
+  padding: 0 20rpx;
+  color: #999;
+}
+.current-month {
+  color: #333;
+}
+.date-jump {
+  font-size: 26rpx;
+  color: #4CAF50;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid #4CAF50;
+  border-radius: 8rpx;
+}
+.week-days {
+  display: flex;
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #eee;
+}
+.week-days text { flex: 1; }
+
+.dates {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 10rpx;
+}
+.date-item {
+  width: 14.28%; /* 1/7 of the width */
+  height: 80rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 28rpx;
+  color: #333;
+  position: relative;
+  margin: 5rpx 0;
+}
+.date-item.other-month {
+  color: #ccc;
+}
+.date-item.today {
+  border: 1rpx solid #FF5722;
+  border-radius: 50%;
+  color: #FF5722;
+  background-color: #FFF0EB;
+}
+.date-item.scheduled {
+  background-color: #E6F3FF;
+  border-radius: 50%;
+}
+.date-item.dayoff {
+  background-color: #F7F8FA;
+  border-radius: 50%;
+}
+.date-item.today.scheduled {
+    border: 1rpx solid #1677FF;
+}
+.date-item .status-dot {
+  position: absolute;
+  bottom: 8rpx;
+  width: 10rpx;
+  height: 10rpx;
+  background-color: #4CAF50;
+  border-radius: 50%;
+}
+
+/* 2. 当日排班详情 */
+.schedule-detail {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+}
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+}
+.date-text { font-size: 32rpx; font-weight: bold; }
+.status-text { 
+    font-size: 28rpx; font-weight: bold; 
+    padding: 4rpx 16rpx; border-radius: 8rpx;
+}
+.status-0 { color: #666; background-color: #eee; } /* 休息 */
+.status-1 { color: #4CAF50; background-color: #E6FAF0; } /* 可接单 */
+.status-2 { color: #FF5722; background-color: #FFF0EB; } /* 忙碌 */
+
+/* 状态切换卡片 */
+.status-options {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+.option-item {
+  flex: 1;
+  border: 1rpx solid #f0f0f0;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.2s;
+}
+.option-item.active {
+  border-color: #4CAF50;
+  background-color: #E6FAF0;
+}
+.option-label { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 6rpx; }
+.option-desc { font-size: 22rpx; color: #999; }
+
+/* 当天订单列表 */
+.today-orders { margin-top: 30rpx; }
+.order-title { font-size: 28rpx; font-weight: bold; margin-bottom: 16rpx; }
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx dashed #eee;
+  font-size: 26rpx;
+}
+.order-item:last-child { border-bottom: none; }
+.order-item .time { color: #333; font-weight: bold; width: 150rpx; flex-shrink: 0; }
+.order-item .service { color: #666; flex-grow: 1; }
+.order-item .status-tag { font-size: 22rpx; } /* Use global status tags defined in app.wxss */
+
+.no-orders { text-align: center; color: #999; padding: 20rpx 0; font-size: 26rpx; }

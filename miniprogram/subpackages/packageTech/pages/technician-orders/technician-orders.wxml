@@ -1,0 +1,93 @@
+<view class="page-order-list">
+  <view class="tabs-container">
+    <view class="tabs">
+      <view
+        class="tab-item {{activeTab === index ? 'active' : ''}}"
+        wx:for="{{tabs}}"
+        wx:key="index"
+        bindtap="onTabClick"
+        data-index="{{index}}"
+      >
+        {{item.name}}
+        <view class="badge" wx:if="{{item.status === 10 && pendingCount > 0}}">{{pendingCount}}</view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view
+    class="order-scroll-list"
+    scroll-y
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{isPulling}}"
+    bindrefresherrefresh="onRefresherRefresh"
+    bindscrolltolower="onScrollToLower"
+  >
+    <view class="list-container">
+      <view class="loading-state" wx:if="{{loading && orders.length === 0}}">
+          <view class="loading-spinner"></view>
+          <text>正在加载订单...</text>
+      </view>
+
+      <block wx:elif="{{orders.length > 0}}">
+        <view class="order-card" wx:for="{{orders}}" wx:key="_id">
+          <view class="card-header">
+            <text class="service-name text-ellipsis">{{item.service_name}}</text>
+            <text class="status-tag-base status-{{item.status}}">{{item.status_text}}</text>
+          </view>
+          <view class="order-no">订单号: {{item._id}}</view>
+
+          <view class="card-body">
+            <view class="info-line">
+              <image class="info-icon" src="/packageCommon/images/icon_time_gray.png"></image>
+              <text>{{item.service_date}} {{item.service_time_slot}}</text>
+            </view>
+            <view class="info-line">
+              <image class="info-icon" src="/packageCommon/images/icon_location_gray.png"></image>
+              <text>{{item.address}}</text>
+            </view>
+            <view class="info-line">
+              <image class="info-icon" src="/packageCommon/images/icon_user_gray.png"></image>
+              <text>{{item.contact_name}} {{item.contact_phone}}</text>
+            </view>
+            <view class="remark-box" wx:if="{{item.remarks}}">
+              <text class="remark-label">备注：</text>
+              <text class="remark-content">{{item.remarks}}</text>
+            </view>
+          </view>
+
+          <view class="card-footer">
+            <view class="price-info">
+              <text class="price-label">{{item.status >= 35 ? '服务费' : '预计'}}</text>
+              <text class="price">¥{{item.final_price || item.price_range || '待核价'}}</text>
+            </view>
+            <view class="actions">
+              <button class="btn btn-plain" bindtap="viewDetail" data-order="{{item}}">查看详情</button>
+              <button class="btn btn-dark" wx:if="{{item.status === 10}}" bindtap="acceptOrder" data-id="{{item._id}}">立即接单</button>
+              <button class="btn btn-dark" wx:if="{{item.status === 20}}" bindtap="startService" data-id="{{item._id}}">确认上门</button>
+              <button class="btn btn-dark" wx:if="{{item.status === 30}}" bindtap="completeAndQuote" data-id="{{item._id}}">完成服务报价</button>
+              <button class="btn btn-plain" wx:if="{{item.status === 35 || item.status === 40}}" bindtap="remindPayment" data-id="{{item._id}}">提醒付款</button>
+              </view>
+          </view>
+        </view>
+
+        <view class="load-more-text">
+            <view class="loading-spinner" wx:if="{{isReachingBottom}}"></view>
+            <text>{{bottomText}}</text>
+        </view>
+      </block>
+
+      <view class="empty-state" wx:else>
+        <image class="empty-icon" src="/packageCommon/images/icon_empty_order.png"></image>
+        <text>当前分类下暂无订单</text>
+      </view>
+    </view> </scroll-view>
+
+  <order-detail-modal
+      wx:if="{{showDetailModal}}"
+      order="{{modalOrderDetail}}"
+      bind:close="hideOrderDetailModal"
+      bind:accept="acceptOrderFromModal"
+      bind:reject="rejectOrderFromModal">
+  </order-detail-modal>
+  
+</view>

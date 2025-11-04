@@ -1,5 +1,4 @@
 <view class="page-order">
-  <!-- 顶部固定 Tabs -->
   <view class="tabs-container">
     <view class="tabs">
       <view
@@ -14,7 +13,6 @@
     </view>
   </view>
 
-  <!-- ✅ 独立滚动的订单列表 -->
   <scroll-view
     class="order-list-scroll"
     scroll-y
@@ -23,103 +21,89 @@
     bindrefresherrefresh="onScrollRefresh"
     bindscrolltolower="onScrollToLower"
   >
-    <!-- 加载中状态 -->
-    <view class="loading-state" wx:if="{{loading && filteredOrders.length === 0}}">
-      <text>加载中...</text>
-    </view>
-
-    <!-- 列表数据 -->
-    <block wx:elif="{{filteredOrders.length > 0}}">
-      <view
-        class="order-card"
-        wx:for="{{filteredOrders}}"
-        wx:key="_id"
-        data-id="{{item._id}}"
-        bindtap="toOrderDetail"
-      >
-        <view class="card-header">
-          <view class="service-name">{{item.service_name}}</view>
-          <view class="status-tag status-{{item.status}}">{{item.status_text}}</view>
-        </view>
-
-        <view class="order-no">订单编号: {{item._id}}</view>
-
-        <view class="card-body">
-          <view class="info-line" wx:if="{{item.address}}">
-            <image class="info-icon" src="/packageCommon/images/icon_location_gray.png" mode="widthFix"></image>
-            <text>{{item.address}}</text>
-          </view>
-          <view class="info-line" wx:if="{{item.service_date && item.service_time_slot}}">
-            <image class="info-icon" src="/packageCommon/images/icon_time_gray.png" mode="widthFix"></image>
-            <text>{{item.service_date}} {{item.service_time_slot}}</text>
-          </view>
-          <view class="remark-box" wx:if="{{item.remarks}}">
-            <text class="remark-label">备注：</text>
-            <text class="remark-content">{{item.remarks}}</text>
-          </view>
-          <view class="info-line" wx:if="{{item.master_info && item.master_info !== '待分配'}}">
-            <image class="info-icon" src="/packageCommon/images/icon_master_gray.png" mode="widthFix"></image>
-            <text>{{item.master_info}}</text>
-          </view>
-        </view>
-
-        <view class="card-footer">
-          <view class="payment-info">
-            <text wx:if="{{item.is_range}}">报价:</text>
-            <text wx:else>实付:</text>
-            <text class="price">
-              <text wx:if="{{!item.is_range}}">¥</text>{{item.payment_fmt}}
-            </text>
-          </view>
-
-          <!-- 按钮组保持不变 -->
-          <view class="card-actions">
-            <block wx:if="{{item.status === 10}}">
-              <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
-            </block>
-
-            <block wx:if="{{item.status === 20}}">
-              <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
-              <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
-            </block>
-
-            <block wx:if="{{item.status === 30}}">
-              <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
-            </block>
-
-            <block wx:if="{{item.status === 35}}">
-              <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" bindtap="handleListAction">金额有误</button>
-              <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" bindtap="handleListAction">确认金额</button>
-            </block>
-
-            <block wx:if="{{item.status === 40}}">
-              <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" bindtap="handleListAction">立即支付</button>
-            </block>
-
-            <block wx:if="{{item.status === 50}}">
-              <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
-              <button class="btn btn-dark" data-action="评价" data-id="{{item._id}}" bindtap="handleListAction">评价</button>
-            </block>
-
-            <block wx:if="{{item.status === 60}}">
-              <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
-              <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" bindtap="handleListAction">查看详情</button>
-            </block>
-          </view>
-        </view>
+    <view class="list-container">
+      <view class="loading-state" wx:if="{{loading && filteredOrders.length === 0}}">
+        <text>加载中...</text>
       </view>
-    </block>
 
-    <!-- 空状态 -->
-    <view class="empty-state" wx:else>
-      <image class="empty-icon" src="/packageCommon/images/icon_empty.png"></image>
-      <text>暂无相关订单</text>
-    </view>
+      <block wx:elif="{{filteredOrders.length > 0}}">
+        <view
+          class="order-card"
+          wx:for="{{filteredOrders}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="toOrderDetail"
+        >
+          <view class="card-header">
+            <view class="service-name">{{item.service_name}}</view>
+            <view class="status-tag status-{{item.status}}">{{item.status_text}}</view>
+          </view>
+          <view class="order-no">订单编号: {{item._id}}</view>
+          <view class="card-body">
+            <view class="info-line" wx:if="{{item.address}}">
+              <image class="info-icon" src="/packageCommon/images/icon_location_gray.png" mode="widthFix"></image>
+              <text>{{item.address}}</text>
+            </view>
+            <view class="info-line" wx:if="{{item.service_date && item.service_time_slot}}">
+              <image class="info-icon" src="/packageCommon/images/icon_time_gray.png" mode="widthFix"></image>
+              <text>{{item.service_date}} {{item.service_time_slot}}</text>
+            </view>
+            <view class="remark-box" wx:if="{{item.remarks}}">
+              <text class="remark-label">备注：</text>
+              <text class="remark-content">{{item.remarks}}</text>
+            </view>
+            <view class="info-line" wx:if="{{item.master_info && item.master_info !== '待分配'}}">
+              <image class="info-icon" src="/packageCommon/images/icon_master_gray.png" mode="widthFix"></image>
+              <text>{{item.master_info}}</text>
+            </view>
+          </view>
+          <view class="card-footer">
+            <view class="payment-info">
+              <text wx:if="{{item.is_range}}">报价:</text>
+              <text wx:else>实付:</text>
+              <text class="price">
+                <text wx:if="{{!item.is_range}}">¥</text>{{item.payment_fmt}}
+              </text>
+            </view>
+            <view class="card-actions">
+              <block wx:if="{{item.status === 10}}">
+                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
+              </block>
+              <block wx:if="{{item.status === 20}}">
+                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
+                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
+              </block>
+              <block wx:if="{{item.status === 30}}">
+                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
+              </block>
+              <block wx:if="{{item.status === 35}}">
+                <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" bindtap="handleListAction">金额有误</button>
+                <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" bindtap="handleListAction">确认金额</button>
+              </block>
+              <block wx:if="{{item.status === 40}}">
+                <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" bindtap="handleListAction">立即支付</button>
+              </block>
+              <block wx:if="{{item.status === 50}}">
+                 <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
+                <button class="btn btn-dark" data-action="评价" data-id="{{item._id}}" bindtap="handleListAction">评价</button>
+              </block>
+              <block wx:if="{{item.status === 60}}">
+                <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
+                <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" bindtap="handleListAction">查看详情</button>
+              </block>
+            </view>
+          </view>
+        </view>
+      </block>
 
-    <!-- 加载更多提示 -->
-    <view wx:if="{{loading && filteredOrders.length > 0}}" class="loading-text list-footer-text">加载中...</view>
-    <view wx:if="{{!hasMore && filteredOrders.length > 0}}" class="no-more list-footer-text">没有更多了</view>
-  </scroll-view>
+      <view class="empty-state" wx:else>
+        <image class="empty-icon" src="/packageCommon/images/icon_empty.png"></image>
+        <text>暂无相关订单</text>
+      </view>
+
+      <view wx:if="{{loading && filteredOrders.length > 0}}" class="loading-text list-footer-text">加载中...</view>
+      <view wx:if="{{!hasMore && filteredOrders.length > 0}}" class="no-more list-footer-text">没有更多了</view>
+    </view> </scroll-view>
 
   <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

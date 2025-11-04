@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+      "order-detail-modal": "/components/order-detail-modal/order-detail-modal"
+  },
+  "navigationBarTitleText": "任务中心",
+  "enablePullDownRefresh": false
+}

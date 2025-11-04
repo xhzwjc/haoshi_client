@@ -1,7 +1,6 @@
 {
   "permissions": {
     "openapi": [
-      "wx.cloud.callFunction"
     ]
   }
 }

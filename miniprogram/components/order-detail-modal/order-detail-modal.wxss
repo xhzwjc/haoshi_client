@@ -1,0 +1,86 @@
+/* components/order-detail-modal/order-detail-modal.wxss */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-container {
+  background-color: #fff;
+  border-radius: 20rpx;
+  width: 85%;
+  max-width: 600rpx;
+  overflow: hidden;
+}
+.modal-header {
+  position: relative;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.close-icon {
+  position: absolute;
+  right: 30rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36rpx;
+  height: 36rpx;
+  opacity: 0.5;
+}
+.modal-body {
+  padding: 30rpx 40rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Align items top for long text */
+  margin-bottom: 25rpx;
+  font-size: 28rpx;
+}
+.detail-item:last-child { margin-bottom: 0; }
+.label { color: #999; flex-shrink: 0; margin-right: 30rpx; }
+.value { color: #333; text-align: right; word-break: break-all; }
+.value.primary { font-weight: bold; }
+.value.price { color: #FF5722; font-weight: bold; font-size: 32rpx;}
+.value.placeholder { color: #ccc; }
+
+.remark-item { align-items: flex-start; } /* Override default alignment */
+.remark-box {
+    background-color: #FFFBEB;
+    border: 1rpx solid #FFECB3;
+    color: #CC9A00;
+    font-size: 26rpx;
+    padding: 12rpx 16rpx;
+    border-radius: 8rpx;
+    flex-grow: 1; /* Allow box to take space */
+    text-align: left;
+}
+.fee-item { align-items: center; } /* Align price vertically */
+
+.modal-footer {
+  display: flex;
+  padding: 30rpx 40rpx;
+  border-top: 1rpx solid #f0f0f0;
+  gap: 20rpx;
+}
+.modal-footer .btn {
+    flex: 1;
+    height: 80rpx;
+    line-height: 80rpx;
+    font-size: 30rpx;
+    border-radius: 40rpx;
+    margin: 0;
+}
+.btn-plain { background: #f0f0f0; color: #333; border: none; }
+.btn-dark { background: #333; color: #fff; border: none; }
+.btn.full-width { flex: 1 1 100%; } /* Make close button full width */

@@ -1,0 +1,49 @@
+<view class="modal-mask" wx:if="{{order}}">
+  <view class="modal-container">
+    <view class="modal-header">
+      <text>订单详情</text>
+      <image class="close-icon" src="/images/icon_close_gray.png" bindtap="closeModal"></image>
+    </view>
+    <view class="modal-body">
+      <view class="detail-item">
+        <text class="label">服务项目</text>
+        <text class="value primary">{{order.service_name}}</text>
+      </view>
+       <view class="detail-item">
+        <text class="label">服务时间</text>
+        <text class="value">{{order.service_date}} {{order.service_time_slot}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="label">服务地址</text>
+        <text class="value">{{order.address}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="label">客户信息</text>
+        <text class="value">{{order.contact_name}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="label">联系电话</text>
+        <text class="value">{{order.contact_phone}}</text>
+      </view>
+       <view class="detail-item remark-item">
+        <text class="label">特殊要求</text>
+        <view class="remark-box" wx:if="{{order.remarks}}">
+           <text>{{order.remarks}}</text>
+        </view>
+         <text class="value placeholder" wx:else>无</text>
+      </view>
+       <view class="detail-item fee-item">
+        <text class="label">服务费用</text>
+        <text class="value price">¥{{order.final_price || order.price_range || '待核价'}}</text>
+      </view>
+    </view>
+    
+    <view class="modal-footer" wx:if="{{order.status === 10}}">
+       <button class="btn btn-plain" bindtap="rejectOrder">拒单</button>
+       <button class="btn btn-dark" bindtap="acceptOrder">接单</button>
+    </view>
+     <view class="modal-footer" wx:else>
+       <button class="btn btn-dark full-width" bindtap="closeModal">关闭</button>
+     </view>
+  </view>
+</view>

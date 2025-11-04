@@ -46,11 +46,18 @@ page {
 .order-list-scroll {
   flex: 1;
   height: 0;
+  /* 【移除】padding-bottom */
+}
+
+/* 【新增】内部列表容器样式 */
+.list-container {
+  /* 将底部间距应用到这里 */
   padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
 }
+
 .order-card {
   background-color: #fff;
-  margin: 24rpx;
+  margin: 24rpx; /* 上下左右边距 */
   border-radius: 16rpx;
   padding: 32rpx;
   /* 新增：防止卡片内元素溢出 */
@@ -119,7 +126,7 @@ page {
   border: 1rpx solid #FFECB3; /* 浅黄色边框 */
   color: #CC9A00; /* 略深的黄色字体 */
   font-size: 24rpx; /* 较小的字体 */
-  padding: 16rpx; 
+  padding: 16rpx;
   border-radius: 8rpx;
   margin-top: 16rpx; /* 与上方信息行间隔 */
   margin-bottom: 16rpx; /* 与下方分隔线/其他信息行保持间距 */
@@ -134,7 +141,6 @@ page {
 .remark-content {
   flex-grow: 1;
 }
-
 
 .card-footer {
   border-top: 1rpx solid #F0F0F0;
@@ -176,11 +182,11 @@ page {
   min-width: auto !important; /* 取消最小宽度限制（关键） */
   width: 160rpx !important;
   box-sizing: border-box !important; /* 确保padding不撑大宽度 */
-  
+
   /* 2. 极致压缩内边距 */
   padding: 0 10rpx !important; /* 左右仅10rpx内边距（四字刚好） */
   margin: 0 !important; /* 彻底移除边距 */
-  
+
   /* 3. 固定基础样式 */
   font-size: 24rpx !important; /* 略微缩小字体，进一步省空间 */
   height: 49rpx !important; /* 降低按钮高度，更紧凑 */
