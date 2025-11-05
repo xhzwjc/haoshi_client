@@ -2,7 +2,7 @@
   <view class="modal-container">
     <view class="modal-header">
       <text>订单详情</text>
-      <image class="close-icon" src="/images/icon_close_gray.png" bindtap="closeModal"></image>
+      <image class="close-icon" src="/images/app-logo.png" bindtap="closeModal"></image>
     </view>
     <view class="modal-body">
       <view class="detail-item">

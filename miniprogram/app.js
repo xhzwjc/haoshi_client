@@ -68,5 +68,34 @@ App({
    */
   isTechnician() {
     return wx.getStorageSync('user_role') === 'TECHNICIAN';
+  },
+
+  /**
+   * 等待云开发环境初始化完成（用于技师端调用客户端云函数）
+   * 返回一个 Promise，确保云开发环境已初始化
+   */
+  waitClientCloudReady() {
+    return new Promise((resolve, reject) => {
+      if (wx.cloud) {
+        // 云开发已初始化，直接返回
+        resolve(wx.cloud);
+      } else {
+        // 如果云开发未初始化，等待一段时间后重试
+        let retries = 0;
+        const maxRetries = 10;
+        const checkInterval = setInterval(() => {
+          if (wx.cloud) {
+            clearInterval(checkInterval);
+            resolve(wx.cloud);
+          } else {
+            retries++;
+            if (retries >= maxRetries) {
+              clearInterval(checkInterval);
+              reject(new Error('云开发环境初始化超时'));
+            }
+          }
+        }, 100);
+      }
+    });
   }
 })

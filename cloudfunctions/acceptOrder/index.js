@@ -17,18 +17,21 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 关键：接单操作
-    // 1. 找到这个订单：必须是 status: 10 (待接单) 且 未被分配
-    const res = await db.collection('bookings').doc(orderId)
+    // 条件更新：仅当订单为待接单且未分配时才能成功
+    const res = await db.collection('bookings')
+      .where({
+        _id: orderId,
+        status: 10,
+        technician_openid: _.exists(false)
+      })
       .update({
         data: {
-          status: 20, // 状态变为 "待服务"
-          technician_openid: tech_openid // 分配给当前师傅
+          status: 20,
+          technician_openid: tech_openid
         }
       });
 
-    if (res.stats.updated === 0) {
-      // 订单状态不对或已被抢
+    if (!res.stats || res.stats.updated === 0) {
       return { code: 1, message: '订单已被抢或状态已变更' };
     }
 

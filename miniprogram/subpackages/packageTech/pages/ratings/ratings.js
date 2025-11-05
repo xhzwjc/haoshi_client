@@ -18,9 +18,9 @@ Page({
       loading: false,
       
       ratings: [ // 模拟评价数据
-          { id: 1, avatar: '/images/default_avatar.png', nickname: '客户***01', score: 5, time: '2025-10-25', content: '师傅专业，服务态度非常好，效率很高！', serviceName: '深度保洁', orderId: 'O20251025001', reply: '感谢您的认可，我们会继续努力！' },
-          { id: 2, avatar: '/images/default_avatar.png', nickname: '匿名用户', score: 4, time: '2025-10-20', content: '服务不错，就是时间稍微晚了一点。', serviceName: '洗衣机清洗', orderId: 'O20251020005', reply: '' },
-          { id: 3, avatar: '/images/default_avatar.png', nickname: '客户***03', score: 1, time: '2025-10-18', content: '清洁不彻底，不满意。', serviceName: '深度保洁', orderId: 'O20251018002', reply: '' },
+          { id: 1, avatar: '/packageCommon/images/default_avatar.png', nickname: '客户***01', score: 5, time: '2025-10-25', content: '师傅专业，服务态度非常好，效率很高！', serviceName: '深度保洁', orderId: 'O20251025001', reply: '感谢您的认可，我们会继续努力！' },
+          { id: 2, avatar: '/packageCommon/images/default_avatar.png', nickname: '匿名用户', score: 4, time: '2025-10-20', content: '服务不错，就是时间稍微晚了一点。', serviceName: '洗衣机清洗', orderId: 'O20251020005', reply: '' },
+          { id: 3, avatar: '/packageCommon/images/default_avatar.png', nickname: '客户***03', score: 1, time: '2025-10-18', content: '清洁不彻底，不满意。', serviceName: '深度保洁', orderId: 'O20251018002', reply: '' },
       ]
   },
 

@@ -102,33 +102,68 @@ Page({
         }
 
         const currentTab = this.data.tabs[this.data.activeTab];
-        let condition = {};
-        // Add condition based on technician's openid (MUST HAVE)
-        // condition.technician_openid = wx.getStorageSync('openid'); // Example
 
-        // Build status query
-        if (currentTab.status === 'all') {
-            // No status filter
-        } else if (currentTab.status === 'pending_payment') {
-            condition.status = _.in([35, 40]); // Combine statuses
-        } else if (currentTab.status === 'completed') {
-            condition.status = _.in([50, 60]); // Combine statuses
-        } else {
-            condition.status = currentTab.status; // Specific status (10, 20, 30)
-        }
-
-        // Fetch orders and also the count of pending orders for the badge
+        // 使用云函数获取订单数据（云函数会自动过滤当前技师的openid）
+        const app = getApp();
         Promise.all([
-            db.collection('bookings')
-                .where(condition)
-                .orderBy('created_at', 'desc')
-                .skip(skipCount)
-                .limit(this.data.pageSize)
-                .get(),
-            // Get count for the badge (only needs to run once or less frequently)
-            reset ? db.collection('bookings').where({ status: 10 /*, technician_openid: '...'*/ }).count() : Promise.resolve(null)
-        ]).then(([orderRes, countRes]) => {
-            const list = orderRes.data || [];
+            // 使用云函数获取订单
+            app.waitClientCloudReady().then(clientCloud => {
+                return clientCloud.callFunction({
+                    name: 'getTechnicianOrders',
+                    data: {
+                        status: currentTab.status,
+                        page: currentPage,
+                        pageSize: this.data.pageSize
+                    }
+                });
+            }).then(res => {
+                console.log('云函数返回结果:', res);
+                if (res.result) {
+                    if (res.result.code === 0) {
+                        return { data: res.result.data || [], error: null };
+                    } else {
+                        // 输出详细错误信息（降为 warn，不中断流程，触发本地降级）
+                        console.warn('云函数返回错误:', res.result);
+                        return { data: [], error: new Error(res.result.message || res.result.error || '获取订单失败') };
+                    }
+                } else {
+                    console.warn('云函数返回格式错误');
+                    return { data: [], error: new Error('云函数返回格式错误') };
+                }
+            }).catch(err => {
+                console.warn('调用云函数失败:', err);
+                return { data: [], error: err };
+            }),
+            // 获取待接单数量用于badge（仅重置时）
+            reset ? db.collection('bookings').where({ 
+                status: 10, 
+                technician_openid: _.exists(false) 
+            }).count() : Promise.resolve(null)
+        ]).then(async ([orderRes, countRes]) => {
+            let list = orderRes.data || [];
+
+            // 云函数失败时，进行本地降级查询
+            if (orderRes.error) {
+                try {
+                    if (currentTab.status === 'all' || currentTab.status === 10) {
+                        // 本地查询：仅查询待接单（未分配）的订单，保证页面可用
+                        const fallbackRes = await db.collection('bookings')
+                            .where({ status: 10, technician_openid: _.exists(false) })
+                            .orderBy('created_at', 'desc')
+                            .skip(skipCount)
+                            .limit(this.data.pageSize)
+                            .get();
+                        list = fallbackRes.data || [];
+                    } else {
+                        // 其他Tab在没有技师openid情况下无法可靠查询，返回空列表
+                        list = [];
+                    }
+                } catch (fallbackErr) {
+                    console.error('降级查询失败:', fallbackErr);
+                    list = [];
+                }
+            }
+
             const formatted = list.map(order => this.formatOrderData(order));
 
             const newList = reset ? formatted : [...this.data.orders, ...formatted];
@@ -159,7 +194,10 @@ Page({
             console.error('加载订单失败:', err);
             this.setData({ loading: false, isPulling: false, isReachingBottom: false, bottomText: '加载失败' });
             wx.hideLoading();
-            wx.showToast({ title: '加载失败', icon: 'none' });
+            wx.showToast({ 
+                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '加载失败', 
+                icon: 'none' 
+            });
         }).finally(() => {
             // Ensure pull-down animation stops even on error
             if (this.data.isPulling) {
@@ -221,9 +259,9 @@ Page({
         // Optionally show modal first for confirmation, or accept directly
         this.callCloudFunction('acceptOrder', { orderId: orderId }, '接单成功', '接单失败');
     },
-    startService: function(e) { // Corresponds to '确认上门'
+    startService: function(e) { // 对应“确认上门” 20 -> 30
         const orderId = e.currentTarget.dataset.id;
-         this.callCloudFunction('startService', { orderId: orderId }, '操作成功', '操作失败'); // This CF should change status 20 -> 30
+        this.callCloudFunction('startService', { orderId }, '操作成功', '操作失败');
     },
     completeAndQuote: function(e) {
          const orderId = e.currentTarget.dataset.id;

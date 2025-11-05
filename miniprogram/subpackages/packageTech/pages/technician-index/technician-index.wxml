@@ -38,7 +38,7 @@
     <view class="card notification-card" wx:if="{{dashboardData.notification}}">
       <image class="noti-icon" src="/packageCommon/images/icon_notification_orange.png"></image>
       <view class="noti-text">
-        <view class="title">{{dashboardData.notification.title || '您有3个新订单待处理'}}</view>
+        <view class="title">{{dashboardData.notification.title || '您有31个新订单待处理'}}</view>
         <view class="desc">{{dashboardData.notification.desc || '请及时接单，避免订单流失'}}</view>
       </view>
       <button class="noti-btn" bindtap="goToTaskCenter">查看</button>
@@ -97,8 +97,8 @@
     <view class="recent-orders" wx:if="{{dashboardData.recentOrders && dashboardData.recentOrders.length > 0}}">
        <view class="card order-card-mini" wx:for="{{dashboardData.recentOrders}}" wx:key="_id">
          <view class="card-header">
-           <text class="service-name">{{item.service_name}}</text>
-           <text class="status-tag-base status-{{item.status}}">{{item.status_text}}</text>
+           <view class="service-name">{{item.service_name}}</view>
+           <view class="status-tag status-{{item.status}}">{{item.status_text}}</view>
          </view>
          <view class="order-time">
            <image class="icon" src="/packageCommon/images/icon_time_gray.png"></image>
@@ -109,11 +109,16 @@
            <text class="text-ellipsis">{{item.address}}</text>
          </view>
          <view class="card-footer">
-            <text class="price-label">服务费</text>
-            <text class="price">¥{{item.final_price || item.price_range || '待核价'}}</text>
-           <view class="actions">
-             <button class="btn btn-plain" bindtap="viewOrderDetail" data-order="{{item}}">查看</button>
-             <button class="btn btn-dark" wx:if="{{item.status === 10}}" bindtap="acceptOrderPrompt" data-order="{{item}}">接单</button>
+           <view class="payment-info">
+             <text wx:if="{{item.status < 35}}">报价:</text>
+             <text wx:else>实付:</text>
+             <text class="price">
+               <text wx:if="{{item.status >= 35}}">¥</text>{{item.price_display || item.final_price || item.price_range || '待核价'}}
+             </text>
+           </view>
+           <view class="card-actions">
+             <button class="btn btn-plain" bindtap="viewOrderDetail" data-order="{{item}}" data-id="{{item._id}}">查看</button>
+             <button class="btn btn-dark" wx:if="{{item.status === 10}}" bindtap="acceptOrderPrompt" data-order="{{item}}" data-id="{{item._id}}">接单</button>
            </view>
          </view>
        </view>

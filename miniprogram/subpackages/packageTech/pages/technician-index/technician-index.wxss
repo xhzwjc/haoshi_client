@@ -82,12 +82,14 @@ page { background-color: #F7F8FA; }
   background-color: #333;
   color: #fff;
   font-size: 24rpx;
-  padding: 0 24rpx;
-  height: 56rpx;
-  line-height: 56rpx;
+  padding: 0 18rpx; /* 收窄按钮宽度 */
+  height: 52rpx;
+  line-height: 52rpx;
   border-radius: 28rpx;
   margin: 0;
   flex-shrink: 0;
+  min-width: 220rpx;
+  width: 160rpx !important;
 }
 
 /* Section Title */
@@ -163,6 +165,22 @@ page { background-color: #F7F8FA; }
 }
 .order-card-mini .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx; }
 .order-card-mini .service-name { font-size: 28rpx; font-weight: bold; }
+/* 对齐订单页状态标签风格 */
+.status-tag {
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+  background-color: #f2f2f2;
+}
+.status-tag.status-10 { color: #409EFF; background-color: #ECF5FF; }
+.status-tag.status-20 { color: #07C160; background-color: #F0FFF8; }
+.status-tag.status-30 { color: #FA5151; background-color: #FFF1F0; }
+.status-tag.status-35 { color: #ED6A0C; background-color: #FFFBE8; }
+.status-tag.status-40 { color: #FF5722; background-color: #FFF0EB; }
+.status-tag.status-50 { color: #409EFF; background-color: #ECF5FF; }
+.status-tag.status-60 { color: #999; background-color: #F7F8FA; }
+.status-tag.status-0 { color: #999; background-color: #F7F8FA; }
+.status-tag.status--1 { color: #999; background-color: #F7F8FA; }
 .order-card-mini .order-time, .order-card-mini .order-address {
   display: flex;
   align-items: center;
@@ -182,19 +200,13 @@ page { background-color: #F7F8FA; }
   justify-content: space-between;
   align-items: center;
 }
-.order-card-mini .price-label { font-size: 24rpx; color: #666;}
-.order-card-mini .price { font-size: 30rpx; color: #333; font-weight: bold; margin-left: 8rpx; }
-.order-card-mini .actions { display: flex; gap: 16rpx; }
-.order-card-mini .btn {
-  font-size: 24rpx;
-  height: 56rpx;
-  line-height: 56rpx;
-  padding: 0 24rpx;
-  border-radius: 28rpx;
-  margin: 0;
-}
+.order-card-mini .payment-info { font-size: 26rpx; color: #666; display: flex; align-items: baseline; flex-shrink: 0; margin-right: 10rpx; }
+.order-card-mini .payment-info .price { font-size: 30rpx; color: #FA5151; font-weight: bold; margin-left: 6rpx; }
+.order-card-mini .card-actions { display: flex; gap: 8rpx; flex-wrap: wrap; justify-content: flex-end; }
+.order-card-mini .btn { font-size: 24rpx; height: 56rpx; line-height: 56rpx; padding: 0 16rpx; border-radius: 28rpx; margin: 0; width: 160rpx; }
+.order-card-mini .btn::after { border: none; }
 .order-card-mini .btn-plain { background: #fff; border: 1rpx solid #ccc; color: #333; }
-.order-card-mini .btn-dark { background: #333; color: #fff; border: none; }
+.order-card-mini .btn-dark { background: #333; color: #fff; border: 1rpx solid #333; }
 .empty-recent { text-align: center; color: #999; font-size: 26rpx; padding: 40rpx 0; }
 
 /* Help Button */

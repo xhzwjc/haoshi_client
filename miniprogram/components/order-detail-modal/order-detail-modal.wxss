@@ -74,12 +74,17 @@
   gap: 20rpx;
 }
 .modal-footer .btn {
-    flex: 1;
-    height: 80rpx;
-    line-height: 80rpx;
-    font-size: 30rpx;
-    border-radius: 40rpx;
-    margin: 0;
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx; /* 确保行高与高度完全一致 */
+  font-size: 30rpx;
+  border-radius: 40rpx;
+  margin: 0;
+  padding: 0; /* 清除默认内边距 */
+  vertical-align: middle; /* 强制垂直居中对齐 */
+  display: inline-flex; /* 用flex布局居中文字（更可靠） */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
 }
 .btn-plain { background: #f0f0f0; color: #333; border: none; }
 .btn-dark { background: #333; color: #fff; border: none; }

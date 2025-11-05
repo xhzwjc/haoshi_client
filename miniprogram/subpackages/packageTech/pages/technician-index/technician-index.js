@@ -10,7 +10,7 @@ Page({
             badge: '金牌',
             rating: 4.9,
             servedOrders: 856,
-            avatar: '/images/default_avatar.png' 
+            avatar: '/packageCommon/images/default_avatar.png' 
         },
         dashboardData: { // Placeholder data
             pendingCount: 3,
@@ -70,13 +70,24 @@ Page({
             
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
-                // Example formatting for recent orders
-                if (data.recentOrders) {
-                    data.recentOrders = data.recentOrders.map(order => ({
-                        ...order,
-                        status_text: this.mapStatusToText(order.status),
-                        service_time_display: this.formatServiceTime(order.service_date, order.service_time_slot) 
-                    }));
+                // 格式化最近订单数据
+                if (data.dashboardData && data.dashboardData.recentOrders) {
+                    data.dashboardData.recentOrders = data.dashboardData.recentOrders.map(order => {
+                        // 格式化价格显示
+                        let priceDisplay = '待核价';
+                        if (order.final_price) {
+                            priceDisplay = parseFloat(order.final_price).toFixed(2);
+                        } else if (order.price_range) {
+                            priceDisplay = order.price_range;
+                        }
+                        
+                        return {
+                            ...order,
+                            status_text: this.mapStatusToText(order.status),
+                            service_time_display: this.formatServiceTime(order.service_date, order.service_time_slot),
+                            price_display: priceDisplay
+                        };
+                    });
                 }
                 this.setData({ 
                     dashboardData: data.dashboardData, 
@@ -97,16 +108,24 @@ Page({
     
     // --- Navigation ---
     goToTaskCenter: function() {
-        wx.navigateTo({ url: '/pages/order-list/order-list' });
+        wx.navigateTo({ 
+            url: '/subpackages/packageTech/pages/technician-orders/technician-orders' 
+        });
     },
     goToSchedule: function() {
-        wx.navigateTo({ url: '/pages/schedule/schedule' });
+        wx.navigateTo({ 
+            url: '/subpackages/packageTech/pages/schedule/schedule' 
+        });
     },
     goToIncome: function() {
-        wx.navigateTo({ url: '/pages/income/income' });
+        wx.navigateTo({ 
+            url: '/subpackages/packageTech/pages/income/income' 
+        });
     },
     goToRatings: function() {
-        wx.navigateTo({ url: '/pages/ratings/ratings' });
+        wx.navigateTo({ 
+            url: '/subpackages/packageTech/pages/ratings/ratings' 
+        });
     },
 
     // --- Order Actions ---
@@ -114,24 +133,27 @@ Page({
      * Show prompt before accepting order
      */
     acceptOrderPrompt: function(e) {
-        const order = e.currentTarget.dataset.order;
+        let order = e.currentTarget.dataset.order;
+        const id = e.currentTarget.dataset.id;
+        if (!order && id && this.data.dashboardData && this.data.dashboardData.recentOrders) {
+            order = this.data.dashboardData.recentOrders.find(o => o._id === id);
+        }
         if (!order || order.status !== 10) return;
 
-        this.setData({
-            modalOrderDetail: order,
-            showDetailModal: true
-        });
+        this.setData({ modalOrderDetail: order, showDetailModal: true });
     },
 
     /**
      * View order detail (Show Modal)
      */
     viewOrderDetail: function(e) {
-        const order = e.currentTarget.dataset.order;
-        this.setData({
-            modalOrderDetail: order,
-            showDetailModal: true
-        });
+        let order = e.currentTarget.dataset.order;
+        const id = e.currentTarget.dataset.id;
+        if (!order && id && this.data.dashboardData && this.data.dashboardData.recentOrders) {
+            order = this.data.dashboardData.recentOrders.find(o => o._id === id);
+        }
+        if (!order) return;
+        this.setData({ modalOrderDetail: order, showDetailModal: true });
     },
 
     // --- Modal Callbacks ---
