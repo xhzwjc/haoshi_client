@@ -1,97 +1,106 @@
-// pages/ratings/ratings.js
+const app = getApp();
+
+const DEFAULT_SUMMARY = {
+  averageScore: '0.0',
+  goodRatingRate: 0,
+  totalRatings: 0,
+  recentGoodRatings: 0
+};
+
+function buildTabsFromCounts(counts = {}) {
+  return [
+    { name: '全部', type: 'all', count: counts.all || 0 },
+    { name: '好评', type: 'good', count: counts.good || 0 },
+    { name: '中评', type: 'neutral', count: counts.neutral || 0 },
+    { name: '差评', type: 'bad', count: counts.bad || 0 }
+  ];
+}
+
 Page({
   data: {
-      // 模拟评分概览数据
-      summary: {
-          averageScore: '4.9',
-          goodRatingRate: 98,
-          totalRatings: 856,
-          recentGoodRatings: 52
-      },
-      tabs: [
-          { name: '全部', type: 'all', count: 580 },
-          { name: '好评', type: 'good', count: 560 },
-          { name: '中评', type: 'neutral', count: 15 },
-          { name: '差评', type: 'bad', count: 5 }
-      ],
-      activeTab: 'all',
-      loading: false,
-      
-      ratings: [ // 模拟评价数据
-          { id: 1, avatar: '/packageCommon/images/default_avatar.png', nickname: '客户***01', score: 5, time: '2025-10-25', content: '师傅专业，服务态度非常好，效率很高！', serviceName: '深度保洁', orderId: 'O20251025001', reply: '感谢您的认可，我们会继续努力！' },
-          { id: 2, avatar: '/packageCommon/images/default_avatar.png', nickname: '匿名用户', score: 4, time: '2025-10-20', content: '服务不错，就是时间稍微晚了一点。', serviceName: '洗衣机清洗', orderId: 'O20251020005', reply: '' },
-          { id: 3, avatar: '/packageCommon/images/default_avatar.png', nickname: '客户***03', score: 1, time: '2025-10-18', content: '清洁不彻底，不满意。', serviceName: '深度保洁', orderId: 'O20251018002', reply: '' },
-      ]
+    summary: { ...DEFAULT_SUMMARY },
+    tabs: buildTabsFromCounts(),
+    activeTab: 'all',
+    loading: false,
+    ratings: [],
+    hasMore: false
   },
 
-  onLoad: function (options) {
-      this.loadRatingSummary();
-      this.loadRatings('all');
+  onLoad() {
+    this.fetchRatings('all');
   },
 
-  loadRatingSummary: function() {
-      // Call cloud function to get summary stats
-      // wx.cloud.callFunction({ name: 'getRatingSummary' }).then(...)
-  },
+  async fetchRatings(type = 'all') {
+    if (this.data.loading) return;
 
-  loadRatings: function(type) {
-      this.setData({ loading: true, ratings: [] });
-      
-      // 1. Call cloud function to get ratings based on type ('all', 'good', 'neutral', 'bad')
-      // wx.cloud.callFunction({ name: 'getRatingsList', data: { type: type } }).then(...)
-      
-      // 2. Mock delay and data filtering
-      setTimeout(() => {
-          let mockData = [];
-          if (type === 'good' || type === 'all') {
-              mockData.push(this.data.ratings[0]);
-              mockData.push(this.data.ratings[1]);
-          }
-          if (type === 'neutral') {
-               mockData = [{ id: 4, avatar: '/images/default_avatar.png', nickname: '客户***04', score: 3, time: '2025-10-15', content: '还行吧，没什么亮点。', serviceName: '油烟机清洗', orderId: 'O20251015001', reply: '' }];
-          }
-          if (type === 'bad') {
-               mockData.push(this.data.ratings[2]);
-          }
+    this.setData({ loading: true, ratings: [] });
 
-          this.setData({
-              ratings: mockData,
-              loading: false
-          });
-      }, 800);
-  },
-  
-  onTabClick: function(e) {
-      const type = e.currentTarget.dataset.type;
-      this.setData({ activeTab: type });
-      this.loadRatings(type);
-  },
-
-  replyRating: function(e) {
-      const ratingId = e.currentTarget.dataset.id;
-      
-      wx.showModal({
-          title: '回复评价',
-          editable: true,
-          placeholderText: '请输入回复内容（200字以内）',
-          success: (res) => {
-              if (res.confirm && res.content) {
-                  wx.showLoading({ title: '提交中...' });
-                  // Call cloud function to submit reply
-                  // wx.cloud.callFunction({ name: 'submitReply', data: { ratingId: ratingId, content: res.content } }).then(...)
-                  
-                  // Mock success: Find and update the rating locally
-                  const index = this.data.ratings.findIndex(r => r.id === ratingId);
-                  if (index !== -1) {
-                       const updatedRating = { ...this.data.ratings[index], reply: res.content };
-                       this.data.ratings.splice(index, 1, updatedRating);
-                       this.setData({ ratings: this.data.ratings });
-                  }
-                  
-                  wx.hideLoading();
-                  wx.showToast({ title: '回复成功', icon: 'success' });
-              }
-          }
+    try {
+      const clientCloud = await app.waitClientCloudReady();
+      const res = await clientCloud.callFunction({
+        name: 'getTechnicianRatings',
+        data: { type }
       });
+
+      const result = res && res.result;
+      if (!result || result.code !== 0) {
+        throw new Error((result && result.message) || '获取评价失败');
+      }
+
+      const payload = result.data || {};
+      this.setData({
+        summary: { ...DEFAULT_SUMMARY, ...(payload.summary || {}) },
+        tabs: buildTabsFromCounts(payload.counts || {}),
+        ratings: payload.list || [],
+        hasMore: !!payload.hasMore,
+        loading: false
+      });
+    } catch (error) {
+      console.error('加载评价失败', error);
+      this.setData({ loading: false });
+      const message = error && error.message ? error.message : '评价加载失败';
+      wx.showToast({ title: message.length > 14 ? '评价加载失败' : message, icon: 'none' });
+    }
+  },
+
+  onTabClick(e) {
+    const type = e.currentTarget.dataset.type;
+    if (!type || type === this.data.activeTab) {
+      return;
+    }
+
+    this.setData({ activeTab: type });
+    this.fetchRatings(type);
+  },
+
+  replyRating(e) {
+    const ratingId = e.currentTarget.dataset.id;
+    if (!ratingId) return;
+
+    wx.showModal({
+      title: '回复评价',
+      editable: true,
+      placeholderText: '请输入回复内容（200字以内）',
+      success: (res) => {
+        if (res.confirm && res.content) {
+          const content = res.content.trim();
+          if (!content) {
+            wx.showToast({ title: '回复内容不能为空', icon: 'none' });
+            return;
+          }
+
+          const index = this.data.ratings.findIndex(item => item.id === ratingId);
+          if (index === -1) {
+            wx.showToast({ title: '评价已更新，请刷新', icon: 'none' });
+            return;
+          }
+
+          const updated = [...this.data.ratings];
+          updated[index] = { ...updated[index], reply: content };
+          this.setData({ ratings: updated });
+          wx.showToast({ title: '回复已记录', icon: 'success' });
+        }
+      }
+    });
   }
 });
