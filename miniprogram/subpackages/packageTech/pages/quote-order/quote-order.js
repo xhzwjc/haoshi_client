@@ -25,10 +25,10 @@ Page({
     this.setData({ remark: e.detail.value });
   },
 
-  handleSubmit() {
+  async handleSubmit() {
     if (this.data.submitting) return;
 
-    const price = parseFloat(this.data.finalPrice);
+    const price = Number(this.data.finalPrice);
     if (isNaN(price) || price <= 0) {
       wx.showToast({ title: '请输入正确的金额', icon: 'none' });
       return;
@@ -37,7 +37,7 @@ Page({
     const normalizedPrice = Math.round(price * 100) / 100;
 
     this.setData({ submitting: true });
-    wx.showLoading({ title: '提交中...' });
+    wx.showLoading({ title: '提交中...', mask: true });
 
     const payload = {
       orderId: this.data.orderId,
@@ -45,26 +45,39 @@ Page({
       remark: this.data.remark.trim()
     };
 
-    app.waitClientCloudReady().then(clientCloud => {
-      return clientCloud.callFunction({
+    try {
+      await app.waitClientCloudReady();
+      const res = await wx.cloud.callFunction({
         name: 'completeServiceAndQuote',
         data: payload
       });
-    }).then(res => {
+
       if (res.result && res.result.code === 0) {
         wx.showToast({ title: '提交成功', icon: 'success' });
+
+        const pages = getCurrentPages();
+        if (pages.length > 1) {
+          const prevPage = pages[pages.length - 2];
+          if (prevPage) {
+            prevPage._isDataDirty = true;
+          }
+        }
+
         setTimeout(() => {
           wx.navigateBack({ delta: 1 });
-        }, 500);
+        }, 400);
       } else {
-        wx.showToast({ title: (res.result && res.result.message) || '提交失败', icon: 'none' });
+        const message = (res.result && res.result.message) || '提交失败';
+        wx.showToast({ title: message, icon: 'none' });
       }
-    }).catch(err => {
+    } catch (err) {
       console.error('completeServiceAndQuote 调用失败', err);
-      wx.showToast({ title: '网络错误，请稍后再试', icon: 'none' });
-    }).finally(() => {
+      const rawMsg = (err && err.errMsg) ? err.errMsg.replace(/^cloud\.callFunction:fail\s*/, '') : '';
+      const displayMsg = rawMsg && rawMsg.length <= 20 ? rawMsg : '网络错误，请稍后再试';
+      wx.showToast({ title: displayMsg, icon: 'none' });
+    } finally {
       wx.hideLoading();
       this.setData({ submitting: false });
-    });
+    }
   }
 });

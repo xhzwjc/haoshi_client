@@ -1,67 +1,86 @@
 <view class="login-page">
-    <view class="header-box">
-        <image class="app-logo" src="/packageCommon/images/app-logo.png" mode="aspectFit"></image>
-        <text class="app-title">家政服务平台</text>
-        <text class="app-slogan">选择您的身份，开始服务</text>
+  <view class="bg-overlay"></view>
+  <view class="floating-circle circle-one"></view>
+  <view class="floating-circle circle-two"></view>
+
+  <view class="brand-section">
+    <image class="brand-logo" src="/packageCommon/images/app-logo.png" mode="aspectFit"></image>
+    <view class="brand-text">
+      <text class="brand-name">好室家政</text>
+      <text class="brand-slogan">臻选家政服务 · 定制品质生活</text>
+    </view>
+  </view>
+
+  <view class="login-card">
+    <view class="card-head">
+      <text class="card-title">欢迎回来</text>
+      <text class="card-subtitle">请选择登录身份以进入系统</text>
     </view>
 
-    <view class="role-selection-area">
-        <text class="selection-title">请选择登录身份</text>
-        
-        <!-- 客户身份卡片 -->
-        <view class="role-card client-card" bindtap="onSelectRole" data-role="CLIENT">
-            <view class="icon-circle">
-                <text class="iconfont icon-user"></text>
-            </view>
-            <view class="role-info">
-                <text class="role-name">我是客户</text>
-                <text class="role-desc">预约服务，管理家庭订单</text>
-            </view>
-            <text class="iconfont icon-arrow-right"></text>
+    <view class="role-options">
+      <view
+        class="role-option client {{selectedRole === 'CLIENT' ? 'active' : ''}}"
+        bindtap="onSelectRole"
+        data-role="CLIENT"
+      >
+        <view class="option-icon">
+          <image src="/packageCommon/images/icon_user_gray.png" mode="aspectFit"></image>
         </view>
+        <view class="option-content">
+          <view class="option-title">客户入口</view>
+          <view class="option-desc">预约家政服务、管理订单与地址</view>
+        </view>
+        <image class="option-arrow" src="/packageCommon/images/icon_arrow_right.png"></image>
+      </view>
 
-        <!-- 家政人员身份卡片 -->
-        <view class="role-card technician-card" bindtap="onSelectRole" data-role="TECHNICIAN">
-            <view class="icon-circle">
-                <text class="iconfont icon-worker"></text>
-            </view>
-            <view class="role-info">
-                <text class="role-name">我是家政人员</text>
-                <text class="role-desc">接收任务，管理工作收入</text>
-            </view>
-            <text class="iconfont icon-arrow-right"></text>
+      <view
+        class="role-option technician {{selectedRole === 'TECHNICIAN' ? 'active' : ''}}"
+        bindtap="onSelectRole"
+        data-role="TECHNICIAN"
+      >
+        <view class="option-icon">
+          <image src="/packageCommon/images/icon_master_gray.png" mode="aspectFit"></image>
         </view>
+        <view class="option-content">
+          <view class="option-title">师傅工作台</view>
+          <view class="option-desc">接收任务、安排服务并同步收入</view>
+        </view>
+        <image class="option-arrow" src="/packageCommon/images/icon_arrow_right.png"></image>
+      </view>
     </view>
 
+    <view class="card-footer">
+      <text>模拟账号仅用于演示，不会保存您的真实信息。</text>
+    </view>
+  </view>
 </view>
 
-<!-- 统一的账号密码输入模态框 (替代 alert/confirm) -->
 <view class="modal-mask" wx:if="{{showLoginModal}}"></view>
 <view class="login-modal" wx:if="{{showLoginModal}}">
-    <view class="modal-title">{{modalTitle}}</view>
-    <view class="modal-body">
-        <view class="input-group">
-            <text class="input-label">账号</text>
-            <input 
-                placeholder="{{inputPlaceholder}}" 
-                bindinput="onInputAccount"
-                value="{{account}}"
-                placeholder-class="input-placeholder"
-            />
-        </view>
-        <view class="input-group">
-            <text class="input-label">密码</text>
-            <input 
-                placeholder="请输入密码" 
-                password 
-                bindinput="onInputPassword"
-                value="{{password}}"
-                placeholder-class="input-placeholder"
-            />
-        </view>
+  <view class="modal-title">{{modalTitle}}</view>
+  <view class="modal-body">
+    <view class="input-group">
+      <text class="input-label">账号</text>
+      <input
+        placeholder="{{inputPlaceholder}}"
+        bindinput="onInputAccount"
+        value="{{account}}"
+        placeholder-class="input-placeholder"
+      />
     </view>
-    <view class="modal-footer">
-        <text class="modal-btn cancel-btn" bindtap="onCancelLogin">取消</text>
-        <text class="modal-btn confirm-btn" bindtap="onConfirmLogin">登录</text>
+    <view class="input-group">
+      <text class="input-label">密码</text>
+      <input
+        placeholder="请输入密码"
+        password
+        bindinput="onInputPassword"
+        value="{{password}}"
+        placeholder-class="input-placeholder"
+      />
     </view>
+  </view>
+  <view class="modal-footer">
+    <text class="modal-btn cancel-btn" bindtap="onCancelLogin">取消</text>
+    <text class="modal-btn confirm-btn" bindtap="onConfirmLogin">登录</text>
+  </view>
 </view>

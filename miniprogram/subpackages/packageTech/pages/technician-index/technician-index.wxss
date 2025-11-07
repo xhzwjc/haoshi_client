@@ -139,16 +139,52 @@ page { background-color: #F7F8FA; }
   box-sizing: border-box;
 }
 
-/* 4. Today's Data */
-.today-stats {
-  display: flex;
-  justify-content: space-around;
-  text-align: center;
+/* 4. Service Stats */
+.service-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
 }
-.today-stats .stat-item { flex: 1; }
-.today-stats .stat-item image { width: 52rpx; height: 52rpx; margin-bottom: 12rpx; }
-.today-stats .stat-item .value { font-size: 34rpx; font-weight: bold; margin-bottom: 6rpx; }
-.today-stats .stat-item .label { font-size: 24rpx; color: #666; }
+
+.service-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32rpx 28rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #eef4ff 0%, #f9fbff 100%);
+  box-shadow: 0 8rpx 24rpx rgba(60, 123, 255, 0.08);
+  min-height: 180rpx;
+}
+
+.service-stats .stat-item.pending {
+  background: linear-gradient(135deg, #eef4ff 0%, #f6f8ff 100%);
+  box-shadow: 0 8rpx 24rpx rgba(37, 91, 255, 0.12);
+}
+
+.service-stats .stat-item.completed {
+  background: linear-gradient(135deg, #e9fff3 0%, #f7fff9 100%);
+  box-shadow: 0 8rpx 24rpx rgba(16, 185, 129, 0.12);
+}
+
+.service-stats .stat-item image {
+  width: 56rpx;
+  height: 56rpx;
+  margin-bottom: 20rpx;
+}
+
+.service-stats .stat-item .value {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  color: #1f2d3d;
+}
+
+.service-stats .stat-item .label {
+  font-size: 26rpx;
+  color: #5c6b7a;
+  letter-spacing: 1rpx;
+}
 
 /* 5. Recent Orders */
 .recent-title .view-all {

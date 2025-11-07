@@ -38,36 +38,16 @@ exports.main = async (event, context) => {
       technician_openid: tech_openid 
     }).count();
     
-    // 今日维度
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    // 今日待服务：严格等于今日服务日期，且分配给我
-    const todayPendingServiceRes = await db.collection('bookings').where({
+    // 服务状态维度
+    const totalPendingServiceRes = await db.collection('bookings').where({
       status: 20,
-      technician_openid: tech_openid,
-      service_date: todayStr
+      technician_openid: tech_openid
     }).count();
-    
-    // 今日已完成 (状态60 且 分配给我的，今日更新的)
-    const todayCompletedRes = await db.collection('bookings').where({
+
+    const totalCompletedRes = await db.collection('bookings').where({
       status: 60,
-      technician_openid: tech_openid,
-      updated_at: db.command.gte(today)
+      technician_openid: tech_openid
     }).count();
-    
-    // 今日收入 (状态60且今日完成的订单金额)
-    const todayIncomeRes = await db.collection('bookings')
-      .where({
-        status: 60,
-        technician_openid: tech_openid,
-        updated_at: db.command.gte(today)
-      })
-      .get();
-    const todayIncome = todayIncomeRes.data.reduce((sum, order) => {
-      return sum + (parseFloat(order.final_price) || 0);
-    }, 0);
     
     // 本月收入 (状态60且本月完成的订单金额)
     const monthStart = new Date();
@@ -110,9 +90,8 @@ exports.main = async (event, context) => {
             title: `您有 ${pendingCountRes.total} 个新订单待处理`,
             desc: pendingCountRes.total > 0 ? '请及时接单，避免订单流失' : '暂无新订单'
         },
-        todayPendingService: todayPendingServiceRes.total,
-        todayCompleted: todayCompletedRes.total,
-        todayIncome: todayIncome.toFixed(2),
+        totalPendingService: totalPendingServiceRes.total,
+        totalCompleted: totalCompletedRes.total,
         recentOrders: recentOrdersRes.data
     };
 
