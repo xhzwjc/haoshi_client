@@ -166,9 +166,10 @@ Page({
   },
 
   handleListAction(e) {
-    const { action, id } = e.currentTarget.dataset;
-    const price = e.currentTarget.dataset.price;
-    e.stopPropagation();
+    const { action, id, price } = e.currentTarget.dataset;
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
 
     switch (action) {
       case '取消订单':
