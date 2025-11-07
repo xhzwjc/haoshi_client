@@ -1,3 +1,4 @@
+const app = getApp();
 const db = wx.cloud.database();
 
 Page({
@@ -37,7 +38,7 @@ Page({
     this.setData({ comment: e.detail.value });
   },
 
-  submitReview() {
+  async submitReview() {
     if (this.data.submitting) return;
 
     const { orderId, score, comment } = this.data;
@@ -53,62 +54,36 @@ Page({
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交中...', mask: true });
 
-    const review = {
-      rating: score,
-      comment: comment.trim(),
-      created_at: Date.now(),
-      user_openid: wx.getStorageSync('user_openid') || '',
-    };
+    try {
+      const currentOrder = this.data.order || {};
+      const clientCloud = await app.waitClientCloudReady();
+      const res = await clientCloud.callFunction({
+        name: 'submitServiceReview',
+        data: {
+          orderId,
+          rating: score,
+          comment: comment.trim(),
+          serviceId: currentOrder.service_id || '',
+          serviceName: currentOrder.service_name || '',
+          userOpenId: wx.getStorageSync('user_openid') || ''
+        }
+      });
 
-    const collectionName = 'service_reviews';
-    const addReviewRecord = () => db.collection(collectionName).add({
-      data: {
-        order_id: orderId,
-        ...review,
-        service_id: this.data.order?.service_id || '',
-        service_name: this.data.order?.service_name || '',
+      const result = res && res.result;
+      if (!result || result.code !== 0) {
+        throw new Error((result && result.message) || '提交失败');
       }
-    });
 
-    const ensureCollection = () => db.createCollection(collectionName)
-      .catch(createErr => {
-        if (createErr && createErr.errCode === -502006) {
-          return null;
-        }
-        throw createErr;
-      });
-
-    addReviewRecord()
-      .catch(err => {
-        if (err && err.errCode === -502005) {
-          return ensureCollection().then(() => addReviewRecord());
-        }
-        throw err;
-      })
-      .then(() => {
-        return db.collection('bookings').doc(orderId).update({
-          data: {
-            status: 60,
-            review,
-            review_submitted_at: db.serverDate(),
-            updated_at: db.serverDate()
-          }
-        });
-      })
-      .then(() => {
-        wx.hideLoading();
-        wx.showToast({ title: '感谢您的评价', icon: 'success' });
-        this.notifyPrevPage();
-        setTimeout(() => wx.navigateBack({ delta: 1 }), 800);
-      })
-      .catch(err => {
-        console.error('提交评价失败', err);
-        wx.hideLoading();
-        wx.showToast({ title: '提交失败，请稍后再试', icon: 'none' });
-      })
-      .finally(() => {
-        this.setData({ submitting: false });
-      });
+      wx.showToast({ title: '感谢您的评价', icon: 'success' });
+      this.notifyPrevPage();
+      setTimeout(() => wx.navigateBack({ delta: 1 }), 800);
+    } catch (err) {
+      console.error('提交评价失败', err);
+      wx.showToast({ title: '提交评价失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+      this.setData({ submitting: false });
+    }
   },
 
   notifyPrevPage() {

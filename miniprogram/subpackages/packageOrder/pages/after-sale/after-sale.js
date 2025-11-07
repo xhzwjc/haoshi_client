@@ -1,3 +1,4 @@
+const app = getApp();
 const db = wx.cloud.database();
 
 const AFTER_SALE_SCENES = {
@@ -72,7 +73,7 @@ Page({
     this.setData({ contactPhone: e.detail.value });
   },
 
-  submitRequest() {
+  async submitRequest() {
     if (this.data.submitting) return;
 
     const { orderId, selectedReason, description, contactPhone, scene } = this.data;
@@ -92,57 +93,36 @@ Page({
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交中...', mask: true });
 
-    const payload = {
-      order_id: orderId,
-      scene,
-      reason: selectedReason,
-      description: description.trim(),
-      contact_phone: contactPhone,
-      status: 'pending',
-      created_at: Date.now(),
-      user_openid: wx.getStorageSync('user_openid') || '',
-    };
-
-    const collectionName = 'after_sales';
-    const addRequest = () => db.collection(collectionName).add({ data: payload });
-    const ensureCollection = () => db.createCollection(collectionName)
-      .catch(createErr => {
-        if (createErr && createErr.errCode === -502006) {
-          return null;
+    try {
+      const clientCloud = await app.waitClientCloudReady();
+      const res = await clientCloud.callFunction({
+        name: 'submitAfterSale',
+        data: {
+          orderId,
+          scene,
+          reason: selectedReason,
+          description: description.trim(),
+          contactPhone,
+          userOpenId: wx.getStorageSync('user_openid') || ''
         }
-        throw createErr;
       });
 
-    addRequest()
-      .catch(err => {
-        if (err && err.errCode === -502005) {
-          return ensureCollection().then(() => addRequest());
-        }
-        throw err;
-      })
-      .then(() => {
-        return db.collection('bookings').doc(orderId).update({
-          data: {
-            after_sale_submitted_at: db.serverDate(),
-            after_sale_last_scene: scene,
-            updated_at: db.serverDate()
-          }
-        });
-      })
-      .then(() => {
-        wx.hideLoading();
-        wx.showToast({ title: '提交成功', icon: 'success' });
-        this.notifyPrevPage();
-        setTimeout(() => wx.navigateBack({ delta: 1 }), 800);
-      })
-      .catch(err => {
-        console.error('提交售后失败', err);
-        wx.hideLoading();
-        wx.showToast({ title: '提交失败，请稍后重试', icon: 'none' });
-      })
-      .finally(() => {
-        this.setData({ submitting: false });
-      });
+      const result = res && res.result;
+      if (!result || result.code !== 0) {
+        throw new Error((result && result.message) || '提交失败');
+      }
+
+      wx.showToast({ title: '提交成功', icon: 'success' });
+      this.notifyPrevPage();
+      setTimeout(() => wx.navigateBack({ delta: 1 }), 800);
+    } catch (err) {
+      console.error('提交售后失败', err);
+      const toastTitle = scene === 'amount' ? '提交金额问题失败' : '提交售后失败';
+      wx.showToast({ title: toastTitle, icon: 'none' });
+    } finally {
+      wx.hideLoading();
+      this.setData({ submitting: false });
+    }
   },
 
   notifyPrevPage() {

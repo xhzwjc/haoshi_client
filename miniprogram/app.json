@@ -60,7 +60,10 @@
         "pages/technician-index/technician-index",
         "pages/technician-orders/technician-orders",
         "pages/technician-detail/technician-detail",
-        "pages/quote-order/quote-order"
+        "pages/quote-order/quote-order",
+        "pages/income/income",
+        "pages/ratings/ratings",
+        "pages/schedule/schedule"
       ]
     },
     {
