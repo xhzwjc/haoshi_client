@@ -46,13 +46,11 @@
 
 .submit-btn {
   height: 88rpx;
+  line-height: 88rpx;
   border-radius: 44rpx;
   background: linear-gradient(135deg, #3c7bff, #255bff);
   color: #ffffff;
   font-size: 32rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .submit-btn[disabled] {
