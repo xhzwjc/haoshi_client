@@ -12,35 +12,30 @@ page { background-color: #F7F8FA; }
 .title-bar {
   display: flex;
   align-items: center;
-  justify-content: center; /* Center title */
+  justify-content: center;
   position: relative;
+}
+.title-text {
   font-size: 34rpx;
   font-weight: bold;
 }
-.logout-btn {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0 32rpx;
-  height: 60rpx;
-  line-height: 60rpx;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-  color: #4CAF50;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-}
-.logout-btn::after {
-  display: none;
-}
-.profile-icon {
-  width: 40rpx;
-  height: 40rpx;
+.title-actions {
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.title-actions .more-icon {
+  width: 32rpx;
+  height: 32rpx;
+  filter: invert(1);
 }
 .technician-info {
   display: flex;

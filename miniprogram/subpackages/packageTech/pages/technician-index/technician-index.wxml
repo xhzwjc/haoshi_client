@@ -2,9 +2,10 @@
   <view class="header-bg">
     <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
     <view class="title-bar" style="height: {{titleBarHeight}}px;">
-      <button class="logout-btn" bindtap="handleLogout">退出</button>
-      <text>师傅首页</text>
-      <image class="profile-icon" src="/packageCommon/images/default_avatar.png"></image>
+      <text class="title-text">师傅首页</text>
+      <view class="title-actions" bindtap="openMoreActions">
+        <image class="more-icon" src="/packageCommon/images/icon_more.png"></image>
+      </view>
     </view>
     <view class="technician-info">
       <view class="info-left">

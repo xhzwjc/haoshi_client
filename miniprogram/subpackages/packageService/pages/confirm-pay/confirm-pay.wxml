@@ -1,5 +1,21 @@
 <view class="page-booking">
-    
+    <view class="progress-bar">
+        <view class="step completed">
+            <view class="step-num">1</view>
+            <view class="step-text">填写信息</view>
+        </view>
+        <view class="step-line completed"></view>
+        <view class="step completed">
+            <view class="step-num">2</view>
+            <view class="step-text">选择时间</view>
+        </view>
+        <view class="step-line active"></view>
+        <view class="step active">
+            <view class="step-num">3</view>
+            <view class="step-text">确认支付</view>
+        </view>
+    </view>
+
     <view class="section-card total-summary">
         <view class="summary-header">价格范围</view>
         <view class="total-price-display">

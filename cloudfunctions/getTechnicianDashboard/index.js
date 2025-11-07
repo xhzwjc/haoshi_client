@@ -55,13 +55,17 @@ exports.main = async (event, context) => {
     monthStart.setHours(0, 0, 0, 0);
     const monthIncomeRes = await db.collection('bookings')
       .where({
-        status: 60,
+        status: _.in([50, 60]),
         technician_openid: tech_openid,
-        updated_at: db.command.gte(monthStart)
+        paid_at: _.gte(monthStart)
       })
       .get();
     const monthIncome = monthIncomeRes.data.reduce((sum, order) => {
-      return sum + (parseFloat(order.final_price) || 0);
+      const amount = parseFloat(order.final_price);
+      if (Number.isNaN(amount) || amount < 0) {
+        return sum;
+      }
+      return sum + amount;
     }, 0);
     
     // 3. 获取最近订单：所有待接单的订单 + 该技师接单后的所有订单（排除已取消和已拒单）

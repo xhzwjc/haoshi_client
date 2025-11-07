@@ -48,6 +48,17 @@ Page({
         this.loadDashboardData();
     },
 
+    openMoreActions() {
+        wx.showActionSheet({
+            itemList: ['退出登录'],
+            success: (res) => {
+                if (res.tapIndex === 0) {
+                    this.handleLogout();
+                }
+            }
+        });
+    },
+
     handleLogout() {
         wx.showModal({
             title: '确认退出',

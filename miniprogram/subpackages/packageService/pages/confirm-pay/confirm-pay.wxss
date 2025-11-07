@@ -8,8 +8,76 @@
   min-height: 100vh;
 }
 
-/* 移除原有的进度条样式 (不再需要) */
-.progress-bar { display: none; }
+/* 顶部进度条 */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #fff;
+  padding: 32rpx 48rpx;
+  margin-bottom: 20rpx;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #999;
+}
+
+.step-num {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background-color: #EBEDF0;
+  color: #C8C9CC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+
+.step-text {
+  font-size: 26rpx;
+}
+
+.step-line {
+  flex: 1;
+  height: 4rpx;
+  background-color: #EBEDF0;
+  margin: 0 16rpx;
+  position: relative;
+  top: -20rpx;
+}
+
+.step-line.completed {
+  background-color: rgba(64, 158, 255, 0.4);
+}
+
+.step-line.active {
+  background: linear-gradient(90deg, rgba(64, 158, 255, 0.4) 0%, #409EFF 100%);
+}
+
+.step.completed .step-num {
+  background-color: rgba(64, 158, 255, 0.25);
+  color: #409EFF;
+}
+
+.step.completed .step-text {
+  color: #409EFF;
+}
+
+.step.active .step-num {
+  background-color: #409EFF;
+  color: #fff;
+}
+
+.step.active .step-text {
+  color: #409EFF;
+  font-weight: bold;
+}
 
 
 /* === 通用卡片样式 === */
@@ -124,12 +192,15 @@
   gap: 20rpx; /* 增加按钮间距 */
 }
 .bottom-bar button {
-  height: 96rpx; 
-  line-height: 96rpx;
+  height: 96rpx;
   font-size: 34rpx; /* 略微减小字号以适应双按钮 */
-  border-radius: 12rpx; 
+  border-radius: 12rpx;
   margin: 0;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal;
 }
 
 /* 确认支付按钮 */

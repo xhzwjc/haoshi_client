@@ -1,5 +1,6 @@
 // /subpackages/packageService/pages/confirm-pay/confirm-pay.js
 const db = wx.cloud.database();
+const _ = db.command;
 
 Page({
     data: {
@@ -99,7 +100,9 @@ Page({
             data: finalData
         }).then(res => {
             wx.hideLoading();
-            
+
+            this.incrementServiceSales();
+
             wx.showModal({
                 title: '预约成功',
                 content: '您的预约已提交，请等待家政接单！',
@@ -119,6 +122,23 @@ Page({
             wx.hideLoading();
             wx.showToast({ title: '预约提交失败', icon: 'none' });
             console.error('提交订单失败:', err);
+        });
+    },
+
+    incrementServiceSales() {
+        const serviceId = this.data.bookingData && this.data.bookingData.service_id;
+        if (!serviceId) {
+            return;
+        }
+
+        db.collection('services').doc(serviceId).update({
+            data: {
+                sold: _.inc(1),
+                sales: _.inc(1),
+                updated_at: db.serverDate()
+            }
+        }).catch(err => {
+            console.warn('更新服务销量失败', err);
         });
     }
 });
