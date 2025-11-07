@@ -17,13 +17,15 @@ exports.main = async (event, context) => {
     return { code: -1, message: '金额不合法' };
   }
 
+  const normalizedPrice = Math.round(parsedPrice * 100) / 100;
+
   try {
     const updateRes = await db.collection('bookings')
       .where({ _id: orderId, status: 30, technician_openid: tech_openid })
       .update({
         data: {
           status: 35,
-          final_price: parsedPrice.toFixed(2),
+          final_price: normalizedPrice,
           technician_quote_remark: remark,
           completed_at: db.serverDate(),
           updated_at: db.serverDate()

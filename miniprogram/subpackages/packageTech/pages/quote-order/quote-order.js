@@ -34,12 +34,14 @@ Page({
       return;
     }
 
+    const normalizedPrice = Math.round(price * 100) / 100;
+
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交中...' });
 
     const payload = {
       orderId: this.data.orderId,
-      finalPrice: price,
+      finalPrice: normalizedPrice,
       remark: this.data.remark.trim()
     };
 
