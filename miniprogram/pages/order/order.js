@@ -171,16 +171,60 @@ Page({
     e.stopPropagation();
 
     switch (action) {
-      case '取消订单': this.cancelOrder(id); break;
-      case '联系师傅': wx.showToast({ title: '联系师傅...', icon: 'none' }); break;
-      case '确认金额': this.confirmPrice(id, price); break;
-      case '金额有误': wx.showToast({ title: '联系客服...', icon: 'none' }); break;
-      case '立即支付': this.payNow(id); break;
-      case '评价': wx.showToast({ title: '跳转评价页...', icon: 'none' }); break;
-      case '申请售后': wx.showToast({ title: '联系客服...', icon: 'none' }); break;
-      case '查看详情': this.toOrderDetail(e); break;
-      default: wx.showToast({ title: '未知操作', icon: 'none' });
+      case '取消订单':
+        this.cancelOrder(id);
+        break;
+      case '联系师傅':
+        this.contactMasterFromList(id);
+        break;
+      case '确认金额':
+        this.confirmPrice(id, price);
+        break;
+      case '金额有误':
+        this.goToAfterSale(id, 'amount');
+        break;
+      case '立即支付':
+        this.payNow(id);
+        break;
+      case '评价服务':
+        this.goToReview(id);
+        break;
+      case '申请售后':
+        this.goToAfterSale(id, 'afterSale');
+        break;
+      case '查看详情':
+        this.toOrderDetail(e);
+        break;
+      default:
+        wx.showToast({ title: '未知操作', icon: 'none' });
     }
+  },
+
+  contactMasterFromList(orderId) {
+    const order = this.data.filteredOrders.find(item => item._id === orderId);
+    const phone = order?.master_phone || order?.masterPhone;
+    if (!phone) {
+      wx.showToast({ title: '暂无师傅电话', icon: 'none' });
+      return;
+    }
+    wx.makePhoneCall({
+      phoneNumber: phone.toString(),
+      fail: () => {
+        wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' });
+      }
+    });
+  },
+
+  goToAfterSale(orderId, scene = 'afterSale') {
+    wx.navigateTo({
+      url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
+    });
+  },
+
+  goToReview(orderId) {
+    wx.navigateTo({
+      url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
+    });
   },
 
   cancelOrder(id) {

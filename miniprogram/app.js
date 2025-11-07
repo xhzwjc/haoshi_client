@@ -26,6 +26,7 @@ App({
     clientIndexUrl: '/pages/index/index',
     technicianIndexUrl: '/subpackages/packageTech/pages/technician-index/technician-index',
     loginUrl: '/pages/login/login', // 统一登录页
+    servicePhone: '400-889-8898',
   },
 
   /**

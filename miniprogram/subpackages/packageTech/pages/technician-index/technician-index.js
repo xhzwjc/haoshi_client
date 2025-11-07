@@ -20,9 +20,8 @@ Page({
                 title: '您有3个新订单待处理',
                 desc: '请及时接单，避免订单流失'
             },
-            todayPendingService: 2,
-            todayCompleted: 3,
-            todayIncome: 540,
+            totalPendingService: 8,
+            totalCompleted: 312,
             recentOrders: [ // Example recent orders
                 { _id: 'order1', service_name: '深度保洁', status: 20, status_text: '待服务', service_time_display: '今天 14:00', address: '幸福路123号', final_price: 299 },
                 { _id: 'order2', service_name: '油烟机清洗', status: 10, status_text: '待接单', service_time_display: '今天 16:00', address: '建设路456号', price_range: '120-150' },
@@ -89,9 +88,14 @@ Page({
                         };
                     });
                 }
-                this.setData({ 
-                    dashboardData: data.dashboardData, 
-                    technicianInfo: data.technicianInfo 
+                const dashboardData = Object.assign({
+                    totalPendingService: 0,
+                    totalCompleted: 0
+                }, data.dashboardData || {});
+
+                this.setData({
+                    dashboardData,
+                    technicianInfo: data.technicianInfo
                 });
             } else {
                 wx.showToast({ title: (res.result && res.result.message) || '加载失败', icon: 'none' });

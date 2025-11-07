@@ -85,7 +85,7 @@
               </block>
               <block wx:if="{{item.status === 50}}">
                  <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
-                <button class="btn btn-dark" data-action="评价" data-id="{{item._id}}" bindtap="handleListAction">评价</button>
+                <button class="btn btn-dark" data-action="评价服务" data-id="{{item._id}}" bindtap="handleListAction">评价服务</button>
               </block>
               <block wx:if="{{item.status === 60}}">
                 <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>

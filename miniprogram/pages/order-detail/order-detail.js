@@ -154,18 +154,19 @@ Page({
                 this.payNow(orderId);
                 break;
             case '联系客服':
+                this.contactSupport();
+                break;
             case '金额有误':
+                this.goToAfterSale('amount');
+                break;
             case '申请售后':
-                // 建议使用 open-type="contact" 或 wx.makePhoneCall
-                wx.showToast({ title: `唤起 ${action} 服务`, icon: 'none' });
+                this.goToAfterSale('afterSale');
                 break;
             case '联系师傅':
-                // wx.makePhoneCall(this.data.orderDetail.master_phone)
-                wx.showToast({ title: '联系师傅...', icon: 'none' });
+                this.contactMaster();
                 break;
             case '评价服务':
-                // 跳转到评价页
-                wx.showToast({ title: '跳转评价页...', icon: 'none' });
+                this.goToReview();
                 break;
             case '再次预约':
                 // 跳转到服务详情页
@@ -235,7 +236,7 @@ Page({
      */
     payNow: function(id) {
         wx.showLoading({ title: '正在唤起支付...' });
-        
+
         // 【模拟支付成功】
         setTimeout(() => {
           db.collection('bookings').doc(id).update({
@@ -251,6 +252,45 @@ Page({
             wx.showToast({ title: '支付失败', icon: 'none' });
           });
         }, 1000);
+    },
+
+    contactMaster() {
+        const phone = this.data.orderDetail?.master_phone || this.data.orderDetail?.masterPhone;
+        if (!phone) {
+            wx.showToast({ title: '暂无师傅电话', icon: 'none' });
+            return;
+        }
+        wx.makePhoneCall({
+            phoneNumber: phone.toString(),
+            fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
+        });
+    },
+
+    contactSupport() {
+        const app = getApp();
+        const phone = app?.globalData?.servicePhone;
+        if (!phone) {
+            wx.showToast({ title: '暂未配置客服', icon: 'none' });
+            return;
+        }
+        wx.makePhoneCall({
+            phoneNumber: phone,
+            fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
+        });
+    },
+
+    goToAfterSale(scene = 'afterSale') {
+        const orderId = this.data.orderId;
+        wx.navigateTo({
+            url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
+        });
+    },
+
+    goToReview() {
+        const orderId = this.data.orderId;
+        wx.navigateTo({
+            url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
+        });
     },
 
     // 复制订单编号功能

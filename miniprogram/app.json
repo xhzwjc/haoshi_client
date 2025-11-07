@@ -59,7 +59,15 @@
       "pages": [
         "pages/technician-index/technician-index",
         "pages/technician-orders/technician-orders",
-        "pages/technician-detail/technician-detail"
+        "pages/technician-detail/technician-detail",
+        "pages/quote-order/quote-order"
+      ]
+    },
+    {
+      "root": "subpackages/packageOrder",
+      "pages": [
+        "pages/after-sale/after-sale",
+        "pages/rate-order/rate-order"
       ]
     }
   ],

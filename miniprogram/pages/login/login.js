@@ -6,6 +6,7 @@ Page({
         modalTitle: '客户登录',
         inputPlaceholder: '请输入手机号',
         currentRole: '', // 'CLIENT' or 'TECHNICIAN'
+        selectedRole: '',
         account: '',
         password: ''
     },
@@ -18,6 +19,7 @@ Page({
             modalTitle: role === 'CLIENT' ? '客户登录' : '家政人员登录',
             inputPlaceholder: role === 'CLIENT' ? '请输入任意手机号' : '请输入任意工号/手机号',
             showLoginModal: true,
+            selectedRole: role,
             account: '',
             password: ''
         });
@@ -27,7 +29,7 @@ Page({
     onInputAccount(e) { this.setData({ account: e.detail.value }); },
     onInputPassword(e) { this.setData({ password: e.detail.value }); },
 
-    onCancelLogin() { this.setData({ showLoginModal: false }); },
+    onCancelLogin() { this.setData({ showLoginModal: false, selectedRole: '' }); },
 
     // 3. [Core Logic] Confirm Login (Simulated Success)
     async onConfirmLogin() {
@@ -55,10 +57,12 @@ Page({
         // Store identity info locally
         wx.setStorageSync('user_token', mockToken);
         wx.setStorageSync('user_role', currentRole); // 'CLIENT' or 'TECHNICIAN'
-        wx.setStorageSync('user_openid', mockOpenid); 
-        
+        wx.setStorageSync('user_openid', mockOpenid);
+
         wx.showToast({ title: '登录成功 (测试模式)', icon: 'success' });
-        
+
+        this.setData({ selectedRole: '' });
+
         // 4. Redirect to the corresponding home page based on role
         this.redirectToHomePage(currentRole);
 

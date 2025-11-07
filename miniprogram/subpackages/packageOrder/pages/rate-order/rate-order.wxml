@@ -1,0 +1,36 @@
+<view class="rate-page">
+  <view class="card order-card" wx:if="{{order}}">
+    <view class="title">服务评价</view>
+    <view class="order-name">{{order.service_name || '家政服务'}}</view>
+    <view class="order-info">服务时间：{{order.service_date}} {{order.service_time_slot}}</view>
+    <view class="order-info">服务师傅：{{order.master_info || '待分配'}}</view>
+  </view>
+
+  <view class="card score-card">
+    <view class="title">服务评分</view>
+    <view class="stars">
+      <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+        <text
+          class="star {{item <= score ? 'active' : ''}}"
+          data-score="{{item}}"
+          bindtap="changeScore"
+        >★</text>
+      </block>
+    </view>
+    <view class="score-label">{{score}} 分</view>
+  </view>
+
+  <view class="card comment-card">
+    <view class="title">评价内容</view>
+    <textarea
+      class="comment"
+      placeholder="分享一下本次服务体验吧～"
+      maxlength="500"
+      value="{{comment}}"
+      bindinput="onCommentInput"
+      auto-height
+    />
+  </view>
+
+  <button class="submit-btn" type="primary" loading="{{submitting}}" bindtap="submitReview">提交评价</button>
+</view>
