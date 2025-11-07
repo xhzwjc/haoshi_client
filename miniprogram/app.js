@@ -98,5 +98,22 @@ App({
         }, 100);
       }
     });
+  },
+
+  logout() {
+    try {
+      wx.removeStorageSync('user_token');
+      wx.removeStorageSync('user_role');
+      wx.removeStorageSync('user_openid');
+      wx.removeStorageSync('client_profile_cache');
+    } catch (err) {
+      console.warn('清理登录状态失败', err);
+    }
+
+    wx.showToast({ title: '已退出登录', icon: 'none' });
+
+    setTimeout(() => {
+      wx.reLaunch({ url: this.globalData.loginUrl });
+    }, 300);
   }
 })

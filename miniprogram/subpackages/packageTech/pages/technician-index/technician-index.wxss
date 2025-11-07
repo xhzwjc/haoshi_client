@@ -17,6 +17,23 @@ page { background-color: #F7F8FA; }
   font-size: 34rpx;
   font-weight: bold;
 }
+.logout-btn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 32rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #4CAF50;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+}
+.logout-btn::after {
+  display: none;
+}
 .profile-icon {
   width: 40rpx;
   height: 40rpx;

@@ -78,7 +78,8 @@ Page({
         // 构造要写入数据库的最终数据
         const finalData = {
             ...this.data.bookingData,
-            
+            client_openid: wx.getStorageSync('user_openid') || '',
+
             // 【修改】 记录价格范围，而非固定价格
             price_range: this.data.orderSummary.total_price_display, // e.g., "100-250"
             service_unit: this.data.orderSummary.service_unit,

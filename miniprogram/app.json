@@ -72,6 +72,14 @@
         "pages/after-sale/after-sale",
         "pages/rate-order/rate-order"
       ]
+    },
+    {
+      "root": "subpackages/packageProfile",
+      "pages": [
+        "pages/personal-info/personal-info",
+        "pages/settings/settings",
+        "pages/feedback/feedback"
+      ]
     }
   ],
   "style": "v2",

@@ -1,0 +1,48 @@
+<view class="page-personal-info">
+  <view class="card avatar-card">
+    <view class="avatar-row">
+      <text class="label">头像</text>
+      <view class="avatar-action" bindtap="chooseAvatar">
+        <image class="avatar" src="{{profile.avatar || defaultAvatar}}"></image>
+        <view class="avatar-text">
+          <text>更换头像</text>
+          <text class="hint">支持上传1张清晰照片</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card form-card">
+    <view class="form-item">
+      <text class="label">姓名</text>
+      <input class="input" placeholder="请输入姓名" value="{{profile.name}}" bindinput="onInputChange" data-field="name"></input>
+    </view>
+    <view class="form-item">
+      <text class="label">手机号</text>
+      <input class="input" type="number" placeholder="请输入常用手机号" maxlength="11" value="{{profile.phone}}" bindinput="onInputChange" data-field="phone"></input>
+    </view>
+    <view class="form-item">
+      <text class="label">性别</text>
+      <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+        <view class="picker-value">{{profile.gender || '保密'}}</view>
+      </picker>
+    </view>
+    <view class="form-item">
+      <text class="label">生日</text>
+      <picker mode="date" value="{{profile.birthday}}" start="1950-01-01" end="2100-12-31" bindchange="onDateChange">
+        <view class="picker-value">{{profile.birthday || '请选择生日'}}</view>
+      </picker>
+    </view>
+    <view class="form-item textarea-item">
+      <text class="label">常用地址</text>
+      <textarea class="textarea" placeholder="请输入常用服务地址或备注" value="{{profile.address}}" bindinput="onInputChange" data-field="address" maxlength="120" auto-height></textarea>
+    </view>
+  </view>
+
+  <view class="tips">
+    <image src="/packageCommon/images/icon_notification.png"></image>
+    <view class="tip-text">完整信息有助于师傅更快联系您，请确保手机号准确。</view>
+  </view>
+
+  <button class="save-btn" type="primary" loading="{{saving}}" disabled="{{saving}}" bindtap="submitProfile">保存并同步</button>
+</view>

@@ -6,7 +6,8 @@ async function ensureCollection(collectionName) {
   try {
     await db.createCollection(collectionName);
   } catch (error) {
-    if (!(error && error.errCode === -502006)) {
+    const alreadyExistsCodes = new Set([-502006, -501001]);
+    if (!(error && alreadyExistsCodes.has(error.errCode))) {
       throw error;
     }
   }

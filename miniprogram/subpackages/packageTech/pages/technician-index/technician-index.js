@@ -48,6 +48,20 @@ Page({
         this.loadDashboardData();
     },
 
+    handleLogout() {
+        wx.showModal({
+            title: '确认退出',
+            content: '确定要退出当前账号吗？',
+            confirmText: '退出',
+            cancelText: '取消',
+            success: (res) => {
+                if (res.confirm) {
+                    app.logout();
+                }
+            }
+        });
+    },
+
     /**
      * 【核心修改】 Load dashboard data from cloud function
      * 使用 app.waitClientCloudReady() 确保环境初始化完成
