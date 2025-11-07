@@ -58,10 +58,14 @@ Page({
   },
 
   createAddress() {
+    const isFirst = !this.data.addresses.length;
     this.setData({
       showEditor: true,
       editingId: '',
-      form: defaultForm()
+      form: {
+        ...defaultForm(),
+        is_default: isFirst
+      }
     });
   },
 

@@ -1,6 +1,5 @@
 <view class="login-page">
-  <view class="gradient-bg"></view>
-  <view class="noise"></view>
+  <view class="light-gradient"></view>
 
   <view class="login-container">
     <view class="brand-block">
@@ -12,8 +11,8 @@
     </view>
 
     <view class="headline">
-      <text class="headline-main">轻盈的登录体验</text>
-      <text class="headline-sub">选择角色进入对应的工作流，所有账号均为演示环境。</text>
+      <text class="headline-main">选择你的角色</text>
+      <text class="headline-sub">登录后即可同步个人资料、常用地址与全部订单数据。</text>
     </view>
 
     <view class="role-panel">
@@ -29,7 +28,7 @@
       </view>
     </view>
 
-    <view class="statement">模拟登录仅用于产品演示，不会产生真实扣费。</view>
+    <view class="statement">模拟登录仅用于产品演示，不会产生真实扣费。新客户首次登录请使用默认密码 6666。</view>
   </view>
 </view>
 
@@ -38,7 +37,7 @@
   <view class="modal-card">
     <view class="modal-header">
       <text class="modal-title">{{modalTitle}}</text>
-      <text class="modal-subtitle">请输入任意账号完成测试登录</text>
+      <text class="modal-subtitle">账号需为已填写资料的手机号，首次登录默认密码 6666</text>
     </view>
     <view class="modal-body">
       <view class="input-group">
@@ -47,7 +46,7 @@
       </view>
       <view class="input-group">
         <text class="input-label">密码</text>
-        <input placeholder="请输入密码" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+        <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
       </view>
     </view>
     <view class="modal-actions">

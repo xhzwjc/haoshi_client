@@ -37,7 +37,12 @@ exports.main = async () => {
     await ensureCollection(PROFILE_COLLECTION);
 
     const profileRes = await db.collection(PROFILE_COLLECTION)
-      .where({ _openid: OPENID })
+      .where(
+        _.or([
+          { _openid: OPENID },
+          { client_openid: OPENID }
+        ])
+      )
       .limit(1)
       .get();
 

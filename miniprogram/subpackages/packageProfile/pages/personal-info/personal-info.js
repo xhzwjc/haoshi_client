@@ -124,8 +124,23 @@ Page({
       });
 
       if (res.result && res.result.code === 0) {
-        const cached = wx.getStorageSync('client_profile_cache') || {};
-        wx.setStorageSync('client_profile_cache', { ...cached, ...payload });
+        try {
+          const latest = await clientCloud.callFunction({ name: 'getClientProfile' });
+          if (latest.result && latest.result.code === 0) {
+            const freshProfile = latest.result.data || {};
+            wx.setStorageSync('client_profile_cache', freshProfile);
+            if (freshProfile.phone) {
+              wx.setStorageSync('client_account_phone', freshProfile.phone);
+            }
+          } else {
+            const cached = wx.getStorageSync('client_profile_cache') || {};
+            wx.setStorageSync('client_profile_cache', { ...cached, ...payload });
+          }
+        } catch (refreshErr) {
+          console.warn('刷新个人资料缓存失败', refreshErr);
+          const cached = wx.getStorageSync('client_profile_cache') || {};
+          wx.setStorageSync('client_profile_cache', { ...cached, ...payload });
+        }
         wx.showToast({ title: '保存成功', icon: 'success' });
         setTimeout(() => {
           wx.navigateBack({ delta: 1 });

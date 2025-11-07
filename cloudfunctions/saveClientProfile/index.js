@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
+const _ = db.command;
 
 const PROFILE_COLLECTION = 'client_profiles';
 
@@ -21,7 +22,15 @@ exports.main = async (event) => {
     return { code: -1, message: '未登录' };
   }
 
-  const { name, phone, gender = '保密', birthday = '', address = '', avatar = '' } = event || {};
+  const {
+    name,
+    phone,
+    gender = '保密',
+    birthday = '',
+    address = '',
+    avatar = '',
+    password
+  } = event || {};
 
   if (!name || !String(name).trim()) {
     return { code: -1, message: '姓名不能为空' };
@@ -44,18 +53,59 @@ exports.main = async (event) => {
   try {
     await ensureCollection(PROFILE_COLLECTION);
 
-    const existing = await db.collection(PROFILE_COLLECTION)
-      .where({ _openid: OPENID })
+    const existingRes = await db.collection(PROFILE_COLLECTION)
+      .where(
+        _.or([
+          { _openid: OPENID },
+          { phone: normalizedData.phone }
+        ])
+      )
       .limit(1)
       .get();
 
-    if (existing.data && existing.data.length > 0) {
-      const docId = existing.data[0]._id;
-      await db.collection(PROFILE_COLLECTION).doc(docId).update({ data: normalizedData });
+    const existingDoc = existingRes.data && existingRes.data.length > 0 ? existingRes.data[0] : null;
+
+    if (existingDoc) {
+      const duplicate = await db.collection(PROFILE_COLLECTION)
+        .where({
+          phone: normalizedData.phone,
+          _id: _.neq(existingDoc._id)
+        })
+        .count();
+
+      if (duplicate.total > 0) {
+        return { code: -1, message: '该手机号已被其他账号使用' };
+      }
+    } else {
+      const duplicate = await db.collection(PROFILE_COLLECTION)
+        .where({
+          phone: normalizedData.phone,
+          _openid: _.neq(OPENID)
+        })
+        .count();
+
+      if (duplicate.total > 0) {
+        return { code: -1, message: '该手机号已被其他账号使用' };
+      }
+    }
+
+    if (password && String(password).trim()) {
+      normalizedData.password = String(password).trim();
+    }
+
+    if (existingDoc) {
+      const docId = existingDoc._id;
+      await db.collection(PROFILE_COLLECTION).doc(docId).update({
+        data: {
+          ...normalizedData,
+          client_openid: OPENID
+        }
+      });
     } else {
       await db.collection(PROFILE_COLLECTION).add({
         data: {
           ...normalizedData,
+          password: password && String(password).trim() ? String(password).trim() : '6666',
           client_openid: OPENID,
           created_at: db.serverDate()
         }
