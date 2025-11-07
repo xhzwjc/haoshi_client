@@ -16,12 +16,16 @@ async function ensureCollection() {
   }
 }
 
-async function listAddresses(openid) {
-  await ensureCollection();
-  const matcher = _.or([
+function ownerMatcher(openid) {
+  return _.or([
     { _openid: openid },
     { client_openid: openid }
   ]);
+}
+
+async function listAddresses(openid) {
+  await ensureCollection();
+  const matcher = ownerMatcher(openid);
   const res = await db.collection(COLLECTION)
     .where(matcher)
     .orderBy('is_default', 'desc')
@@ -68,7 +72,12 @@ async function saveAddress(openid, payload = {}) {
 
   if (id) {
     const updateRes = await db.collection(COLLECTION)
-      .where({ _id: id, _openid: openid })
+      .where(
+        _.and([
+          { _id: id },
+          ownerMatcher(openid)
+        ])
+      )
       .update({ data: normalized });
 
     if (!updateRes.stats || updateRes.stats.updated === 0) {
@@ -86,10 +95,12 @@ async function saveAddress(openid, payload = {}) {
 
   if (normalized.is_default) {
     await db.collection(COLLECTION)
-      .where({
-        _openid: openid,
-        _id: _.neq(docId)
-      })
+      .where(
+        _.and([
+          ownerMatcher(openid),
+          { _id: _.neq(docId) }
+        ])
+      )
       .update({ data: { is_default: false } });
   }
 
@@ -102,7 +113,12 @@ async function deleteAddress(openid, id) {
   }
   await ensureCollection();
   const res = await db.collection(COLLECTION)
-    .where({ _id: id, _openid: openid })
+    .where(
+      _.and([
+        { _id: id },
+        ownerMatcher(openid)
+      ])
+    )
     .remove();
   if (!res.stats || res.stats.removed === 0) {
     return { code: -1, message: '地址不存在或已删除' };
@@ -116,7 +132,12 @@ async function setDefault(openid, id) {
   }
   await ensureCollection();
   const res = await db.collection(COLLECTION)
-    .where({ _id: id, _openid: openid })
+    .where(
+      _.and([
+        { _id: id },
+        ownerMatcher(openid)
+      ])
+    )
     .update({ data: { is_default: true, updated_at: db.serverDate() } });
 
   if (!res.stats || res.stats.updated === 0) {
@@ -124,10 +145,12 @@ async function setDefault(openid, id) {
   }
 
   await db.collection(COLLECTION)
-    .where({
-      _openid: openid,
-      _id: _.neq(id)
-    })
+    .where(
+      _.and([
+        ownerMatcher(openid),
+        { _id: _.neq(id) }
+      ])
+    )
     .update({ data: { is_default: false } });
 
   return { code: 0, message: 'success' };
