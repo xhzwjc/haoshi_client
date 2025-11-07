@@ -177,8 +177,11 @@ page {
   font-size: 28rpx;
   border-radius: 48rpx;
   height: 96rpx;
-  line-height: 96rpx;
+  line-height: normal;
   box-shadow: 0 10rpx 24rpx rgba(31,45,61,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .settings-btn::after {

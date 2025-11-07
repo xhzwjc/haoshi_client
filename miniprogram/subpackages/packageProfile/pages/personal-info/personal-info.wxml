@@ -23,19 +23,19 @@
     </view>
     <view class="form-item">
       <text class="label">性别</text>
-      <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+      <picker class="picker-field" mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
         <view class="picker-value">{{profile.gender || '保密'}}</view>
       </picker>
     </view>
     <view class="form-item">
       <text class="label">生日</text>
-      <picker mode="date" value="{{profile.birthday}}" start="1950-01-01" end="2100-12-31" bindchange="onDateChange">
+      <picker class="picker-field" mode="date" value="{{profile.birthday}}" start="1950-01-01" end="2100-12-31" bindchange="onDateChange">
         <view class="picker-value">{{profile.birthday || '请选择生日'}}</view>
       </picker>
     </view>
     <view class="form-item textarea-item">
       <text class="label">常用地址</text>
-      <textarea class="textarea" placeholder="请输入常用服务地址或备注" value="{{profile.address}}" bindinput="onInputChange" data-field="address" maxlength="120" auto-height></textarea>
+      <textarea class="textarea" placeholder="请输入常用服务地址或备注" placeholder-class="textarea-ph" value="{{profile.address}}" bindinput="onInputChange" data-field="address" maxlength="120" auto-height></textarea>
     </view>
   </view>
 

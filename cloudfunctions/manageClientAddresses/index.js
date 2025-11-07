@@ -18,8 +18,12 @@ async function ensureCollection() {
 
 async function listAddresses(openid) {
   await ensureCollection();
+  const matcher = _.or([
+    { _openid: openid },
+    { client_openid: openid }
+  ]);
   const res = await db.collection(COLLECTION)
-    .where({ _openid: openid })
+    .where(matcher)
     .orderBy('is_default', 'desc')
     .orderBy('updated_at', 'desc')
     .get();

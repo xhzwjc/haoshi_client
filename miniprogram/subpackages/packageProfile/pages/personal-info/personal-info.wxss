@@ -66,6 +66,13 @@ page {
   border-bottom: 1rpx solid #eef2f8;
 }
 
+.form-card .form-item .picker-field {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .form-card .form-item:last-child {
   border-bottom: none;
 }
@@ -76,6 +83,10 @@ page {
   text-align: right;
   font-size: 28rpx;
   color: #1f2d3d;
+}
+
+.picker-value {
+  width: 100%;
 }
 
 .input {
@@ -91,8 +102,14 @@ page {
   min-height: 120rpx;
   font-size: 28rpx;
   color: #1f2d3d;
-  text-align: left;
+  text-align: right;
   line-height: 1.6;
+  padding-right: 8rpx;
+}
+
+.textarea-ph {
+  color: #b6c0ce;
+  text-align: right;
 }
 
 .tips {
@@ -115,8 +132,11 @@ page {
   color: #fff;
   font-size: 32rpx;
   height: 96rpx;
-  line-height: 96rpx;
+  line-height: normal;
   margin: 0 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .save-btn::after {

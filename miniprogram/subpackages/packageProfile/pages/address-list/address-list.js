@@ -43,12 +43,14 @@ Page({
           tag: item.tag || ''
         }));
         this.setData({ addresses: list });
+        return list;
       } else {
         throw new Error((res.result && res.result.message) || '加载失败');
       }
     } catch (err) {
       console.error('加载地址失败', err);
       wx.showToast({ title: '地址加载失败', icon: 'none' });
+      return [];
     } finally {
       this.setData({ loading: false });
       if (isPullDown) {
@@ -141,8 +143,12 @@ Page({
 
       if (res.result && res.result.code === 0) {
         wx.showToast({ title: '保存成功', icon: 'success' });
-        this.setData({ showEditor: false });
-        this.fetchAddresses();
+        await this.fetchAddresses();
+        this.setData({
+          showEditor: false,
+          editingId: '',
+          form: defaultForm()
+        });
       } else {
         throw new Error((res.result && res.result.message) || '保存失败');
       }

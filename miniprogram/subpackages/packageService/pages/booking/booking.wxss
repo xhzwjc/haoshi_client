@@ -111,14 +111,21 @@ page {
   color: #1677FF;
   background: rgba(22, 119, 255, 0.08);
   font-size: 26rpx;
-  line-height: 88rpx;
   height: 88rpx;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tool-btn.secondary {
   border-color: #B1B6BD;
   color: #5A6270;
   background: #fff;
+}
+
+.tool-btn::after {
+  display: none;
 }
 
 .form-section {

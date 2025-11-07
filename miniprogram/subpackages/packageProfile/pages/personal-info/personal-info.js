@@ -127,19 +127,36 @@ Page({
         try {
           const latest = await clientCloud.callFunction({ name: 'getClientProfile' });
           if (latest.result && latest.result.code === 0) {
-            const freshProfile = latest.result.data || {};
+            const freshProfile = { ...DEFAULT_PROFILE, ...(latest.result.data || {}) };
+            const genderIndex = this.data.genderOptions.indexOf(freshProfile.gender || '保密');
+            this.setData({
+              profile: freshProfile,
+              genderIndex: genderIndex >= 0 ? genderIndex : 0
+            });
             wx.setStorageSync('client_profile_cache', freshProfile);
             if (freshProfile.phone) {
               wx.setStorageSync('client_account_phone', freshProfile.phone);
             }
           } else {
             const cached = wx.getStorageSync('client_profile_cache') || {};
-            wx.setStorageSync('client_profile_cache', { ...cached, ...payload });
+            const merged = { ...cached, ...payload };
+            const genderIndex = this.data.genderOptions.indexOf(merged.gender || '保密');
+            this.setData({
+              profile: merged,
+              genderIndex: genderIndex >= 0 ? genderIndex : 0
+            });
+            wx.setStorageSync('client_profile_cache', merged);
           }
         } catch (refreshErr) {
           console.warn('刷新个人资料缓存失败', refreshErr);
           const cached = wx.getStorageSync('client_profile_cache') || {};
-          wx.setStorageSync('client_profile_cache', { ...cached, ...payload });
+          const merged = { ...cached, ...payload };
+          const genderIndex = this.data.genderOptions.indexOf(merged.gender || '保密');
+          this.setData({
+            profile: merged,
+            genderIndex: genderIndex >= 0 ? genderIndex : 0
+          });
+          wx.setStorageSync('client_profile_cache', merged);
         }
         wx.showToast({ title: '保存成功', icon: 'success' });
         setTimeout(() => {
