@@ -4,6 +4,7 @@ const db = cloud.database();
 const _ = db.command;
 
 const PROFILE_COLLECTION = 'client_profiles';
+const UNIVERSAL_ACCOUNT = '1';
 
 async function ensureCollection(collectionName) {
   try {
@@ -53,10 +54,13 @@ exports.main = async (event) => {
   try {
     await ensureCollection(PROFILE_COLLECTION);
 
-    const existingRes = await db.collection(PROFILE_COLLECTION)
+    const collection = db.collection(PROFILE_COLLECTION);
+    const existingRes = await collection
       .where(
         _.or([
           { _openid: OPENID },
+          { client_openid: OPENID },
+          { bound_openids: _.in([OPENID]) },
           { phone: normalizedData.phone }
         ])
       )
@@ -66,7 +70,7 @@ exports.main = async (event) => {
     const existingDoc = existingRes.data && existingRes.data.length > 0 ? existingRes.data[0] : null;
 
     if (existingDoc) {
-      const duplicate = await db.collection(PROFILE_COLLECTION)
+      const duplicate = await collection
         .where({
           phone: normalizedData.phone,
           _id: _.neq(existingDoc._id)
@@ -77,7 +81,7 @@ exports.main = async (event) => {
         return { code: -1, message: '该手机号已被其他账号使用' };
       }
     } else {
-      const duplicate = await db.collection(PROFILE_COLLECTION)
+      const duplicate = await collection
         .where({
           phone: normalizedData.phone,
           _openid: _.neq(OPENID)
@@ -94,19 +98,33 @@ exports.main = async (event) => {
     }
 
     if (existingDoc) {
-      const docId = existingDoc._id;
-      await db.collection(PROFILE_COLLECTION).doc(docId).update({
+      const aliasSet = new Set(Array.isArray(existingDoc.alias_accounts) ? existingDoc.alias_accounts : []);
+      const boundSet = new Set(Array.isArray(existingDoc.bound_openids) ? existingDoc.bound_openids : []);
+
+      if (aliasSet.has(UNIVERSAL_ACCOUNT)) {
+        aliasSet.add(UNIVERSAL_ACCOUNT);
+      }
+      boundSet.add(OPENID);
+
+      await collection.doc(existingDoc._id).update({
         data: {
           ...normalizedData,
-          client_openid: OPENID
+          client_openid: OPENID,
+          alias_accounts: Array.from(aliasSet),
+          bound_openids: Array.from(boundSet)
         }
       });
     } else {
-      await db.collection(PROFILE_COLLECTION).add({
+      const aliasAccounts = [];
+      const boundOpenids = [OPENID];
+
+      await collection.add({
         data: {
           ...normalizedData,
           password: password && String(password).trim() ? String(password).trim() : '6666',
           client_openid: OPENID,
+          alias_accounts: aliasAccounts,
+          bound_openids: boundOpenids,
           created_at: db.serverDate()
         }
       });

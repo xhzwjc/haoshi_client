@@ -107,6 +107,7 @@ App({
       wx.removeStorageSync('user_openid');
       wx.removeStorageSync('client_profile_cache');
       wx.removeStorageSync('client_account_phone');
+      wx.removeStorageSync('client_last_account');
     } catch (err) {
       console.warn('清理登录状态失败', err);
     }

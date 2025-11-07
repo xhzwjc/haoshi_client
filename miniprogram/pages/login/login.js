@@ -4,7 +4,7 @@ Page({
     data: {
         showLoginModal: false,
         modalTitle: '客户登录',
-        inputPlaceholder: '请输入手机号',
+        inputPlaceholder: '请输入手机号或万能账号',
         currentRole: '', // 'CLIENT' or 'TECHNICIAN'
         selectedRole: '',
         account: '',
@@ -15,13 +15,18 @@ Page({
     onSelectRole(e) {
         const role = e.currentTarget.dataset.role;
         const cachedPhone = role === 'CLIENT' ? (wx.getStorageSync('client_account_phone') || '') : '';
+        const lastAccount = role === 'CLIENT' ? (wx.getStorageSync('client_last_account') || '') : '';
+        const defaultAccount = role === 'CLIENT'
+            ? (lastAccount || cachedPhone || '1')
+            : '';
+
         this.setData({
             currentRole: role,
             modalTitle: role === 'CLIENT' ? '客户登录' : '家政人员登录',
-            inputPlaceholder: role === 'CLIENT' ? '请输入手机号' : '请输入工号/手机号',
+            inputPlaceholder: role === 'CLIENT' ? '请输入手机号或万能账号' : '请输入工号/手机号',
             showLoginModal: true,
             selectedRole: role,
-            account: cachedPhone,
+            account: defaultAccount,
             password: role === 'CLIENT' ? '6666' : ''
         });
     },
@@ -34,7 +39,10 @@ Page({
 
     // 3. [Core Logic] Confirm Login (Simulated Success)
     async onConfirmLogin() {
-        const { currentRole, account, password } = this.data;
+        const { currentRole } = this.data;
+        const account = String(this.data.account || '').trim();
+        const password = String(this.data.password || '').trim();
+        const isUniversalAccount = account === '1';
 
         if (!currentRole) {
             return wx.showToast({ title: '请选择登录身份', icon: 'none' });
@@ -44,8 +52,8 @@ Page({
             return wx.showToast({ title: '请输入账号和密码', icon: 'none' });
         }
 
-        if (currentRole === 'CLIENT' && !/^1\d{10}$/.test(account)) {
-            return wx.showToast({ title: '请输入11位手机号', icon: 'none' });
+        if (currentRole === 'CLIENT' && !isUniversalAccount && !/^1\d{10}$/.test(account)) {
+            return wx.showToast({ title: '请输入11位手机号或万能账号', icon: 'none' });
         }
 
         wx.showLoading({ title: '登录中...', mask: true });
@@ -54,9 +62,10 @@ Page({
             if (currentRole === 'CLIENT') {
                 const clientCloud = await app.waitClientCloudReady();
                 const res = await clientCloud.callFunction({
-                    name: 'clientAuth',
+                    name: 'getClientProfile',
                     data: {
-                        phone: account,
+                        action: 'login',
+                        account,
                         password
                     }
                 });
@@ -73,10 +82,19 @@ Page({
                 wx.setStorageSync('user_token', token);
                 wx.setStorageSync('user_role', currentRole);
                 wx.setStorageSync('user_openid', openid);
-                wx.setStorageSync('client_account_phone', account);
+                wx.setStorageSync('client_last_account', account);
 
                 if (profile) {
                     wx.setStorageSync('client_profile_cache', profile);
+                    if (profile.phone) {
+                        wx.setStorageSync('client_account_phone', profile.phone);
+                    }
+                }
+
+                if (!profile || !profile.phone) {
+                    if (!isUniversalAccount && /^1\d{10}$/.test(account)) {
+                        wx.setStorageSync('client_account_phone', account);
+                    }
                 }
 
                 wx.showToast({ title: '登录成功', icon: 'success' });
