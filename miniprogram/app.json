@@ -59,7 +59,8 @@
       "pages": [
         "pages/technician-index/technician-index",
         "pages/technician-orders/technician-orders",
-        "pages/technician-detail/technician-detail"
+        "pages/technician-detail/technician-detail",
+        "pages/quote-order/quote-order"
       ]
     }
   ],

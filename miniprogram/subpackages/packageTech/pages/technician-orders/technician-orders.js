@@ -265,11 +265,9 @@ Page({
     },
     completeAndQuote: function(e) {
          const orderId = e.currentTarget.dataset.id;
-         // This needs to open a new page or modal to input the final price
-         // Example: Navigate to a quote page
-         wx.navigateTo({ url: `/pages/quote-order/quote-order?id=${orderId}` }); 
-         // The quote page will then call a cloud function `completeServiceAndQuote`
-         // which sets status 30 -> 35 and saves final_price
+         wx.navigateTo({
+             url: `/subpackages/packageTech/pages/quote-order/quote-order?id=${orderId}`
+         });
     },
     remindPayment: function(e) {
         const orderId = e.currentTarget.dataset.id;
