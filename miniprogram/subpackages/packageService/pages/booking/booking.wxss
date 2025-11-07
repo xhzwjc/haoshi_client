@@ -98,6 +98,29 @@ page {
 }
 
 /* 3. 填写表单 */
+.address-toolbar {
+  margin: 32rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.tool-btn {
+  flex: 1;
+  border-radius: 999rpx;
+  border: 1rpx solid #1677FF;
+  color: #1677FF;
+  background: rgba(22, 119, 255, 0.08);
+  font-size: 26rpx;
+  line-height: 88rpx;
+  height: 88rpx;
+}
+
+.tool-btn.secondary {
+  border-color: #B1B6BD;
+  color: #5A6270;
+  background: #fff;
+}
+
 .form-section {
   background-color: #fff;
   margin: 32rpx;

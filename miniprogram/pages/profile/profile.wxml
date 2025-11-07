@@ -42,13 +42,13 @@
         <image class="arrow-icon" src="/packageCommon/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
     </view>
-    <view class="menu-item" bindtap="showAddressHint">
+    <view class="menu-item" bindtap="goToAddressManage">
       <view class="menu-left">
         <image class="menu-icon" src="/packageCommon/images/icon_profile_location.png"></image>
         <text class="menu-label">地址管理</text>
       </view>
       <view class="menu-right">
-        <text class="menu-desc">即将上线</text>
+        <text class="menu-desc">保存常用地址</text>
         <image class="arrow-icon" src="/packageCommon/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
     </view>

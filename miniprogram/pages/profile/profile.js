@@ -97,7 +97,9 @@ Page({
     this.goToPersonalInfo();
   },
 
-  showAddressHint() {
-    wx.showToast({ title: '地址管理功能即将上线', icon: 'none' });
+  goToAddressManage() {
+    wx.navigateTo({
+      url: '/subpackages/packageProfile/pages/address-list/address-list'
+    });
   }
 });

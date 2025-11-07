@@ -48,9 +48,14 @@ exports.main = async () => {
     let historyOrders = 0;
     let completedOrders = 0;
 
+    const openidMatcher = _.or([
+      { client_openid: OPENID },
+      { _openid: OPENID }
+    ]);
+
     try {
       const historyRes = await db.collection(BOOKINGS_COLLECTION)
-        .where({ client_openid: OPENID })
+        .where(openidMatcher)
         .count();
       historyOrders = historyRes.total || 0;
     } catch (err) {
@@ -61,7 +66,12 @@ exports.main = async () => {
 
     try {
       const completedRes = await db.collection(BOOKINGS_COLLECTION)
-        .where({ client_openid: OPENID, status: _.in([50, 60]) })
+        .where(
+          _.and([
+            openidMatcher,
+            { status: _.in([50, 60]) }
+          ])
+        )
         .count();
       completedOrders = completedRes.total || 0;
     } catch (err) {
