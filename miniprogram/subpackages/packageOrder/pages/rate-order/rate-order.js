@@ -60,22 +60,41 @@ Page({
       user_openid: wx.getStorageSync('user_openid') || '',
     };
 
-    Promise.all([
-      db.collection('bookings').doc(orderId).update({
-        data: {
-          status: 60,
-          review
+    const collectionName = 'service_reviews';
+    const addReviewRecord = () => db.collection(collectionName).add({
+      data: {
+        order_id: orderId,
+        ...review,
+        service_id: this.data.order?.service_id || '',
+        service_name: this.data.order?.service_name || '',
+      }
+    });
+
+    const ensureCollection = () => db.createCollection(collectionName)
+      .catch(createErr => {
+        if (createErr && createErr.errCode === -502006) {
+          return null;
         }
-      }),
-      db.collection('service_reviews').add({
-        data: {
-          order_id: orderId,
-          ...review,
-          service_id: this.data.order?.service_id || '',
-          service_name: this.data.order?.service_name || '',
+        throw createErr;
+      });
+
+    addReviewRecord()
+      .catch(err => {
+        if (err && err.errCode === -502005) {
+          return ensureCollection().then(() => addReviewRecord());
         }
+        throw err;
       })
-    ])
+      .then(() => {
+        return db.collection('bookings').doc(orderId).update({
+          data: {
+            status: 60,
+            review,
+            review_submitted_at: db.serverDate(),
+            updated_at: db.serverDate()
+          }
+        });
+      })
       .then(() => {
         wx.hideLoading();
         wx.showToast({ title: '感谢您的评价', icon: 'success' });

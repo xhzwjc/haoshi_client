@@ -32,9 +32,21 @@
         </view>
          <text class="value placeholder" wx:else>无</text>
       </view>
-       <view class="detail-item fee-item">
+      <view class="detail-item fee-item">
         <text class="label">服务费用</text>
         <text class="value price">¥{{order.final_price || order.price_range || '待核价'}}</text>
+      </view>
+      <view class="timeline-section" wx:if="{{timeline.length}}">
+        <view class="timeline-title">订单进度</view>
+        <view class="timeline-list">
+          <view class="timeline-item" wx:for="{{timeline}}" wx:key="label">
+            <view class="timeline-dot"></view>
+            <view class="timeline-content">
+              <text class="timeline-label">{{item.label}}</text>
+              <text class="timeline-value">{{item.value}}</text>
+            </view>
+          </view>
+        </view>
       </view>
     </view>
     

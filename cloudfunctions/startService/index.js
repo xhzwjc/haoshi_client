@@ -18,7 +18,11 @@ exports.main = async (event, context) => {
     const res = await db.collection('bookings')
       .where({ _id: orderId, status: 20, technician_openid: tech_openid })
       .update({
-        data: { status: 30, updated_at: db.serverDate() }
+        data: {
+          status: 30,
+          service_started_at: db.serverDate(),
+          updated_at: db.serverDate()
+        }
       });
 
     if (!res.stats || res.stats.updated === 0) {

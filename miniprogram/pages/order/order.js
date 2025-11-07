@@ -236,7 +236,7 @@ Page({
         if (res.confirm) {
           wx.showLoading({ title: '取消中...' });
           db.collection('bookings').doc(id).update({
-            data: { status: 0 }
+            data: { status: 0, cancelled_at: db.serverDate(), updated_at: db.serverDate() }
           }).then(() => {
             wx.hideLoading();
             wx.showToast({ title: '取消成功', icon: 'success' });
@@ -258,7 +258,11 @@ Page({
         if (res.confirm) {
           wx.showLoading({ title: '确认中...' });
           db.collection('bookings').doc(id).update({
-            data: { status: 40 }
+            data: {
+              status: 40,
+              amount_confirmed_at: db.serverDate(),
+              updated_at: db.serverDate()
+            }
           }).then(() => {
             wx.hideLoading();
             wx.showToast({ title: '请支付', icon: 'none' });
@@ -276,7 +280,11 @@ Page({
     wx.showLoading({ title: '正在唤起支付...' });
     setTimeout(() => {
       db.collection('bookings').doc(id).update({
-        data: { status: 50 }
+        data: {
+          status: 50,
+          paid_at: db.serverDate(),
+          updated_at: db.serverDate()
+        }
       }).then(() => {
         wx.hideLoading();
         wx.showToast({ title: '支付成功', icon: 'success' });

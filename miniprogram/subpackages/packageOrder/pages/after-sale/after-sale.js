@@ -103,7 +103,32 @@ Page({
       user_openid: wx.getStorageSync('user_openid') || '',
     };
 
-    db.collection('after_sales').add({ data: payload })
+    const collectionName = 'after_sales';
+    const addRequest = () => db.collection(collectionName).add({ data: payload });
+    const ensureCollection = () => db.createCollection(collectionName)
+      .catch(createErr => {
+        if (createErr && createErr.errCode === -502006) {
+          return null;
+        }
+        throw createErr;
+      });
+
+    addRequest()
+      .catch(err => {
+        if (err && err.errCode === -502005) {
+          return ensureCollection().then(() => addRequest());
+        }
+        throw err;
+      })
+      .then(() => {
+        return db.collection('bookings').doc(orderId).update({
+          data: {
+            after_sale_submitted_at: db.serverDate(),
+            after_sale_last_scene: scene,
+            updated_at: db.serverDate()
+          }
+        });
+      })
       .then(() => {
         wx.hideLoading();
         wx.showToast({ title: '提交成功', icon: 'success' });

@@ -1,6 +1,62 @@
 // /pages/order-detail/order-detail.js
 const db = wx.cloud.database();
-const _ = db.command; // 引入数据库操作符
+
+function toDate(value) {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value === 'number') {
+        return new Date(value);
+    }
+    if (typeof value === 'string') {
+        const parsed = new Date(value);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    if (value && typeof value === 'object') {
+        if (typeof value.toDate === 'function') {
+            return value.toDate();
+        }
+        if (value.$date) {
+            const parsed = new Date(value.$date);
+            return isNaN(parsed.getTime()) ? null : parsed;
+        }
+    }
+    return null;
+}
+
+function formatTimestamp(value) {
+    const dateObj = toDate(value);
+    if (!dateObj || isNaN(dateObj.getTime())) return '';
+    const pad = (num) => (num < 10 ? `0${num}` : `${num}`);
+    const y = dateObj.getFullYear();
+    const m = pad(dateObj.getMonth() + 1);
+    const d = pad(dateObj.getDate());
+    const hh = pad(dateObj.getHours());
+    const mm = pad(dateObj.getMinutes());
+    return `${y}-${m}-${d} ${hh}:${mm}`;
+}
+
+function buildTimeline(order = {}) {
+    const timeline = [];
+    const pushIfExists = (label, value) => {
+        const formatted = formatTimestamp(value);
+        if (formatted) {
+            timeline.push({ label, value: formatted });
+        }
+    };
+
+    pushIfExists('下单', order.created_at);
+    pushIfExists('师傅接单', order.accepted_at);
+    pushIfExists('确认上门', order.service_started_at);
+    pushIfExists('完成服务', order.service_completed_at);
+    pushIfExists('提交报价', order.quote_submitted_at);
+    pushIfExists('确认金额', order.amount_confirmed_at);
+    pushIfExists('支付', order.paid_at);
+    pushIfExists('评价', order.review_submitted_at);
+    pushIfExists('售后申请', order.after_sale_submitted_at);
+    pushIfExists('取消', order.cancelled_at);
+
+    return timeline;
+}
 
 Page({
     data: {
@@ -44,7 +100,8 @@ Page({
               order.is_final_price = isFinalPrice; 
               order.price_display = isFinalPrice ? finalFee.toFixed(2) : (order.price_range || '待核价');
               
-              order.created_at_fmt = new Date(order.created_at).toLocaleString();
+              order.created_at_fmt = formatTimestamp(order.created_at);
+              order.timeline = buildTimeline(order);
               // 如果有支付时间，也可以格式化 order.paid_at
 
               // 【核心修改】 状态文案逻辑
@@ -189,7 +246,9 @@ Page({
                     wx.showLoading({ title: '取消中...' });
                     db.collection('bookings').doc(id).update({
                       data: {
-                        status: 0 
+                        status: 0,
+                        cancelled_at: db.serverDate(),
+                        updated_at: db.serverDate()
                       }
                     }).then(() => {
                       wx.hideLoading();
@@ -216,7 +275,9 @@ Page({
                     wx.showLoading({ title: '确认中...' });
                     db.collection('bookings').doc(id).update({
                       data: {
-                        status: 40 // 变为 "待支付"
+                        status: 40, // 变为 "待支付"
+                        amount_confirmed_at: db.serverDate(),
+                        updated_at: db.serverDate()
                       }
                     }).then(() => {
                       wx.hideLoading();
@@ -241,7 +302,9 @@ Page({
         setTimeout(() => {
           db.collection('bookings').doc(id).update({
             data: {
-              status: 50 // 变为 "待评价"
+              status: 50, // 变为 "待评价"
+              paid_at: db.serverDate(),
+              updated_at: db.serverDate()
             }
           }).then(() => {
             wx.hideLoading();
