@@ -1,6 +1,6 @@
 // /subpackages/packageService/pages/confirm-pay/confirm-pay.js
-const app = getApp();
 const db = wx.cloud.database();
+const _ = db.command;
 
 Page({
     data: {
@@ -101,7 +101,7 @@ Page({
         }).then(res => {
             wx.hideLoading();
 
-            this.incrementServiceSales();
+            this.updateServiceSales();
 
             wx.showModal({
                 title: '预约成功',
@@ -125,17 +125,18 @@ Page({
         });
     },
 
-    async incrementServiceSales() {
+    async updateServiceSales() {
         const serviceId = this.data.bookingData && this.data.bookingData.service_id;
         if (!serviceId) {
             return;
         }
 
         try {
-            const clientCloud = await app.waitClientCloudReady();
-            await clientCloud.callFunction({
-                name: 'incrementServiceSales',
-                data: { serviceId }
+            await db.collection('services').doc(serviceId).update({
+                data: {
+                    sold: _.inc(1),
+                    sales: _.inc(1)
+                }
             });
         } catch (err) {
             console.warn('更新服务销量失败', err);

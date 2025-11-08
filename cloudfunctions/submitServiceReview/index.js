@@ -64,25 +64,77 @@ async function fetchClientProfile(openid, phone = '') {
   }
 }
 
-exports.main = async (event, context) => {
-  const {
-    orderId,
-    rating,
-    comment,
-    serviceId,
-    serviceName,
-    userOpenId,
-  } = event || {};
-
-  if (!orderId || !rating || !comment) {
-    return { code: -1, message: '缺少必要参数' };
-  }
-
+exports.main = async (event = {}, context) => {
+  const { OPENID } = cloud.getWXContext();
+  const action = event.action || 'create';
   const collectionName = 'service_reviews';
-  const now = db.serverDate();
 
   try {
     await ensureCollection(collectionName);
+
+    if (action === 'reply') {
+      const reviewId = event.reviewId || event.id;
+      const replyContent = (event.reply || '').trim();
+
+      if (!reviewId) {
+        return { code: -1, message: '缺少评价ID' };
+      }
+      if (!replyContent) {
+        return { code: -1, message: '回复内容不能为空' };
+      }
+
+      const reviewRes = await db.collection(collectionName).doc(reviewId).get();
+      const review = reviewRes.data;
+      if (!review) {
+        return { code: -1, message: '评价不存在或已删除' };
+      }
+
+      const targetTechnician = review.technician_openid || '';
+      if (!OPENID || (targetTechnician && targetTechnician !== OPENID)) {
+        return { code: -1, message: '无权回复该评价' };
+      }
+
+      const now = db.serverDate();
+
+      await db.collection(collectionName).doc(reviewId).update({
+        data: {
+          reply: replyContent,
+          reply_at: now,
+          updated_at: now
+        }
+      });
+
+      if (review.order_id) {
+        try {
+          await db.collection('bookings').doc(review.order_id).update({
+            data: {
+              'review.reply': replyContent,
+              'review.reply_at': now,
+              updated_at: now
+            }
+          });
+        } catch (error) {
+          console.warn('更新订单回复信息失败', error);
+        }
+      }
+
+      return { code: 0, message: 'success', data: { reply: replyContent } };
+    }
+
+    const {
+      orderId,
+      rating,
+      comment,
+      serviceId,
+      serviceName,
+      userOpenId,
+    } = event;
+
+    if (!orderId || !rating || !comment) {
+      return { code: -1, message: '缺少必要参数' };
+    }
+
+    const now = db.serverDate();
 
     let booking = null;
     try {
@@ -99,7 +151,7 @@ exports.main = async (event, context) => {
     }
 
     const technicianOpenid = booking.technician_openid || '';
-    const clientOpenid = booking.client_openid || booking._openid || userOpenId || '';
+    const clientOpenid = booking.client_openid || booking._openid || userOpenId || OPENID || '';
     const profile = await fetchClientProfile(clientOpenid, booking.contact_phone || '');
 
     const clientName = (profile && profile.name) || booking.contact_name || '匿名客户';

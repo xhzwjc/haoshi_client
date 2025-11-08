@@ -98,8 +98,16 @@ page { background-color: #F7F8FA; }
 .rating-item:last-child { border-bottom: none; }
 .item-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
   margin-bottom: 16rpx;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
 }
 .avatar {
   width: 72rpx;
@@ -130,14 +138,23 @@ page { background-color: #F7F8FA; }
 }
 .service-info {
   font-size: 24rpx;
-  color: #999;
+  color: #666;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 16rpx;
   margin-bottom: 10rpx;
 }
+.service-info .service-name {
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  color: #333;
+}
 .service-info .order-no {
-    font-size: 22rpx;
-    color: #ccc;
+  font-size: 22rpx;
+  color: #999;
+  white-space: nowrap;
 }
 .reply-box {
     margin-top: 10rpx;
@@ -149,15 +166,18 @@ page { background-color: #F7F8FA; }
 }
 .reply-label { font-weight: bold; color: #4CAF50; margin-right: 8rpx; }
 .reply-btn {
-    float: right;
-    font-size: 24rpx;
-    height: 50rpx;
-    line-height: 50rpx;
-    padding: 0 20rpx;
-    border-radius: 25rpx;
-    background-color: #333;
-    color: #fff;
-    margin-top: 10rpx;
+  font-size: 24rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 26rpx;
+  border-radius: 30rpx;
+  background-color: #f5f7fa;
+  color: #333;
+  border: 1rpx solid #dcdfe6;
+  flex-shrink: 0;
+}
+.reply-btn::after {
+  display: none;
 }
 
 .empty-state, .loading-state { text-align: center; color: #999; font-size: 26rpx; padding: 40rpx 0; }

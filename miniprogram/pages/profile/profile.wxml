@@ -82,5 +82,4 @@
     <button class="settings-btn" bindtap="goToSettings">设置</button>
   </view>
 
-  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

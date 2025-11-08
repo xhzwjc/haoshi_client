@@ -2,12 +2,11 @@
   <view class="header-bg">
     <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
     <view class="title-bar" style="height: {{titleBarHeight}}px;">
-      <view class="title-actions title-actions-left" bindtap="openMoreActions">
-        <image class="more-icon" src="/packageCommon/images/icon_more.png"></image>
-        <text class="title-actions-label">退出</text>
+      <view class="title-icon-button" bindtap="openMoreActions">
+        <image class="title-icon" src="/packageCommon/images/icon_more.png"></image>
       </view>
       <text class="title-text">师傅首页</text>
-      <view class="title-actions title-actions-spacer"></view>
+      <view class="title-actions-spacer"></view>
     </view>
     <view class="technician-info">
       <view class="info-left">

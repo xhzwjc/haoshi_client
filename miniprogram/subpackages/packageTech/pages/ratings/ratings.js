@@ -75,18 +75,21 @@ Page({
 
   replyRating(e) {
     const ratingId = e.currentTarget.dataset.id;
+    const currentReply = e.currentTarget.dataset.reply || '';
     if (!ratingId) return;
 
     wx.showModal({
-      title: '回复评价',
+      title: currentReply ? '更新回复' : '回复评价',
       editable: true,
       placeholderText: '请输入回复内容（200字以内）',
+      confirmText: '提交',
+      content: currentReply || '',
       success: async (res) => {
-        if (!res.confirm || !res.content) {
+        if (!res.confirm) {
           return;
         }
 
-        const content = res.content.trim();
+        const content = (res.content || '').trim();
         if (!content) {
           wx.showToast({ title: '回复内容不能为空', icon: 'none' });
           return;
@@ -109,8 +112,12 @@ Page({
     try {
       const clientCloud = await app.waitClientCloudReady();
       const res = await clientCloud.callFunction({
-        name: 'replyServiceReview',
-        data: { reviewId: ratingId, reply: replyContent }
+        name: 'submitServiceReview',
+        data: {
+          action: 'reply',
+          reviewId: ratingId,
+          reply: replyContent
+        }
       });
 
       const result = res && res.result;
@@ -126,10 +133,6 @@ Page({
       this.setData({ ratings: updated });
 
       wx.showToast({ title: '回复成功', icon: 'success' });
-
-      setTimeout(() => {
-        this.fetchRatings(this.data.activeTab);
-      }, 300);
     } catch (error) {
       console.error('回复评价失败', error);
       const message = error && error.message ? error.message : '回复失败';

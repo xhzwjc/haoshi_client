@@ -3,7 +3,7 @@ page {
   background-color: #F7F8FA;
 }
 .page-profile {
-  padding-bottom: 150rpx; /* 避开tabbar和帮助按钮 */
+  padding-bottom: 60rpx;
 }
 
 /* 1. 顶部 */
@@ -177,25 +177,17 @@ page {
   font-size: 28rpx;
   border-radius: 48rpx;
   height: 96rpx;
-  line-height: normal;
+  line-height: 96rpx;
   box-shadow: 0 10rpx 24rpx rgba(31,45,61,0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  text-align: center;
+  padding: 0;
 }
 
 .settings-btn::after {
   display: none;
 }
 
-/* 帮助图标 */
-.help-btn {
-  position: fixed;
-  right: 32rpx;
-  bottom: 150rpx; /* 避开tabbar */
-  width: 80rpx;
-  height: 80rpx;
-}
 
 /* 添加菜单项view样式 */
 .menu-item-view {

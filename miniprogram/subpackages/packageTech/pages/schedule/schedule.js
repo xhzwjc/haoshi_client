@@ -1,214 +1,390 @@
-// pages/schedule/schedule.js
+const db = wx.cloud.database();
+const _ = db.command;
+
+const WEEK_NAMES = ['日', '一', '二', '三', '四', '五', '六'];
+const STATUS_OPTIONS = {
+  0: { label: '休息', desc: '不接任何新单' },
+  1: { label: '可接单', desc: '正常派单' },
+  2: { label: '忙碌', desc: '仅接重点订单' }
+};
+
+function pad(num) {
+  return num < 10 ? `0${num}` : `${num}`;
+}
+
+function formatDateKey(date) {
+  const target = date instanceof Date ? date : new Date(date);
+  const year = target.getFullYear();
+  const month = pad(target.getMonth() + 1);
+  const day = pad(target.getDate());
+  return `${year}-${month}-${day}`;
+}
+
+function formatDisplayText(dateKey) {
+  if (!dateKey) return '';
+  const [year, month, day] = dateKey.split('-');
+  return `${year}年${Number(month)}月${Number(day)}日`;
+}
+
+function getMonthKey(year, month) {
+  return `${year}-${pad(month)}`;
+}
+
 Page({
   data: {
-      weekNames: ['日', '一', '二', '三', '四', '五', '六'],
-      currentYear: new Date().getFullYear(),
-      currentMonth: new Date().getMonth() + 1,
-      selectedDate: new Date().toLocaleDateString('zh-CN'), // YYYY/MM/DD format
-      selectedDateText: new Date().toLocaleDateString('zh-CN'),
-
-      calendarDates: [], // Generated dates array
-      
-      // 模拟排班状态数据 (key is YYYY/MM/DD)
-      scheduleMap: { 
-          // '2025/10/28': { status: 1, hasOrders: true },
-          // '2025/10/29': { status: 0, hasOrders: false },
-      },
-      
-      // 排班设置选项
-      scheduleOptions: {
-          0: { label: '休息', desc: '不接任何新单' },
-          1: { label: '可接单', desc: '正常派单' },
-          2: { label: '忙碌', desc: '只接急单/高价单' }
-      },
-      currentStatus: { label: '可接单', value: 1 }, // 默认状态
-      
-      // 模拟当日订单列表
-      todayOrders: [
-           { _id: 'o3', time: '14:00', service: '深度保洁', status: 20, status_text: '待服务' },
-           { _id: 'o4', time: '18:30', service: '洗衣机清洗', status: 30, status_text: '服务中' },
-      ] 
+    weekNames: WEEK_NAMES,
+    currentYear: new Date().getFullYear(),
+    currentMonth: new Date().getMonth() + 1,
+    selectedDate: formatDateKey(new Date()),
+    selectedDateText: formatDisplayText(formatDateKey(new Date())),
+    calendarDates: [],
+    scheduleMap: {},
+    scheduleOptions: STATUS_OPTIONS,
+    currentStatus: { label: STATUS_OPTIONS[1].label, value: 1 },
+    todayOrders: [],
+    loading: false
   },
 
-  onLoad: function (options) {
-      this.generateCalendar(this.data.currentYear, this.data.currentMonth);
-      this.loadScheduleData(); // Load real schedule data
-  },
-  
-  // --- Calendar Logic ---
-  generateCalendar: function(year, month) {
-      const dates = [];
-      const today = new Date();
-      const todayStr = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-      
-      // Get first day of the month
-      const firstDay = new Date(year, month - 1, 1);
-      const firstDayWeek = firstDay.getDay(); // 0 (Sunday) to 6 (Saturday)
-      
-      // Get last day of the month
-      const lastDay = new Date(year, month, 0);
-      const daysInMonth = lastDay.getDate();
-      
-      // Fill previous month dates (for offset)
-      const prevMonthDays = new Date(year, month - 1, 0).getDate();
-      for (let i = firstDayWeek; i > 0; i--) {
-          dates.push({
-              day: prevMonthDays - i + 1,
-              date: '', // Not needed for display
-              isCurrentMonth: false
-          });
-      }
-      
-      // Fill current month dates
-      for (let day = 1; day <= daysInMonth; day++) {
-          const dateStr = `${year}/${month}/${day}`;
-          const schedule = this.data.scheduleMap[dateStr] || {};
-          
-          dates.push({
-              day: day,
-              date: dateStr,
-              isCurrentMonth: true,
-              isToday: dateStr === todayStr,
-              isScheduled: schedule.status === 1 || schedule.status === 2,
-              isDayOff: schedule.status === 0,
-              hasOrders: schedule.hasOrders || false // Check if the day has orders
-          });
-      }
-      
-      // Fill next month dates (until a full 6 weeks if necessary)
-      const totalCells = 42;
-      const remainingCells = totalCells - dates.length;
-      for (let day = 1; day <= remainingCells && dates.length < totalCells; day++) {
-          dates.push({
-              day: day,
-              date: '', 
-              isCurrentMonth: false
-          });
-      }
-      
-      this.setData({ calendarDates: dates });
-  },
-  
-  prevMonth: function() {
-      let { currentYear, currentMonth } = this.data;
-      if (currentMonth === 1) {
-          currentYear -= 1;
-          currentMonth = 12;
-      } else {
-          currentMonth -= 1;
-      }
-      this.setData({ currentYear, currentMonth }, () => {
-          this.generateCalendar(currentYear, currentMonth);
-          this.loadScheduleData();
-      });
-  },
-  
-  nextMonth: function() {
-      let { currentYear, currentMonth } = this.data;
-      if (currentMonth === 12) {
-          currentYear += 1;
-          currentMonth = 1;
-      } else {
-          currentMonth += 1;
-      }
-      this.setData({ currentYear, currentMonth }, () => {
-          this.generateCalendar(currentYear, currentMonth);
-          this.loadScheduleData();
-      });
-  },
-  
-  goToToday: function() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1;
-      this.setData({ currentYear: year, currentMonth: month }, () => {
-          this.generateCalendar(year, month);
-          this.onDateSelect({ currentTarget: { dataset: { date: this.data.selectedDate } } }); // Re-select today
-      });
+  onLoad() {
+    const today = new Date();
+    const dateKey = formatDateKey(today);
+    this.setData({
+      currentYear: today.getFullYear(),
+      currentMonth: today.getMonth() + 1,
+      selectedDate: dateKey,
+      selectedDateText: formatDisplayText(dateKey)
+    });
+    this.generateCalendar(today.getFullYear(), today.getMonth() + 1);
+    this.loadScheduleData();
   },
 
-  onDateSelect: function(e) {
-      const dateStr = e.currentTarget.dataset.date;
-      if (!dateStr) return; // Ignore previous/next month days
-      
-      // 格式化展示文本 (e.g., 2025年10月28日)
-      const [y, m, d] = dateStr.split('/').map(Number);
-      const dateText = `${y}年${m}月${d}日`;
-      
-      const schedule = this.data.scheduleMap[dateStr] || {};
-      const statusValue = schedule.status !== undefined ? schedule.status : 1; // Default to '可接单'
-      
-      this.setData({
-          selectedDate: dateStr,
-          selectedDateText: dateText,
-          currentStatus: {
-              label: this.data.scheduleOptions[statusValue].label,
-              value: statusValue
-          }
-      });
-      this.loadDayOrders(dateStr);
+  ensureTechnicianOpenid() {
+    if (this._technicianOpenid) {
+      return this._technicianOpenid;
+    }
+    const cached = wx.getStorageSync('user_openid');
+    if (!cached) {
+      wx.showToast({ title: '登录信息已失效', icon: 'none' });
+      return '';
+    }
+    this._technicianOpenid = cached;
+    return cached;
   },
 
-  // --- Schedule Data & Actions ---
-  loadScheduleData: function() {
-      // 1. Load monthly schedule from Cloud Function
-      // wx.cloud.callFunction({ name: 'getMonthlySchedule', data: { year: this.data.currentYear, month: this.data.currentMonth } }).then(...)
-      
-      // 2. Mock Data Update: Assume API returns an object for the month
-      const mockScheduleMap = {
-           '2025/10/28': { status: 1, hasOrders: true },
-           '2025/10/29': { status: 0, hasOrders: false },
-           '2025/11/01': { status: 2, hasOrders: true },
-           '2025/11/05': { status: 1, hasOrders: false },
+  generateCalendar(year, month) {
+    const dates = [];
+    const todayKey = formatDateKey(new Date());
+
+    const firstDay = new Date(year, month - 1, 1);
+    const firstWeekday = firstDay.getDay();
+    const lastDay = new Date(year, month, 0);
+    const daysInMonth = lastDay.getDate();
+
+    const prevMonthDays = new Date(year, month - 1, 0).getDate();
+    for (let i = firstWeekday; i > 0; i--) {
+      dates.push({ day: prevMonthDays - i + 1, date: '', isCurrentMonth: false });
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateKey = `${year}-${pad(month)}-${pad(day)}`;
+      const schedule = this.data.scheduleMap[dateKey] || {};
+      dates.push({
+        day,
+        date: dateKey,
+        isCurrentMonth: true,
+        isToday: dateKey === todayKey,
+        isScheduled: schedule.status === 1 || schedule.status === 2,
+        isDayOff: schedule.status === 0,
+        hasOrders: !!schedule.hasOrders
+      });
+    }
+
+    while (dates.length < 42) {
+      dates.push({ day: dates.length - daysInMonth - firstWeekday + 1, date: '', isCurrentMonth: false });
+    }
+
+    this.setData({ calendarDates: dates });
+  },
+
+  prevMonth() {
+    let { currentYear, currentMonth } = this.data;
+    if (currentMonth === 1) {
+      currentYear -= 1;
+      currentMonth = 12;
+    } else {
+      currentMonth -= 1;
+    }
+    this.setData({ currentYear, currentMonth });
+    this.generateCalendar(currentYear, currentMonth);
+    this.loadScheduleData();
+  },
+
+  nextMonth() {
+    let { currentYear, currentMonth } = this.data;
+    if (currentMonth === 12) {
+      currentYear += 1;
+      currentMonth = 1;
+    } else {
+      currentMonth += 1;
+    }
+    this.setData({ currentYear, currentMonth });
+    this.generateCalendar(currentYear, currentMonth);
+    this.loadScheduleData();
+  },
+
+  goToToday() {
+    const today = new Date();
+    const dateKey = formatDateKey(today);
+    this.setData({
+      currentYear: today.getFullYear(),
+      currentMonth: today.getMonth() + 1,
+      selectedDate: dateKey,
+      selectedDateText: formatDisplayText(dateKey)
+    });
+    this.generateCalendar(today.getFullYear(), today.getMonth() + 1);
+    this.onDateSelect({ currentTarget: { dataset: { date: dateKey } } });
+  },
+
+  onDateSelect(e) {
+    const dateKey = e.currentTarget.dataset.date;
+    if (!dateKey) {
+      return;
+    }
+
+    const schedule = this.data.scheduleMap[dateKey] || { status: 1 };
+    const statusMeta = this.data.scheduleOptions[schedule.status] || this.data.scheduleOptions[1];
+
+    this.setData({
+      selectedDate: dateKey,
+      selectedDateText: formatDisplayText(dateKey),
+      currentStatus: { label: statusMeta.label, value: schedule.status }
+    });
+
+    this.loadDayOrders(dateKey);
+  },
+
+  async loadScheduleData() {
+    const openid = this.ensureTechnicianOpenid();
+    if (!openid) {
+      return;
+    }
+
+    const { currentYear, currentMonth } = this.data;
+    const monthKey = getMonthKey(currentYear, currentMonth);
+
+    this.setData({ loading: true });
+
+    try {
+      const [scheduleRes, monthlyOrders] = await Promise.all([
+        db.collection('technician_schedules')
+          .where({ technician_openid: openid, month_key: monthKey })
+          .limit(200)
+          .get(),
+        this.fetchMonthOrderDates(openid, currentYear, currentMonth)
+      ]);
+
+      const scheduleMap = {};
+      (scheduleRes.data || []).forEach((item) => {
+        const dateKey = item.date_key || item.date || '';
+        if (!dateKey) return;
+        scheduleMap[dateKey] = {
+          status: typeof item.status === 'number' ? item.status : 1,
+          hasOrders: Boolean(item.has_orders)
+        };
+      });
+
+      monthlyOrders.forEach((dateKey) => {
+        if (!scheduleMap[dateKey]) {
+          scheduleMap[dateKey] = { status: 1, hasOrders: true };
+        } else {
+          scheduleMap[dateKey].hasOrders = true;
+        }
+      });
+
+      this.setData({ scheduleMap }, () => {
+        this.generateCalendar(currentYear, currentMonth);
+      });
+
+      const selectedDate = this.data.selectedDate || formatDateKey(new Date());
+      this.onDateSelect({ currentTarget: { dataset: { date: selectedDate } } });
+    } catch (error) {
+      console.error('loadScheduleData error', error);
+      wx.showToast({ title: '排班加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
+    }
+  },
+
+  async fetchMonthOrderDates(openid, year, month) {
+    const startKey = `${year}-${pad(month)}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const endKey = `${year}-${pad(month)}-${pad(lastDay)}`;
+
+    try {
+      const res = await db.collection('bookings')
+        .where({
+          technician_openid: openid,
+          status: _.nin([0, -1]),
+          service_date: _.gte(startKey)
+        })
+        .field({ service_date: true })
+        .limit(200)
+        .get();
+
+      const set = new Set();
+      (res.data || []).forEach((item) => {
+        if (!item.service_date) return;
+        if (item.service_date >= startKey && item.service_date <= endKey) {
+          set.add(item.service_date);
+        }
+      });
+      return Array.from(set);
+    } catch (error) {
+      console.warn('fetchMonthOrderDates error', error);
+      return [];
+    }
+  },
+
+  async loadDayOrders(dateKey) {
+    const openid = this.ensureTechnicianOpenid();
+    if (!openid || !dateKey) {
+      return;
+    }
+
+    try {
+      const res = await db.collection('bookings')
+        .where({
+          technician_openid: openid,
+          service_date: dateKey,
+          status: _.nin([0, -1])
+        })
+        .orderBy('service_time_slot', 'asc')
+        .limit(100)
+        .get();
+
+      const orders = (res.data || []).map((item) => ({
+        _id: item._id,
+        time: item.service_time_slot || '待定',
+        service: item.service_name || '家政服务',
+        status: item.status,
+        status_text: this.mapStatusToText(item.status)
+      }));
+
+      const updatedMap = {
+        ...this.data.scheduleMap,
+        [dateKey]: {
+          status: (this.data.scheduleMap[dateKey] && this.data.scheduleMap[dateKey].status) || 1,
+          hasOrders: orders.length > 0
+        }
       };
-      this.setData({ scheduleMap: mockScheduleMap });
-      this.generateCalendar(this.data.currentYear, this.data.currentMonth);
-      this.onDateSelect({ currentTarget: { dataset: { date: this.data.selectedDate } } }); // Refresh detail panel
-  },
-  
-  loadDayOrders: function(dateStr) {
-      // 1. Load orders for the selected date from Cloud Function
-      // wx.cloud.callFunction({ name: 'getDayOrders', data: { date: dateStr } }).then(...)
-      
-      // 2. Mock Orders
-      let orders = [];
-      if (dateStr === this.data.selectedDate) {
-          orders = [
-               { _id: 'o3', time: '14:00', service: '深度保洁', status: 20, status_text: '待服务' },
-               { _id: 'o4', time: '18:30', service: '洗衣机清洗', status: 30, status_text: '服务中' },
-          ];
-      } 
-      
-      this.setData({ todayOrders: orders });
+
+      this.setData({ todayOrders: orders, scheduleMap: updatedMap }, () => {
+        this.generateCalendar(this.data.currentYear, this.data.currentMonth);
+      });
+    } catch (error) {
+      console.error('loadDayOrders error', error);
+      this.setData({ todayOrders: [] });
+    }
   },
 
-  onStatusChange: function(e) {
-      const newStatus = parseInt(e.currentTarget.dataset.status);
-      const { selectedDate, scheduleOptions } = this.data;
-      
-      if (newStatus === this.data.currentStatus.value) return;
-      
-      wx.showModal({
-          title: '确认设置',
-          content: `确定将 ${selectedDateOptions.label} 设置为 ${scheduleOptions[newStatus].label} 吗？`,
-          success: (res) => {
-              if (res.confirm) {
-                  // Call API to set schedule
-                  // wx.cloud.callFunction({ name: 'setDailySchedule', data: { date: selectedDate, status: newStatus } }).then(...)
-                  
-                  // Mock success: Update local data and UI
-                  const scheduleMap = this.data.scheduleMap;
-                  scheduleMap[selectedDate] = { status: newStatus, hasOrders: this.data.todayOrders.length > 0 };
-                  
-                  this.setData({
-                      currentStatus: { label: scheduleOptions[newStatus].label, value: newStatus },
-                      scheduleMap: scheduleMap
-                  }, () => {
-                      this.generateCalendar(this.data.currentYear, this.data.currentMonth);
-                      wx.showToast({ title: '设置成功', icon: 'success' });
-                  });
-              }
+  onStatusChange(e) {
+    const newStatus = Number(e.currentTarget.dataset.status);
+    if (Number.isNaN(newStatus) || !this.data.scheduleOptions[newStatus]) {
+      return;
+    }
+
+    if (newStatus === this.data.currentStatus.value) {
+      return;
+    }
+
+    const dateKey = this.data.selectedDate;
+    if (!dateKey) {
+      wx.showToast({ title: '请先选择日期', icon: 'none' });
+      return;
+    }
+
+    const label = this.data.scheduleOptions[newStatus].label;
+    wx.showModal({
+      title: '确认设置',
+      content: `确定将 ${this.data.selectedDateText} 设置为${label}吗？`,
+      success: (res) => {
+        if (res.confirm) {
+          this.updateScheduleStatus(dateKey, newStatus);
+        }
+      }
+    });
+  },
+
+  async updateScheduleStatus(dateKey, status) {
+    const openid = this.ensureTechnicianOpenid();
+    if (!openid) {
+      return;
+    }
+
+    const hasOrders = !!(this.data.scheduleMap[dateKey] && this.data.scheduleMap[dateKey].hasOrders);
+    const monthKey = dateKey.slice(0, 7);
+    const now = db.serverDate();
+
+    try {
+      const existing = await db.collection('technician_schedules')
+        .where({ technician_openid: openid, date_key: dateKey })
+        .limit(1)
+        .get();
+
+      if (existing.data && existing.data.length) {
+        await db.collection('technician_schedules').doc(existing.data[0]._id).update({
+          data: {
+            status,
+            has_orders: hasOrders,
+            updated_at: now
           }
+        });
+      } else {
+        await db.collection('technician_schedules').add({
+          data: {
+            technician_openid: openid,
+            date_key: dateKey,
+            month_key: monthKey,
+            status,
+            has_orders: hasOrders,
+            created_at: now,
+            updated_at: now
+          }
+        });
+      }
+
+      const statusMeta = this.data.scheduleOptions[status];
+      const scheduleMap = {
+        ...this.data.scheduleMap,
+        [dateKey]: { status, hasOrders }
+      };
+      this.setData({
+        currentStatus: { label: statusMeta.label, value: status },
+        scheduleMap
+      }, () => {
+        this.generateCalendar(this.data.currentYear, this.data.currentMonth);
       });
+
+      wx.showToast({ title: '设置成功', icon: 'success' });
+    } catch (error) {
+      console.error('updateScheduleStatus error', error);
+      wx.showToast({ title: '设置失败，请稍后重试', icon: 'none' });
+    }
+  },
+
+  mapStatusToText(status) {
+    switch (status) {
+      case 10: return '待接单';
+      case 20: return '待服务';
+      case 30: return '服务中';
+      case 35: return '待确认';
+      case 40: return '待支付';
+      case 45: return '待评价';
+      case 50: return '待支付';
+      case 60: return '已完成';
+      case -1: return '已拒单';
+      case 0: return '已取消';
+      default: return '处理中';
+    }
   }
 });

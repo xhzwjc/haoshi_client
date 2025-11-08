@@ -105,5 +105,4 @@
       <view wx:if="{{!hasMore && filteredOrders.length > 0}}" class="no-more list-footer-text">没有更多了</view>
     </view> </scroll-view>
 
-  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

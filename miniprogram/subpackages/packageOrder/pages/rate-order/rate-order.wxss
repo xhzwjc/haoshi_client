@@ -70,10 +70,10 @@
   color: #fff;
   font-size: 32rpx;
   box-shadow: 0 18rpx 28rpx rgba(255, 140, 66, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: normal;
+  line-height: 88rpx;
+  display: block;
+  text-align: center;
+  padding: 0;
 }
 
 .submit-btn[disabled] {

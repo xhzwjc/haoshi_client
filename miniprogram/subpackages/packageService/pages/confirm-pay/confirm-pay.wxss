@@ -219,15 +219,3 @@
   border: 1px solid #ddd;
 }
 
-
-/* 帮助按钮 */
-.help-btn {
-  position: fixed;
-  bottom: 190rpx; /* 调整位置，避免被双按钮遮挡 */
-  right: 20rpx;
-  width: 80rpx;
-  height: 80rpx;
-  z-index: 999;
-  border-radius: 50%;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-}

@@ -2,10 +2,34 @@
 // (这个函数部署在【客户端】共享环境中)
 const cloud = require('wx-server-sdk');
 cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV 
+  env: cloud.DYNAMIC_CURRENT_ENV
 });
 const db = cloud.database();
 const _ = db.command;
+
+function pad(num) {
+  return num < 10 ? `0${num}` : `${num}`;
+}
+
+function extractMonthKey(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  return `${year}-${month}`;
+}
+
+function safeAmount(value) {
+  if (typeof value === 'number') {
+    return value >= 0 ? value : 0;
+  }
+  const parsed = parseFloat(value);
+  if (Number.isNaN(parsed) || parsed < 0) {
+    return 0;
+  }
+  return parsed;
+}
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
@@ -49,24 +73,26 @@ exports.main = async (event, context) => {
       technician_openid: tech_openid
     }).count();
     
-    // 本月收入 (状态60且本月完成的订单金额)
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
-    const monthIncomeRes = await db.collection('bookings')
+    // 本月收入 (与收入明细保持一致)
+    const now = new Date();
+    const currentMonthKey = extractMonthKey(now);
+    const incomeRes = await db.collection('bookings')
       .where({
-        status: _.in([50, 60]),
         technician_openid: tech_openid,
-        paid_at: _.gte(monthStart)
+        status: _.in([50, 60]),
+        paid_at: _.exists(true)
       })
+      .orderBy('paid_at', 'desc')
+      .limit(200)
       .get();
-    const monthIncome = monthIncomeRes.data.reduce((sum, order) => {
-      const amount = parseFloat(order.final_price);
-      if (Number.isNaN(amount) || amount < 0) {
-        return sum;
+
+    let monthIncome = 0;
+    (incomeRes.data || []).forEach((order) => {
+      const paidAt = order.paid_at || order.completed_at || order.updated_at || order.created_at;
+      if (extractMonthKey(paidAt) === currentMonthKey) {
+        monthIncome += safeAmount(order.final_price);
       }
-      return sum + amount;
-    }, 0);
+    });
     
     // 3. 获取最近订单：所有待接单的订单 + 该技师接单后的所有订单（排除已取消和已拒单）
     const recentOrdersRes = await db.collection('bookings')
@@ -89,7 +115,7 @@ exports.main = async (event, context) => {
     const dashboardData = {
         pendingCount: pendingCountRes.total,
         runningCount: runningCountRes.total,
-        monthIncome: monthIncome.toFixed(2), // 本月收入（保留2位小数）
+        monthIncome: monthIncome.toFixed(2),
         notification: {
             title: `您有 ${pendingCountRes.total} 个新订单待处理`,
             desc: pendingCountRes.total > 0 ? '请及时接单，避免订单流失' : '暂无新订单'
