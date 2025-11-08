@@ -166,21 +166,66 @@ Page({
   },
 
   handleListAction(e) {
-    const { action, id } = e.currentTarget.dataset;
-    const price = e.currentTarget.dataset.price;
-    e.stopPropagation();
+    const { action, id, price } = e.currentTarget.dataset;
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
 
     switch (action) {
-      case '取消订单': this.cancelOrder(id); break;
-      case '联系师傅': wx.showToast({ title: '联系师傅...', icon: 'none' }); break;
-      case '确认金额': this.confirmPrice(id, price); break;
-      case '金额有误': wx.showToast({ title: '联系客服...', icon: 'none' }); break;
-      case '立即支付': this.payNow(id); break;
-      case '评价': wx.showToast({ title: '跳转评价页...', icon: 'none' }); break;
-      case '申请售后': wx.showToast({ title: '联系客服...', icon: 'none' }); break;
-      case '查看详情': this.toOrderDetail(e); break;
-      default: wx.showToast({ title: '未知操作', icon: 'none' });
+      case '取消订单':
+        this.cancelOrder(id);
+        break;
+      case '联系师傅':
+        this.contactMasterFromList(id);
+        break;
+      case '确认金额':
+        this.confirmPrice(id, price);
+        break;
+      case '金额有误':
+        this.goToAfterSale(id, 'amount');
+        break;
+      case '立即支付':
+        this.payNow(id);
+        break;
+      case '评价服务':
+        this.goToReview(id);
+        break;
+      case '申请售后':
+        this.goToAfterSale(id, 'afterSale');
+        break;
+      case '查看详情':
+        this.toOrderDetail(e);
+        break;
+      default:
+        wx.showToast({ title: '未知操作', icon: 'none' });
     }
+  },
+
+  contactMasterFromList(orderId) {
+    const order = this.data.filteredOrders.find(item => item._id === orderId);
+    const phone = order?.master_phone || order?.masterPhone;
+    if (!phone) {
+      wx.showToast({ title: '暂无师傅电话', icon: 'none' });
+      return;
+    }
+    wx.makePhoneCall({
+      phoneNumber: phone.toString(),
+      fail: () => {
+        wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' });
+      }
+    });
+  },
+
+  goToAfterSale(orderId, scene = 'afterSale') {
+    wx.navigateTo({
+      url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
+    });
+  },
+
+  goToReview(orderId) {
+    wx.navigateTo({
+      url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
+    });
   },
 
   cancelOrder(id) {
@@ -191,7 +236,7 @@ Page({
         if (res.confirm) {
           wx.showLoading({ title: '取消中...' });
           db.collection('bookings').doc(id).update({
-            data: { status: 0 }
+            data: { status: 0, cancelled_at: db.serverDate(), updated_at: db.serverDate() }
           }).then(() => {
             wx.hideLoading();
             wx.showToast({ title: '取消成功', icon: 'success' });
@@ -213,7 +258,11 @@ Page({
         if (res.confirm) {
           wx.showLoading({ title: '确认中...' });
           db.collection('bookings').doc(id).update({
-            data: { status: 40 }
+            data: {
+              status: 40,
+              amount_confirmed_at: db.serverDate(),
+              updated_at: db.serverDate()
+            }
           }).then(() => {
             wx.hideLoading();
             wx.showToast({ title: '请支付', icon: 'none' });
@@ -231,7 +280,11 @@ Page({
     wx.showLoading({ title: '正在唤起支付...' });
     setTimeout(() => {
       db.collection('bookings').doc(id).update({
-        data: { status: 50 }
+        data: {
+          status: 50,
+          paid_at: db.serverDate(),
+          updated_at: db.serverDate()
+        }
       }).then(() => {
         wx.hideLoading();
         wx.showToast({ title: '支付成功', icon: 'success' });

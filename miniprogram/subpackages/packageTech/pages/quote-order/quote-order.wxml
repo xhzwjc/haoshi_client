@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="card">
+    <view class="card-title">填写最终报价</view>
+    <view class="form-item">
+      <view class="label">最终金额（元）</view>
+      <input class="input" type="digit" placeholder="请输入最终金额" value="{{finalPrice}}" bindinput="onPriceInput" />
+    </view>
+    <view class="form-item">
+      <view class="label">备注（可选）</view>
+      <textarea
+        class="textarea"
+        placeholder="填写服务说明或额外费用"
+        maxlength="200"
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+      ></textarea>
+    </view>
+  </view>
+  <button class="submit-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="handleSubmit">提交并完成服务</button>
+</view>

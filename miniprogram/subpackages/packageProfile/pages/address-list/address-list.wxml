@@ -1,0 +1,75 @@
+<view class="address-page">
+  <view class="hero">
+    <view class="hero-meta">
+      <text class="hero-title">常用服务地址</text>
+      <text class="hero-desc">为不同家庭成员保存地址，预约时一键填充。</text>
+    </view>
+    <button class="add-btn" bindtap="createAddress">新增地址</button>
+  </view>
+
+  <view class="address-list" wx:if="{{addresses.length}}">
+    <block wx:for="{{addresses}}" wx:key="_id">
+      <view class="address-card {{item.is_default ? 'default' : ''}}">
+        <view class="card-head">
+          <view class="tags">
+            <text class="tag primary" wx:if="{{item.is_default}}">默认</text>
+            <text class="tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+          </view>
+          <view class="card-actions">
+            <text class="action" data-id="{{item._id}}" bindtap="editAddress">编辑</text>
+            <text class="action danger" data-id="{{item._id}}" bindtap="deleteAddress">删除</text>
+          </view>
+        </view>
+        <view class="card-body">
+          <view class="line">
+            <text class="name">{{item.contact_name}}</text>
+            <text class="phone">{{item.contact_phone}}</text>
+          </view>
+          <view class="line address">{{item.address}}</view>
+        </view>
+        <view class="card-footer">
+          <button class="ghost-btn" wx:if="{{!item.is_default}}" data-id="{{item._id}}" bindtap="setDefault">设为默认</button>
+          <text class="default-text" wx:else>默认地址</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="empty-state" wx:if="{{!addresses.length && !loading}}">
+    <text class="empty-title">暂无地址</text>
+    <text class="empty-desc">点击“新增地址”，提前准备常用服务地点。</text>
+  </view>
+</view>
+
+<view class="editor-mask" wx:if="{{showEditor}}" bindtap="closeEditor"></view>
+<view class="editor-panel" wx:if="{{showEditor}}" catchtap="noop">
+  <view class="panel-header">
+    <text>{{editingId ? '编辑地址' : '新增地址'}}</text>
+    <text class="close" bindtap="closeEditor">×</text>
+  </view>
+  <view class="panel-body">
+    <view class="field">
+      <text class="label">联系人</text>
+      <input class="input" placeholder="请输入联系人姓名" placeholder-class="ph" value="{{form.contact_name}}" data-field="contact_name" bindinput="onFieldChange" />
+    </view>
+    <view class="field">
+      <text class="label">手机号</text>
+      <input class="input" placeholder="请输入11位手机号" placeholder-class="ph" value="{{form.contact_phone}}" data-field="contact_phone" bindinput="onFieldChange" maxlength="11" />
+    </view>
+    <view class="field">
+      <text class="label">地址标签</text>
+      <input class="input" placeholder="如：家、父母家、公司" placeholder-class="ph" value="{{form.tag}}" data-field="tag" bindinput="onFieldChange" maxlength="6" />
+    </view>
+    <view class="field">
+      <text class="label">详细地址</text>
+      <textarea class="textarea" placeholder="请输入详细地址" placeholder-class="ph" value="{{form.address}}" data-field="address" bindinput="onFieldChange" auto-height></textarea>
+    </view>
+    <view class="field switch">
+      <text class="label">设为默认</text>
+      <switch checked="{{form.is_default}}" color="#1d9bf0" data-field="is_default" bindchange="onSwitchChange"></switch>
+    </view>
+  </view>
+  <view class="panel-footer">
+    <button class="submit-btn" bindtap="submitForm" loading="{{saving}}">保存</button>
+  </view>
+</view>

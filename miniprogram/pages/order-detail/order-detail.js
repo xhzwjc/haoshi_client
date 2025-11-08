@@ -1,6 +1,62 @@
 // /pages/order-detail/order-detail.js
 const db = wx.cloud.database();
-const _ = db.command; // 引入数据库操作符
+
+function toDate(value) {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value === 'number') {
+        return new Date(value);
+    }
+    if (typeof value === 'string') {
+        const parsed = new Date(value);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    if (value && typeof value === 'object') {
+        if (typeof value.toDate === 'function') {
+            return value.toDate();
+        }
+        if (value.$date) {
+            const parsed = new Date(value.$date);
+            return isNaN(parsed.getTime()) ? null : parsed;
+        }
+    }
+    return null;
+}
+
+function formatTimestamp(value) {
+    const dateObj = toDate(value);
+    if (!dateObj || isNaN(dateObj.getTime())) return '';
+    const pad = (num) => (num < 10 ? `0${num}` : `${num}`);
+    const y = dateObj.getFullYear();
+    const m = pad(dateObj.getMonth() + 1);
+    const d = pad(dateObj.getDate());
+    const hh = pad(dateObj.getHours());
+    const mm = pad(dateObj.getMinutes());
+    return `${y}-${m}-${d} ${hh}:${mm}`;
+}
+
+function buildTimeline(order = {}) {
+    const timeline = [];
+    const pushIfExists = (label, value) => {
+        const formatted = formatTimestamp(value);
+        if (formatted) {
+            timeline.push({ label, value: formatted });
+        }
+    };
+
+    pushIfExists('下单', order.created_at);
+    pushIfExists('师傅接单', order.accepted_at);
+    pushIfExists('确认上门', order.service_started_at);
+    pushIfExists('完成服务', order.service_completed_at);
+    pushIfExists('提交报价', order.quote_submitted_at);
+    pushIfExists('确认金额', order.amount_confirmed_at);
+    pushIfExists('支付', order.paid_at);
+    pushIfExists('评价', order.review_submitted_at);
+    pushIfExists('售后申请', order.after_sale_submitted_at);
+    pushIfExists('取消', order.cancelled_at);
+
+    return timeline;
+}
 
 Page({
     data: {
@@ -44,7 +100,8 @@ Page({
               order.is_final_price = isFinalPrice; 
               order.price_display = isFinalPrice ? finalFee.toFixed(2) : (order.price_range || '待核价');
               
-              order.created_at_fmt = new Date(order.created_at).toLocaleString();
+              order.created_at_fmt = formatTimestamp(order.created_at);
+              order.timeline = buildTimeline(order);
               // 如果有支付时间，也可以格式化 order.paid_at
 
               // 【核心修改】 状态文案逻辑
@@ -154,18 +211,19 @@ Page({
                 this.payNow(orderId);
                 break;
             case '联系客服':
+                this.contactSupport();
+                break;
             case '金额有误':
+                this.goToAfterSale('amount');
+                break;
             case '申请售后':
-                // 建议使用 open-type="contact" 或 wx.makePhoneCall
-                wx.showToast({ title: `唤起 ${action} 服务`, icon: 'none' });
+                this.goToAfterSale('afterSale');
                 break;
             case '联系师傅':
-                // wx.makePhoneCall(this.data.orderDetail.master_phone)
-                wx.showToast({ title: '联系师傅...', icon: 'none' });
+                this.contactMaster();
                 break;
             case '评价服务':
-                // 跳转到评价页
-                wx.showToast({ title: '跳转评价页...', icon: 'none' });
+                this.goToReview();
                 break;
             case '再次预约':
                 // 跳转到服务详情页
@@ -188,7 +246,9 @@ Page({
                     wx.showLoading({ title: '取消中...' });
                     db.collection('bookings').doc(id).update({
                       data: {
-                        status: 0 
+                        status: 0,
+                        cancelled_at: db.serverDate(),
+                        updated_at: db.serverDate()
                       }
                     }).then(() => {
                       wx.hideLoading();
@@ -215,7 +275,9 @@ Page({
                     wx.showLoading({ title: '确认中...' });
                     db.collection('bookings').doc(id).update({
                       data: {
-                        status: 40 // 变为 "待支付"
+                        status: 40, // 变为 "待支付"
+                        amount_confirmed_at: db.serverDate(),
+                        updated_at: db.serverDate()
                       }
                     }).then(() => {
                       wx.hideLoading();
@@ -235,12 +297,14 @@ Page({
      */
     payNow: function(id) {
         wx.showLoading({ title: '正在唤起支付...' });
-        
+
         // 【模拟支付成功】
         setTimeout(() => {
           db.collection('bookings').doc(id).update({
             data: {
-              status: 50 // 变为 "待评价"
+              status: 50, // 变为 "待评价"
+              paid_at: db.serverDate(),
+              updated_at: db.serverDate()
             }
           }).then(() => {
             wx.hideLoading();
@@ -251,6 +315,45 @@ Page({
             wx.showToast({ title: '支付失败', icon: 'none' });
           });
         }, 1000);
+    },
+
+    contactMaster() {
+        const phone = this.data.orderDetail?.master_phone || this.data.orderDetail?.masterPhone;
+        if (!phone) {
+            wx.showToast({ title: '暂无师傅电话', icon: 'none' });
+            return;
+        }
+        wx.makePhoneCall({
+            phoneNumber: phone.toString(),
+            fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
+        });
+    },
+
+    contactSupport() {
+        const app = getApp();
+        const phone = app?.globalData?.servicePhone;
+        if (!phone) {
+            wx.showToast({ title: '暂未配置客服', icon: 'none' });
+            return;
+        }
+        wx.makePhoneCall({
+            phoneNumber: phone,
+            fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
+        });
+    },
+
+    goToAfterSale(scene = 'afterSale') {
+        const orderId = this.data.orderId;
+        wx.navigateTo({
+            url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
+        });
+    },
+
+    goToReview() {
+        const orderId = this.data.orderId;
+        wx.navigateTo({
+            url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
+        });
     },
 
     // 复制订单编号功能

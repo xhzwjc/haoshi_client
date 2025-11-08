@@ -323,13 +323,3 @@ page {
   margin-bottom: 20rpx;
   opacity: 0.6;
 }
-
-/* Help Button */
-.help-btn {
-  position: fixed;
-  right: 32rpx;
-  bottom: 40rpx;
-  width: 80rpx;
-  height: 80rpx;
-  z-index: 100;
-}

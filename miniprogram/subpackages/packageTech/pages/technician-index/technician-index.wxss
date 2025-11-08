@@ -1,6 +1,6 @@
 /* pages/index/index.wxss */
 page { background-color: #F7F8FA; }
-.page-index { padding-bottom: 150rpx; } /* Space for help button */
+.page-index { padding-bottom: 60rpx; }
 
 /* 1. Custom Header */
 .header-bg {
@@ -12,18 +12,33 @@ page { background-color: #F7F8FA; }
 .title-bar {
   display: flex;
   align-items: center;
-  justify-content: center; /* Center title */
-  position: relative;
+  justify-content: space-between;
+}
+.title-text {
+  flex: 1;
+  text-align: center;
   font-size: 34rpx;
   font-weight: bold;
 }
-.profile-icon {
-  width: 40rpx;
-  height: 40rpx;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.title-icon-button {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.title-icon {
+  width: 28rpx;
+  height: 28rpx;
+  filter: invert(1);
+}
+.title-actions-spacer {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
 }
 .technician-info {
   display: flex;
@@ -44,7 +59,7 @@ page { background-color: #F7F8FA; }
 .header-stats {
   display: flex;
   justify-content: space-around;
-  margin-top: 40rpx;
+  margin-top: 28rpx;
   text-align: center;
 }
 .header-stats .stat-item .value { font-size: 36rpx; font-weight: bold; margin-bottom: 8rpx; }
@@ -96,12 +111,12 @@ page { background-color: #F7F8FA; }
 .section-title {
   font-size: 32rpx;
   font-weight: bold;
-  margin: 40rpx 0 24rpx 8rpx; /* Adjust margin */
+  margin: 28rpx 0 20rpx 8rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.quick-title { margin-top: 40rpx; } /* Adjust top margin for quick functions */
+.quick-title { margin-top: 24rpx; }
 
 /* 3. Quick Functions */
 .quick-functions {
@@ -139,16 +154,51 @@ page { background-color: #F7F8FA; }
   box-sizing: border-box;
 }
 
-/* 4. Today's Data */
-.today-stats {
-  display: flex;
-  justify-content: space-around;
-  text-align: center;
+/* 4. Service Stats */
+.service-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
 }
-.today-stats .stat-item { flex: 1; }
-.today-stats .stat-item image { width: 52rpx; height: 52rpx; margin-bottom: 12rpx; }
-.today-stats .stat-item .value { font-size: 34rpx; font-weight: bold; margin-bottom: 6rpx; }
-.today-stats .stat-item .label { font-size: 24rpx; color: #666; }
+
+.service-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24rpx 24rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #eef4ff 0%, #f9fbff 100%);
+  box-shadow: 0 6rpx 18rpx rgba(60, 123, 255, 0.08);
+  min-height: 150rpx;
+}
+
+.service-stats .stat-item.pending {
+  background: linear-gradient(135deg, #eef4ff 0%, #f6f8ff 100%);
+  box-shadow: 0 6rpx 18rpx rgba(37, 91, 255, 0.12);
+}
+
+.service-stats .stat-item.completed {
+  background: linear-gradient(135deg, #e9fff3 0%, #f7fff9 100%);
+  box-shadow: 0 6rpx 18rpx rgba(16, 185, 129, 0.12);
+}
+
+.service-stats .stat-item image {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 16rpx;
+}
+
+.service-stats .stat-item .value {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 6rpx;
+  color: #1f2d3d;
+}
+
+.service-stats .stat-item .label {
+  font-size: 24rpx;
+  color: #5c6b7a;
+}
 
 /* 5. Recent Orders */
 .recent-title .view-all {
@@ -208,13 +258,3 @@ page { background-color: #F7F8FA; }
 .order-card-mini .btn-plain { background: #fff; border: 1rpx solid #ccc; color: #333; }
 .order-card-mini .btn-dark { background: #333; color: #fff; border: 1rpx solid #333; }
 .empty-recent { text-align: center; color: #999; font-size: 26rpx; padding: 40rpx 0; }
-
-/* Help Button */
-.help-btn {
-  position: fixed;
-  right: 32rpx;
-  bottom: 40rpx; /* Adjust position */
-  width: 80rpx;
-  height: 80rpx;
-  z-index: 100;
-}

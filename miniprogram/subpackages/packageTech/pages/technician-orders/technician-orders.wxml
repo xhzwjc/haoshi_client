@@ -68,7 +68,6 @@
               <button class="btn btn-dark" wx:if="{{item.status === 10}}" bindtap="acceptOrder" data-id="{{item._id}}">立即接单</button>
               <button class="btn btn-dark" wx:if="{{item.status === 20}}" bindtap="startService" data-id="{{item._id}}">确认上门</button>
               <button class="btn btn-dark" wx:if="{{item.status === 30}}" bindtap="completeAndQuote" data-id="{{item._id}}">完成服务报价</button>
-              <button class="btn btn-plain" wx:if="{{item.status === 35 || item.status === 40}}" bindtap="remindPayment" data-id="{{item._id}}">提醒付款</button>
             </view>
           </view>
         </view>

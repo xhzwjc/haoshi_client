@@ -1,0 +1,9 @@
+{
+  "name": "technicianScheduleOps",
+  "version": "1.0.0",
+  "description": "Utility helpers for technician schedule records",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "^3.0.1"
+  }
+}

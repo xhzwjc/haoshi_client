@@ -98,6 +98,36 @@ page {
 }
 
 /* 3. 填写表单 */
+.address-toolbar {
+  margin: 32rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.tool-btn {
+  flex: 1;
+  border-radius: 999rpx;
+  border: 1rpx solid #1677FF;
+  color: #1677FF;
+  background: rgba(22, 119, 255, 0.08);
+  font-size: 26rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  display: block;
+  padding: 0;
+}
+
+.tool-btn.secondary {
+  border-color: #B1B6BD;
+  color: #5A6270;
+  background: #fff;
+}
+
+.tool-btn::after {
+  display: none;
+}
+
 .form-section {
   background-color: #fff;
   margin: 32rpx;
@@ -183,14 +213,4 @@ page {
 .submit-btn:not([disabled]) {
   /* 假设表单有效时变色 */
   /* background-color: #409EFF; */
-}
-/* 帮助按钮 */
-.help-btn {
-  position: fixed;
-  right: 32rpx;
-  bottom: 180rpx; /* 避开提交按钮 */
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
 }

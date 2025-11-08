@@ -80,6 +80,19 @@ page { background-color: #F7F8FA; }
   background-color: #F7F8FA;
   border-radius: 50%;
 }
+.date-item.selected {
+  border-radius: 50%;
+  border: 2rpx solid #1677FF;
+  color: #1677FF;
+  background-color: rgba(22, 119, 255, 0.08);
+}
+.date-item.selected.today {
+  border-color: #1677FF;
+  color: #1677FF;
+}
+.date-item.selected.dayoff {
+  background-color: rgba(0, 0, 0, 0.04);
+}
 .date-item.today.scheduled {
     border: 1rpx solid #1677FF;
 }

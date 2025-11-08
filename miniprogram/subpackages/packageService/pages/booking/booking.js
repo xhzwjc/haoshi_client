@@ -1,4 +1,5 @@
 // subpackages/packageService/pages/booking/booking.js
+const app = getApp();
 const db = wx.cloud.database();
 
 Page({
@@ -14,7 +15,8 @@ Page({
         // 表单数据 (用于地址选择器绑定)
         address: '',
         contact_name: '',
-        contact_phone: ''
+        contact_phone: '',
+        savedAddresses: []
     },
 
     onLoad: function (options) {
@@ -27,6 +29,10 @@ Page({
             console.warn('未传入 serviceId');
             wx.showToast({ title: '服务ID缺失', icon: 'none' });
         }
+    },
+
+    onShow() {
+        this.loadSavedAddresses();
     },
 
     /**
@@ -76,11 +82,83 @@ Page({
         });
     },
 
+    async loadSavedAddresses() {
+        try {
+            const clientCloud = await app.waitClientCloudReady();
+            const res = await clientCloud.callFunction({
+                name: 'manageClientAddresses',
+                data: { action: 'list' }
+            });
+
+            if (res.result && res.result.code === 0) {
+                const list = res.result.data || [];
+                this.setData({ savedAddresses: list });
+
+                if (!this.data.address && list.length) {
+                    const defaultAddress = list.find(item => item.is_default) || list[0];
+                    if (defaultAddress) {
+                        this.applyAddress(defaultAddress);
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('加载常用地址失败', err);
+        }
+    },
+
+    openAddressPicker() {
+        const { savedAddresses } = this.data;
+        if (!savedAddresses || !savedAddresses.length) {
+            wx.showToast({ title: '请先在地址管理中新增地址', icon: 'none' });
+            return;
+        }
+
+        const itemList = savedAddresses.map(item => {
+            const tag = item.tag ? `（${item.tag}）` : '';
+            return `${item.contact_name}${tag} · ${item.contact_phone}`;
+        });
+
+        wx.showActionSheet({
+            itemList,
+            success: (res) => {
+                const selected = savedAddresses[res.tapIndex];
+                if (selected) {
+                    this.applyAddress(selected);
+                }
+            }
+        });
+    },
+
+    applyAddress(address) {
+        this.setData({
+            address: address.address || '',
+            contact_name: address.contact_name || '',
+            contact_phone: address.contact_phone || ''
+        });
+    },
+
+    onFieldInput(e) {
+        const field = e.currentTarget.dataset.field;
+        if (!field) return;
+        this.setData({ [field]: e.detail.value });
+    },
+
+    goManageAddress() {
+        wx.navigateTo({
+            url: '/subpackages/packageProfile/pages/address-list/address-list'
+        });
+    },
+
     /**
      * 表单提交 (仅校验和跳转到第二步)
      */
     formSubmit: function(e) {
-        const formData = e.detail.value;
+        const formData = {
+            address: this.data.address,
+            contact_name: this.data.contact_name,
+            contact_phone: this.data.contact_phone,
+            remarks: e.detail.value.remarks || ''
+        };
         const serviceData = this.data.service;
         // const phoneReg = /^1[3-9]\d{9}$/;
 
