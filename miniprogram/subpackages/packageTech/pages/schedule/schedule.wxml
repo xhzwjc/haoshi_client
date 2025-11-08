@@ -15,8 +15,8 @@
     </view>
     
     <view class="dates">
-      <view 
-        class="date-item {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isScheduled ? 'scheduled' : ''}} {{item.isDayOff ? 'dayoff' : ''}}"
+      <view
+        class="date-item {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isScheduled ? 'scheduled' : ''}} {{item.isDayOff ? 'dayoff' : ''}} {{item.date === selectedDate ? 'selected' : ''}}"
         wx:for="{{calendarDates}}" 
         wx:key="date"
         data-date="{{item.date}}"

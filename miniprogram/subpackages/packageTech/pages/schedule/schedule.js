@@ -1,3 +1,4 @@
+const app = getApp();
 const db = wx.cloud.database();
 const _ = db.command;
 
@@ -45,7 +46,7 @@ Page({
     loading: false
   },
 
-  onLoad() {
+  async onLoad() {
     const today = new Date();
     const dateKey = formatDateKey(today);
     this.setData({
@@ -55,7 +56,31 @@ Page({
       selectedDateText: formatDisplayText(dateKey)
     });
     this.generateCalendar(today.getFullYear(), today.getMonth() + 1);
+    const ensured = await this.ensureScheduleCollection();
+    if (!ensured) {
+      wx.showToast({ title: '排班数据暂不可用', icon: 'none' });
+      return;
+    }
     this.loadScheduleData();
+  },
+
+  async ensureScheduleCollection() {
+    if (this._scheduleCollectionReady) {
+      return true;
+    }
+
+    try {
+      const cloud = await app.waitClientCloudReady();
+      await cloud.callFunction({
+        name: 'technicianScheduleOps',
+        data: { action: 'ensureCollection' }
+      });
+      this._scheduleCollectionReady = true;
+      return true;
+    } catch (error) {
+      console.warn('ensureScheduleCollection error', error);
+      return false;
+    }
   },
 
   ensureTechnicianOpenid() {
@@ -166,6 +191,12 @@ Page({
   async loadScheduleData() {
     const openid = this.ensureTechnicianOpenid();
     if (!openid) {
+      return;
+    }
+
+    const ensured = await this.ensureScheduleCollection();
+    if (!ensured) {
+      wx.showToast({ title: '排班数据暂不可用', icon: 'none' });
       return;
     }
 
@@ -318,6 +349,12 @@ Page({
   async updateScheduleStatus(dateKey, status) {
     const openid = this.ensureTechnicianOpenid();
     if (!openid) {
+      return;
+    }
+
+    const ensured = await this.ensureScheduleCollection();
+    if (!ensured) {
+      wx.showToast({ title: '设置失败，请稍后重试', icon: 'none' });
       return;
     }
 
