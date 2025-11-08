@@ -81,26 +81,64 @@ Page({
       title: '回复评价',
       editable: true,
       placeholderText: '请输入回复内容（200字以内）',
-      success: (res) => {
-        if (res.confirm && res.content) {
-          const content = res.content.trim();
-          if (!content) {
-            wx.showToast({ title: '回复内容不能为空', icon: 'none' });
-            return;
-          }
-
-          const index = this.data.ratings.findIndex(item => item.id === ratingId);
-          if (index === -1) {
-            wx.showToast({ title: '评价已更新，请刷新', icon: 'none' });
-            return;
-          }
-
-          const updated = [...this.data.ratings];
-          updated[index] = { ...updated[index], reply: content };
-          this.setData({ ratings: updated });
-          wx.showToast({ title: '回复已记录', icon: 'success' });
+      success: async (res) => {
+        if (!res.confirm || !res.content) {
+          return;
         }
+
+        const content = res.content.trim();
+        if (!content) {
+          wx.showToast({ title: '回复内容不能为空', icon: 'none' });
+          return;
+        }
+
+        await this.submitReply(ratingId, content);
       }
     });
+  },
+
+  async submitReply(ratingId, replyContent) {
+    const index = this.data.ratings.findIndex(item => item.id === ratingId);
+    if (index === -1) {
+      wx.showToast({ title: '评价已更新，请刷新', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '提交中...', mask: true });
+
+    try {
+      const clientCloud = await app.waitClientCloudReady();
+      const res = await clientCloud.callFunction({
+        name: 'replyServiceReview',
+        data: { reviewId: ratingId, reply: replyContent }
+      });
+
+      const result = res && res.result;
+      if (!result || result.code !== 0) {
+        throw new Error((result && result.message) || '回复失败');
+      }
+
+      const updated = [...this.data.ratings];
+      updated[index] = {
+        ...updated[index],
+        reply: replyContent
+      };
+      this.setData({ ratings: updated });
+
+      wx.showToast({ title: '回复成功', icon: 'success' });
+
+      setTimeout(() => {
+        this.fetchRatings(this.data.activeTab);
+      }, 300);
+    } catch (error) {
+      console.error('回复评价失败', error);
+      const message = error && error.message ? error.message : '回复失败';
+      wx.showToast({
+        title: message.length > 14 ? '回复失败' : message,
+        icon: 'none'
+      });
+    } finally {
+      wx.hideLoading();
+    }
   }
 });

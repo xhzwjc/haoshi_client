@@ -1,0 +1,12 @@
+{
+  "name": "incrementServiceSales",
+  "version": "1.0.0",
+  "description": "Increment service sales after a booking",
+  "main": "index.js",
+  "scripts": {
+    "deploy": ""
+  },
+  "dependencies": {
+    "wx-server-sdk": "^3.1.0"
+  }
+}

@@ -12,30 +12,40 @@ page { background-color: #F7F8FA; }
 .title-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
+  justify-content: space-between;
 }
 .title-text {
+  flex: 1;
+  text-align: center;
   font-size: 34rpx;
   font-weight: bold;
 }
 .title-actions {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 36rpx;
-  background: rgba(255,255,255,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 24rpx;
+  height: 64rpx;
+  border-radius: 36rpx;
+  background: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+.title-actions-left {
+  justify-content: flex-start;
+}
+.title-actions-spacer {
+  visibility: hidden;
+  background: transparent;
 }
 .title-actions .more-icon {
   width: 32rpx;
   height: 32rpx;
   filter: invert(1);
+  margin-right: 10rpx;
+}
+.title-actions-label {
+  font-size: 24rpx;
+  color: #fff;
 }
 .technician-info {
   display: flex;
