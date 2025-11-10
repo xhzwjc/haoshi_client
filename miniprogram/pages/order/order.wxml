@@ -67,29 +67,29 @@
             </view>
             <view class="card-actions">
               <block wx:if="{{item.status === 10}}">
-                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
+                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" catchtap="handleListAction">取消订单</button>
               </block>
               <block wx:if="{{item.status === 20}}">
-                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
-                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" bindtap="handleListAction">取消订单</button>
+                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" catchtap="handleListAction">联系师傅</button>
+                <button class="btn btn-plain" data-action="取消订单" data-id="{{item._id}}" catchtap="handleListAction">取消订单</button>
               </block>
               <block wx:if="{{item.status === 30}}">
-                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" bindtap="handleListAction">联系师傅</button>
+                <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" catchtap="handleListAction">联系师傅</button>
               </block>
               <block wx:if="{{item.status === 35}}">
-                <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" bindtap="handleListAction">金额有误</button>
-                <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" bindtap="handleListAction">确认金额</button>
+                <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" catchtap="handleListAction">金额有误</button>
+                <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" catchtap="handleListAction">确认金额</button>
               </block>
               <block wx:if="{{item.status === 40}}">
-                <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" bindtap="handleListAction">立即支付</button>
+                <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" catchtap="handleListAction">立即支付</button>
               </block>
               <block wx:if="{{item.status === 50}}">
-                 <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
-                <button class="btn btn-dark" data-action="评价" data-id="{{item._id}}" bindtap="handleListAction">评价</button>
+                 <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button>
+                <button class="btn btn-dark" data-action="评价服务" data-id="{{item._id}}" catchtap="handleListAction">评价服务</button>
               </block>
               <block wx:if="{{item.status === 60}}">
-                <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" bindtap="handleListAction">申请售后</button>
-                <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" bindtap="handleListAction">查看详情</button>
+                <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button>
+                <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" catchtap="handleListAction">查看详情</button>
               </block>
             </view>
           </view>
@@ -105,5 +105,4 @@
       <view wx:if="{{!hasMore && filteredOrders.length > 0}}" class="no-more list-footer-text">没有更多了</view>
     </view> </scroll-view>
 
-  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

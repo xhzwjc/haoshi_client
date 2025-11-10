@@ -47,26 +47,33 @@
     <block wx:elif="{{ratings.length > 0}}">
       <view class="rating-item" wx:for="{{ratings}}" wx:key="id">
         <view class="item-header">
-          <image class="avatar" src="{{item.avatar}}"></image>
-          <view class="user-info">
-            <text class="nickname">{{item.nickname}}</text>
-            <view class="stars-time">
-               <text class="star-filled" wx:for="{{item.score}}" wx:key="index">★</text>
-               <text class="star-empty" wx:for="{{5-item.score}}" wx:key="index">★</text>
-               <text class="time">{{item.time}}</text>
+          <view class="header-left">
+            <image class="avatar" src="{{item.avatar}}"></image>
+            <view class="user-info">
+              <text class="nickname">{{item.nickname}}</text>
+              <view class="stars-time">
+                 <text class="star-filled" wx:for="{{item.score}}" wx:key="index">★</text>
+                 <text class="star-empty" wx:for="{{5-item.score}}" wx:key="index">★</text>
+                 <text class="time">{{item.time}}</text>
+              </view>
             </view>
           </view>
+          <button
+            class="reply-btn"
+            bindtap="replyRating"
+            data-id="{{item.id}}"
+            data-reply="{{item.reply}}"
+          >{{item.reply ? '编辑回复' : '回复'}}</button>
         </view>
         <view class="content">{{item.content}}</view>
         <view class="service-info">
-           <text>服务：{{item.serviceName}}</text>
-           <text class="order-no">订单号: {{item.orderId}}</text>
+           <text class="service-name">{{item.serviceName}}</text>
+           <text class="order-no">订单号 {{item.orderId}}</text>
         </view>
         <view class="reply-box" wx:if="{{item.reply}}">
            <text class="reply-label">我的回复：</text>
            <text class="reply-content">{{item.reply}}</text>
         </view>
-        <button class="reply-btn" wx:elif="{{!item.reply && activeTab === 'all'}}" bindtap="replyRating" data-id="{{item.id}}">回复</button>
       </view>
     </block>
     

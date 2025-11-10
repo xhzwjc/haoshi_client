@@ -2,8 +2,11 @@
   <view class="header-bg">
     <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
     <view class="title-bar" style="height: {{titleBarHeight}}px;">
-      <text>师傅首页</text>
-      <image class="profile-icon" src="/packageCommon/images/default_avatar.png"></image>
+      <view class="title-icon-button" bindtap="openMoreActions">
+        <image class="title-icon" src="/packageCommon/images/icon_more.png"></image>
+      </view>
+      <text class="title-text">师傅首页</text>
+      <view class="title-actions-spacer"></view>
     </view>
     <view class="technician-info">
       <view class="info-left">

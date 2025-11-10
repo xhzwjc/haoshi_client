@@ -1,86 +1,57 @@
 <view class="login-page">
-  <view class="bg-overlay"></view>
-  <view class="floating-circle circle-one"></view>
-  <view class="floating-circle circle-two"></view>
+  <view class="light-gradient"></view>
 
-  <view class="brand-section">
-    <image class="brand-logo" src="/packageCommon/images/app-logo.png" mode="aspectFit"></image>
-    <view class="brand-text">
-      <text class="brand-name">好室家政</text>
-      <text class="brand-slogan">臻选家政服务 · 定制品质生活</text>
-    </view>
-  </view>
-
-  <view class="login-card">
-    <view class="card-head">
-      <text class="card-title">欢迎回来</text>
-      <text class="card-subtitle">请选择登录身份以进入系统</text>
-    </view>
-
-    <view class="role-options">
-      <view
-        class="role-option client {{selectedRole === 'CLIENT' ? 'active' : ''}}"
-        bindtap="onSelectRole"
-        data-role="CLIENT"
-      >
-        <view class="option-icon">
-          <image src="/packageCommon/images/icon_user_gray.png" mode="aspectFit"></image>
-        </view>
-        <view class="option-content">
-          <view class="option-title">客户入口</view>
-          <view class="option-desc">预约家政服务、管理订单与地址</view>
-        </view>
-        <image class="option-arrow" src="/packageCommon/images/icon_arrow_right.png"></image>
-      </view>
-
-      <view
-        class="role-option technician {{selectedRole === 'TECHNICIAN' ? 'active' : ''}}"
-        bindtap="onSelectRole"
-        data-role="TECHNICIAN"
-      >
-        <view class="option-icon">
-          <image src="/packageCommon/images/icon_master_gray.png" mode="aspectFit"></image>
-        </view>
-        <view class="option-content">
-          <view class="option-title">师傅工作台</view>
-          <view class="option-desc">接收任务、安排服务并同步收入</view>
-        </view>
-        <image class="option-arrow" src="/packageCommon/images/icon_arrow_right.png"></image>
+  <view class="login-container">
+    <view class="brand-block">
+      <view class="brand-badge">H</view>
+      <view class="brand-text">
+        <text class="brand-title">好室家政</text>
+        <text class="brand-subtitle">精致生活，从一次预约开始</text>
       </view>
     </view>
 
-    <view class="card-footer">
-      <text>模拟账号仅用于演示，不会保存您的真实信息。</text>
+    <view class="headline">
+      <text class="headline-main">选择你的角色</text>
+      <text class="headline-sub">登录后即可同步个人资料、常用地址与全部订单数据。</text>
     </view>
+
+    <view class="role-panel">
+      <view class="role-card {{selectedRole === 'CLIENT' ? 'active' : ''}}" bindtap="onSelectRole" data-role="CLIENT">
+        <view class="role-title">客户入口</view>
+        <view class="role-desc">预约家政服务、管理订单与常用地址</view>
+        <view class="role-arrow">→</view>
+      </view>
+      <view class="role-card {{selectedRole === 'TECHNICIAN' ? 'active' : ''}}" bindtap="onSelectRole" data-role="TECHNICIAN">
+        <view class="role-title">师傅工作台</view>
+        <view class="role-desc">查看待办、确认服务、维护口碑</view>
+        <view class="role-arrow">→</view>
+      </view>
+    </view>
+
+    <view class="statement">模拟登录仅用于产品演示，不会产生真实扣费。新客户首次登录请使用默认密码 6666。</view>
   </view>
 </view>
 
 <view class="modal-mask" wx:if="{{showLoginModal}}"></view>
 <view class="login-modal" wx:if="{{showLoginModal}}">
-  <view class="modal-title">{{modalTitle}}</view>
-  <view class="modal-body">
-    <view class="input-group">
-      <text class="input-label">账号</text>
-      <input
-        placeholder="{{inputPlaceholder}}"
-        bindinput="onInputAccount"
-        value="{{account}}"
-        placeholder-class="input-placeholder"
-      />
+  <view class="modal-card">
+    <view class="modal-header">
+      <text class="modal-title">{{modalTitle}}</text>
+      <text class="modal-subtitle">账号需为已填写资料的手机号，首次登录默认密码 6666</text>
     </view>
-    <view class="input-group">
-      <text class="input-label">密码</text>
-      <input
-        placeholder="请输入密码"
-        password
-        bindinput="onInputPassword"
-        value="{{password}}"
-        placeholder-class="input-placeholder"
-      />
+    <view class="modal-body">
+      <view class="input-group">
+        <text class="input-label">账号</text>
+        <input placeholder="{{inputPlaceholder}}" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+      </view>
+      <view class="input-group">
+        <text class="input-label">密码</text>
+        <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+      </view>
     </view>
-  </view>
-  <view class="modal-footer">
-    <text class="modal-btn cancel-btn" bindtap="onCancelLogin">取消</text>
-    <text class="modal-btn confirm-btn" bindtap="onConfirmLogin">登录</text>
+    <view class="modal-actions">
+      <button class="modal-btn ghost" bindtap="onCancelLogin">取消</button>
+      <button class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
+    </view>
   </view>
 </view>

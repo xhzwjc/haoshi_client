@@ -1,0 +1,21 @@
+<view class="page-feedback">
+  <view class="card">
+    <view class="section-title">反馈类型</view>
+    <picker mode="selector" range="{{typeOptions}}" value="{{typeIndex}}" bindchange="onTypeChange">
+      <view class="picker-value">{{typeOptions[typeIndex]}}</view>
+    </picker>
+  </view>
+
+  <view class="card">
+    <view class="section-title">反馈内容</view>
+    <textarea class="textarea" placeholder="请描述遇到的问题或建议" bindinput="onContentInput" maxlength="300" value="{{content}}" auto-height></textarea>
+    <view class="counter">{{content.length}}/300</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">联系方式</view>
+    <input class="input" placeholder="选填，方便我们联系您" bindinput="onContactInput" value="{{contact}}" maxlength="30"></input>
+  </view>
+
+  <button class="submit-btn" type="primary" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitFeedback">提交反馈</button>
+</view>

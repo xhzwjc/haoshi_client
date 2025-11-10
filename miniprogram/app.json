@@ -60,11 +60,38 @@
         "pages/technician-index/technician-index",
         "pages/technician-orders/technician-orders",
         "pages/technician-detail/technician-detail",
-        "pages/quote-order/quote-order"
+        "pages/quote-order/quote-order",
+        "pages/income/income",
+        "pages/ratings/ratings",
+        "pages/schedule/schedule"
+      ]
+    },
+    {
+      "root": "subpackages/packageOrder",
+      "pages": [
+        "pages/after-sale/after-sale",
+        "pages/rate-order/rate-order"
+      ]
+    },
+    {
+      "root": "subpackages/packageProfile",
+      "pages": [
+        "pages/personal-info/personal-info",
+        "pages/settings/settings",
+        "pages/feedback/feedback",
+        "pages/address-list/address-list"
       ]
     }
   ],
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于选择服务地址并提供上门服务"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseLocation"
+  ]
 }

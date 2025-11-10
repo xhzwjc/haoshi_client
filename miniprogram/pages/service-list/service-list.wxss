@@ -231,14 +231,3 @@
   margin-top: 46rpx;
   width: 200rpx !important;
 }
-
-/* 帮助按钮 */
-.help-btn {
-  position: fixed;
-  right: 32rpx;
-  bottom: 150rpx;
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
-}

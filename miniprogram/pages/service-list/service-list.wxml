@@ -74,5 +74,4 @@
     </view>
   </scroll-view>
 
-  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

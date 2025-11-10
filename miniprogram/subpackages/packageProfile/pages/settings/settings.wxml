@@ -1,0 +1,20 @@
+<view class="page-settings">
+  <view class="card">
+    <view class="section-title">账号与安全</view>
+    <view class="action-item" bindtap="handleLogout">
+      <view class="left">
+        <image src="/packageCommon/images/icon_income_red.png"></image>
+        <view class="text-group">
+          <text class="title">退出登录</text>
+          <text class="desc">退出后需重新登录方可预约服务</text>
+        </view>
+      </view>
+      <image class="arrow" src="/packageCommon/images/icon_arrow_right.png"></image>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">通知与偏好</view>
+    <view class="placeholder-text">更多个性化设置开发中，敬请期待。</view>
+  </view>
+</view>

@@ -27,6 +27,8 @@ exports.main = async (event, context) => {
           status: 35,
           final_price: normalizedPrice,
           technician_quote_remark: remark,
+          service_completed_at: db.serverDate(),
+          quote_submitted_at: db.serverDate(),
           completed_at: db.serverDate(),
           updated_at: db.serverDate()
         }

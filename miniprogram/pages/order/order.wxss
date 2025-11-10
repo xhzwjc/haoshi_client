@@ -225,15 +225,6 @@ page {
   margin-bottom: 24rpx;
 }
 
-/* 帮助图标 */
-.help-btn {
-  position: fixed;
-  right: 32rpx;
-  bottom: calc(120rpx + env(safe-area-inset-bottom));
-  width: 80rpx;
-  height: 80rpx;
-}
-
 .list-footer-text {
   text-align: center;
   font-size: 24rpx;

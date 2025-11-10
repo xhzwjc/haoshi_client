@@ -1,0 +1,72 @@
+page {
+  background: #f5f7fb;
+}
+
+.page-settings {
+  padding: 32rpx 24rpx 80rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx 32rpx;
+  box-shadow: 0 12rpx 30rpx rgba(15, 35, 95, 0.06);
+  margin-bottom: 32rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: #5c6b7a;
+  margin-bottom: 20rpx;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 0;
+  border-top: 1rpx solid #eef2f8;
+}
+
+.action-item:first-of-type {
+  border-top: none;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.left image {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-group .title {
+  font-size: 30rpx;
+  color: #d14343;
+  font-weight: 600;
+}
+
+.text-group .desc {
+  font-size: 24rpx;
+  color: #8a97a6;
+  margin-top: 6rpx;
+}
+
+.arrow {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.placeholder-text {
+  font-size: 26rpx;
+  color: #8a97a6;
+  padding: 24rpx 0 8rpx;
+}
