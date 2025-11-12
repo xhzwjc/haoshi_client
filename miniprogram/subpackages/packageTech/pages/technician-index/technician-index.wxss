@@ -21,8 +21,8 @@ page { background-color: #F7F8FA; }
   font-weight: bold;
 }
 .title-icon-button {
-  width: 64rpx;
-  height: 64rpx;
+  width: 36rpx;
+  height: 36rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.25);
   display: flex;
@@ -31,8 +31,8 @@ page { background-color: #F7F8FA; }
   flex-shrink: 0;
 }
 .title-icon {
-  width: 28rpx;
-  height: 28rpx;
+  width: 35rpx;
+  height: 35rpx;
   filter: invert(1);
 }
 .title-actions-spacer {

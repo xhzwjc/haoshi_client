@@ -3,7 +3,7 @@
     <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
     <view class="title-bar" style="height: {{titleBarHeight}}px;">
       <view class="title-icon-button" bindtap="openMoreActions">
-        <image class="title-icon" src="/packageCommon/images/icon_more.png"></image>
+        <image class="title-icon" src="/packageCommon/images/icon_more_technician.png"></image>
       </view>
       <text class="title-text">师傅首页</text>
       <view class="title-actions-spacer"></view>

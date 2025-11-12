@@ -7,7 +7,8 @@ Page({
         tabs: [
             { name: '全部' },
             { name: '保洁清洗' },
-            { name: '装修翻新' },
+            { name: '家电清洗' },
+            { name: '维修与保养' }
         ],
         activeTab: 0,
         allServices: [],
