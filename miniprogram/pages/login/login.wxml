@@ -12,7 +12,7 @@
 
     <view class="headline">
       <text class="headline-main">选择你的角色</text>
-      <text class="headline-sub">登录后即可同步个人资料、常用地址与全部订单数据。</text>
+      <text class="headline-sub">使用微信手机号授权登录，即可同步个人资料、地址和全部订单数据。</text>
     </view>
 
     <view class="role-panel">
@@ -28,7 +28,7 @@
       </view>
     </view>
 
-    <view class="statement">模拟登录仅用于产品演示，不会产生真实扣费。新客户首次登录请使用默认密码 6666。</view>
+    <view class="statement">授权后我们仅用于账号验证，所有订单与资料都会按手机号自动隔离，确保每位用户的数据安全。</view>
   </view>
 </view>
 
@@ -37,21 +37,19 @@
   <view class="modal-card">
     <view class="modal-header">
       <text class="modal-title">{{modalTitle}}</text>
-      <text class="modal-subtitle">账号需为已填写资料的手机号，首次登录默认密码 6666</text>
+      <text class="modal-subtitle">{{modalSubtitle}}</text>
     </view>
     <view class="modal-body">
-      <view class="input-group">
-        <text class="input-label">账号</text>
-        <input placeholder="{{inputPlaceholder}}" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+      <view class="auth-tip">
+        <text class="auth-tip-text">{{currentRole === 'CLIENT' ? '我们仅会将手机号用于识别您的客户账号，保障订单、地址等数据仅本人可见。' : '手机号仅用于验证师傅身份并绑定工作台，避免不同账号之间的数据交叉。'}}</text>
       </view>
-      <view class="input-group">
-        <text class="input-label">密码</text>
-        <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
-      </view>
+      <button class="auth-button" open-type="getPhoneNumber" bindgetphonenumber="onAuthorizePhone" loading="{{isAuthorizing}}" disabled="{{isAuthorizing}}">
+        授权微信手机号登录
+      </button>
+      <view class="privacy-hint">点击授权即代表您同意《用户隐私政策》和《服务协议》</view>
     </view>
     <view class="modal-actions">
-      <button class="modal-btn ghost" bindtap="onCancelLogin">取消</button>
-      <button class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
+      <button class="modal-btn ghost" bindtap="onCancelLogin" disabled="{{isAuthorizing}}">取消</button>
     </view>
   </view>
 </view>

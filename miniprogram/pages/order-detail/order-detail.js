@@ -1,6 +1,25 @@
 // /pages/order-detail/order-detail.js
 const db = wx.cloud.database();
 
+function getCurrentClientOpenid() {
+    return wx.getStorageSync('user_openid') || '';
+}
+
+function orderBelongsToClient(order = {}, openid) {
+    if (!openid) return false;
+    const candidates = new Set();
+    if (order.client_openid) candidates.add(order.client_openid);
+    if (order._openid) candidates.add(order._openid);
+    if (order.clientOpenid) candidates.add(order.clientOpenid);
+    if (Array.isArray(order.bound_openids)) {
+        order.bound_openids.forEach((value) => value && candidates.add(value));
+    }
+    if (Array.isArray(order.client_bound_openids)) {
+        order.client_bound_openids.forEach((value) => value && candidates.add(value));
+    }
+    return candidates.has(openid);
+}
+
 function toDate(value) {
     if (!value) return null;
     if (value instanceof Date) return value;
@@ -93,6 +112,16 @@ Page({
         loading: true
     },
 
+    ensureOwned() {
+        const openid = getCurrentClientOpenid();
+        const order = this.data.orderDetail;
+        if (order && orderBelongsToClient(order, openid)) {
+            return true;
+        }
+        wx.showToast({ title: '无权操作该订单', icon: 'none' });
+        return false;
+    },
+
     onLoad: function (options) {
         if (options.id) {
             this.setData({
@@ -120,7 +149,14 @@ Page({
         db.collection('bookings').doc(id).get({
           success: (res) => {
               const order = res.data;
-              
+
+              const openid = getCurrentClientOpenid();
+              if (!orderBelongsToClient(order, openid)) {
+                  wx.showToast({ title: '无权查看该订单', icon: 'none' });
+                  this.setData({ orderDetail: null, loading: false });
+                  return;
+              }
+
               // 【核心修改】 价格显示逻辑
               let finalFee = parseFloat(order.final_price) || 0; // 最终价格
               let isFinalPrice = order.status >= 35; // 状态 35 及以后显示最终价格
@@ -266,9 +302,10 @@ Page({
      * 【重用方法】 取消订单 (Status 10, 20 -> 0)
      */
     cancelOrder: function(id) {
-        wx.showModal({ 
-            title: '确认取消', 
-            content: '确定要取消这个订单吗?', 
+        if (!this.ensureOwned()) return;
+        wx.showModal({
+            title: '确认取消',
+            content: '确定要取消这个订单吗?',
             success: (res) => {
                 if (res.confirm) {
                     wx.showLoading({ title: '取消中...' });
@@ -295,9 +332,10 @@ Page({
      * 【新增方法】 确认金额 (Status 35 -> 40)
      */
     confirmPrice: function(id, price) {
-        wx.showModal({ 
-            title: '确认金额', 
-            content: `请确认服务金额为 ¥${parseFloat(price).toFixed(2)} ?`, 
+        if (!this.ensureOwned()) return;
+        wx.showModal({
+            title: '确认金额',
+            content: `请确认服务金额为 ¥${parseFloat(price).toFixed(2)} ?`,
             success: (res) => {
                 if (res.confirm) {
                     wx.showLoading({ title: '确认中...' });
@@ -324,6 +362,7 @@ Page({
      * 【重用方法】 立即支付 (Status 40 -> 50)
      */
     payNow: function(id) {
+        if (!this.ensureOwned()) return;
         wx.showLoading({ title: '正在唤起支付...' });
 
         // 【模拟支付成功】
@@ -346,6 +385,7 @@ Page({
     },
 
     contactMaster() {
+        if (!this.ensureOwned()) return;
         const phone = this.data.orderDetail?.master_phone || this.data.orderDetail?.masterPhone;
         if (!phone) {
             wx.showToast({ title: '暂无师傅电话', icon: 'none' });
@@ -371,6 +411,7 @@ Page({
     },
 
     goToAfterSale(scene = 'afterSale') {
+        if (!this.ensureOwned()) return;
         const orderId = this.data.orderId;
         wx.navigateTo({
             url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
@@ -378,6 +419,7 @@ Page({
     },
 
     goToReview() {
+        if (!this.ensureOwned()) return;
         const orderId = this.data.orderId;
         wx.navigateTo({
             url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`

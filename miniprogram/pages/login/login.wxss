@@ -127,9 +127,9 @@ page {
 }
 
 .statement {
-  font-size: 24rpx;
-  color: rgba(31, 41, 51, 0.55);
-  line-height: 1.6;
+  font-size: 26rpx;
+  color: rgba(31, 41, 51, 0.58);
+  line-height: 1.7;
 }
 
 .modal-mask {
@@ -179,38 +179,49 @@ page {
 .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 28rpx;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
+.auth-tip {
+  background: rgba(74, 108, 240, 0.08);
+  border-radius: 24rpx;
+  padding: 28rpx;
 }
 
-.input-label {
+.auth-tip-text {
   font-size: 26rpx;
-  color: rgba(31, 41, 51, 0.7);
+  color: rgba(31, 41, 51, 0.75);
+  line-height: 1.7;
 }
 
-input {
-  background: #f3f6fd;
-  border-radius: 20rpx;
-  padding: 24rpx;
-  color: #1f2933;
-  border: 1rpx solid rgba(74, 108, 240, 0.16);
-  font-size: 28rpx;
+.auth-button {
+  width: 100%;
+  height: 96rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #4a6cf0 0%, #4d8dff 100%);
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
 }
 
-.input-placeholder {
-  color: rgba(74, 108, 240, 0.55);
+.auth-button[disabled] {
+  opacity: 0.72;
+}
+
+.privacy-hint {
+  font-size: 22rpx;
+  color: rgba(31, 41, 51, 0.45);
+  text-align: center;
 }
 
 .modal-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 24rpx;
-  margin-top: 40rpx;
+  justify-content: center;
+  margin-top: 24rpx;
 }
 
 .modal-btn {

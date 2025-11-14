@@ -139,6 +139,9 @@ exports.main = async (event = {}) => {
 
   const action = event.action || 'get';
 
+  const normalizePhone = (value = '') => String(value).replace(/\s+/g, '').trim();
+  const isMobile = (value = '') => /^1\d{10}$/.test(value);
+
   try {
     await ensureCollection(PROFILE_COLLECTION);
 
@@ -251,6 +254,73 @@ exports.main = async (event = {}) => {
       const latestRes = await collection.doc(profileDoc._id).get();
       const latestDoc = latestRes.data || profileDoc;
 
+      const counters = await countOrdersByOpenids(buildOpenidSet(latestDoc, OPENID));
+      const profile = sanitizeProfile(latestDoc, counters);
+
+      return {
+        code: 0,
+        data: {
+          token: `CLIENT_${OPENID}_${Date.now()}`,
+          openid: OPENID,
+          profile
+        }
+      };
+    }
+
+    if (action === 'wechatPhoneLogin') {
+      const phone = normalizePhone(event.phone || event.phoneNumber || '');
+
+      if (!phone) {
+        return { code: -1, message: '手机号不能为空' };
+      }
+
+      if (!isMobile(phone)) {
+        return { code: -1, message: '手机号格式错误' };
+      }
+
+      const collection = db.collection(PROFILE_COLLECTION);
+
+      let profileDoc = null;
+      const profileRes = await collection.where({ phone }).limit(1).get();
+      if (profileRes.data && profileRes.data.length > 0) {
+        profileDoc = profileRes.data[0];
+      } else {
+        const now = db.serverDate();
+        const baseDoc = {
+          ...DEFAULT_PROFILE,
+          phone,
+          alias_accounts: [],
+          bound_openids: [OPENID],
+          client_openid: OPENID,
+          created_at: now,
+          updated_at: now
+        };
+
+        const addRes = await collection.add({ data: baseDoc });
+        const fetchRes = await collection.doc(addRes._id).get();
+        profileDoc = fetchRes.data;
+      }
+
+      if (!profileDoc) {
+        return { code: -1, message: '登录失败，请稍后重试' };
+      }
+
+      const aliasSet = new Set(Array.isArray(profileDoc.alias_accounts) ? profileDoc.alias_accounts : []);
+      const boundSet = new Set(Array.isArray(profileDoc.bound_openids) ? profileDoc.bound_openids : []);
+      boundSet.add(OPENID);
+
+      await collection.doc(profileDoc._id).update({
+        data: {
+          phone,
+          client_openid: OPENID,
+          updated_at: db.serverDate(),
+          alias_accounts: Array.from(aliasSet),
+          bound_openids: Array.from(boundSet)
+        }
+      });
+
+      const latestRes = await collection.doc(profileDoc._id).get();
+      const latestDoc = latestRes.data || profileDoc;
       const counters = await countOrdersByOpenids(buildOpenidSet(latestDoc, OPENID));
       const profile = sanitizeProfile(latestDoc, counters);
 
