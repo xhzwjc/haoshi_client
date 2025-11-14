@@ -14,12 +14,17 @@ Page({
         isAuthorizing: false,
         inputPlaceholder: '请输入手机号或万能账号',
         account: '',
-        password: ''
+        password: '',
+        clientLoginMethod: 'WECHAT'
     },
 
     onSelectRole(e) {
         const role = e.currentTarget.dataset.role;
         if (role === 'CLIENT') {
+            const cachedPhone = wx.getStorageSync('client_account_phone') || '';
+            const lastAccount = wx.getStorageSync('client_last_account') || '';
+            const defaultAccount = lastAccount || cachedPhone || '1';
+
             this.setData({
                 currentRole: role,
                 modalTitle: '客户微信快捷登录',
@@ -27,8 +32,10 @@ Page({
                 showLoginModal: true,
                 selectedRole: role,
                 isAuthorizing: false,
-                account: '',
-                password: ''
+                account: defaultAccount,
+                password: '6666',
+                clientLoginMethod: 'WECHAT',
+                inputPlaceholder: '请输入手机号或万能账号'
             });
             return;
         }
@@ -42,7 +49,8 @@ Page({
             selectedRole: role,
             account: '1',
             password: '6666',
-            isAuthorizing: false
+            isAuthorizing: false,
+            clientLoginMethod: 'WECHAT'
         });
     },
 
@@ -59,12 +67,38 @@ Page({
         this.resetModalState();
     },
 
+    onSwitchClientLoginMethod(e) {
+        const method = e.currentTarget.dataset.method;
+        if (!method || method === this.data.clientLoginMethod) {
+            return;
+        }
+
+        const updates = {
+            clientLoginMethod: method,
+            isAuthorizing: false
+        };
+
+        if (method === 'PASSWORD') {
+            const cachedPhone = wx.getStorageSync('client_account_phone') || '';
+            const lastAccount = wx.getStorageSync('client_last_account') || '';
+            updates.account = lastAccount || cachedPhone || '1';
+            updates.password = '6666';
+            updates.modalTitle = '客户账号登录';
+            updates.modalSubtitle = '支持使用手机号或万能账号 1，默认密码 6666。';
+        } else {
+            updates.modalTitle = '客户微信快捷登录';
+            updates.modalSubtitle = '授权微信手机号即可同步个人资料、常用地址与订单数据。';
+        }
+
+        this.setData(updates);
+    },
+
     async onAuthorizePhone(e) {
         if (this.data.isAuthorizing) {
             return;
         }
 
-        const { currentRole } = this.data;
+        const { currentRole, clientLoginMethod } = this.data;
         if (!currentRole) {
             wx.showToast({ title: '请先选择登录身份', icon: 'none' });
             return;
@@ -72,6 +106,11 @@ Page({
 
         if (currentRole !== 'CLIENT') {
             wx.showToast({ title: '请使用账号密码登录', icon: 'none' });
+            return;
+        }
+
+        if (clientLoginMethod !== 'WECHAT') {
+            wx.showToast({ title: '请切换到微信授权登录', icon: 'none' });
             return;
         }
 
@@ -122,7 +161,7 @@ Page({
                 throw new Error('手机号解析失败');
             }
 
-            await this.handleClientLogin(phone);
+            await this.handleClientWechatLogin(phone);
 
             this.resetModalState();
             this.redirectToHomePage(currentRole);
@@ -136,45 +175,97 @@ Page({
     },
 
     async onConfirmLogin() {
-        if (this.data.currentRole !== 'TECHNICIAN') {
+        const { currentRole, clientLoginMethod } = this.data;
+
+        if (currentRole === 'TECHNICIAN') {
+            const account = String(this.data.account || '').trim();
+            const password = String(this.data.password || '').trim();
+
+            if (!account || !password) {
+                wx.showToast({ title: '请输入账号和密码', icon: 'none' });
+                return;
+            }
+
+            wx.showLoading({ title: '登录中...', mask: true });
+
+            try {
+                const normalizedAccount = account.replace(/\s+/g, '');
+                const mockOpenid = `mock_openid_TECHNICIAN_${Date.now()}`;
+                const mockToken = `MOCK_TOKEN_TECHNICIAN_${Date.now()}`;
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                wx.setStorageSync('user_token', mockToken);
+                wx.setStorageSync('user_role', 'TECHNICIAN');
+                wx.setStorageSync('user_openid', mockOpenid);
+                wx.setStorageSync('technician_account_phone', normalizedAccount);
+
+                wx.showToast({ title: '登录成功', icon: 'success' });
+
+                this.resetModalState();
+                this.redirectToHomePage('TECHNICIAN');
+            } catch (error) {
+                console.error('家政端登录失败', error);
+                wx.showToast({ title: error.message || '登录失败', icon: 'none' });
+            } finally {
+                wx.hideLoading();
+            }
             return;
         }
 
-        const account = String(this.data.account || '').trim();
-        const password = String(this.data.password || '').trim();
+        if (currentRole === 'CLIENT' && clientLoginMethod === 'PASSWORD') {
+            const account = String(this.data.account || '').trim();
+            const password = String(this.data.password || '').trim();
 
-        if (!account || !password) {
-            wx.showToast({ title: '请输入账号和密码', icon: 'none' });
+            if (!account || !password) {
+                wx.showToast({ title: '请输入账号和密码', icon: 'none' });
+                return;
+            }
+
+            wx.showLoading({ title: '登录中...', mask: true });
+
+            try {
+                await this.handleClientPasswordLogin(account, password);
+
+                this.resetModalState();
+                this.redirectToHomePage('CLIENT');
+            } catch (error) {
+                console.error('客户账号登录失败', error);
+                wx.showToast({ title: error.message || '登录失败', icon: 'none' });
+            } finally {
+                wx.hideLoading();
+            }
             return;
-        }
-
-        wx.showLoading({ title: '登录中...', mask: true });
-
-        try {
-            const normalizedAccount = account.replace(/\s+/g, '');
-            const mockOpenid = `mock_openid_TECHNICIAN_${Date.now()}`;
-            const mockToken = `MOCK_TOKEN_TECHNICIAN_${Date.now()}`;
-
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            wx.setStorageSync('user_token', mockToken);
-            wx.setStorageSync('user_role', 'TECHNICIAN');
-            wx.setStorageSync('user_openid', mockOpenid);
-            wx.setStorageSync('technician_account_phone', normalizedAccount);
-
-            wx.showToast({ title: '登录成功', icon: 'success' });
-
-            this.resetModalState();
-            this.redirectToHomePage('TECHNICIAN');
-        } catch (error) {
-            console.error('家政端登录失败', error);
-            wx.showToast({ title: error.message || '登录失败', icon: 'none' });
-        } finally {
-            wx.hideLoading();
         }
     },
 
-    async handleClientLogin(phone) {
+    async handleClientPasswordLogin(account, password) {
+        const clientCloud = await app.waitClientCloudReady();
+        const res = await clientCloud.callFunction({
+            name: 'getClientProfile',
+            data: {
+                action: 'login',
+                account,
+                password
+            }
+        });
+
+        if (!res.result || res.result.code !== 0) {
+            throw new Error((res.result && res.result.message) || '登录失败');
+        }
+
+        const { token, openid, profile } = res.result.data || {};
+        if (!token || !openid) {
+            throw new Error('登录信息不完整');
+        }
+
+        const isUniversal = account === '1';
+        this.storeClientSession({ token, openid, profile, account, isUniversal });
+
+        wx.showToast({ title: '登录成功', icon: 'success' });
+    },
+
+    async handleClientWechatLogin(phone) {
         const clientCloud = await app.waitClientCloudReady();
         const res = await clientCloud.callFunction({
             name: 'getClientProfile',
@@ -193,22 +284,37 @@ Page({
             throw new Error('登录信息不完整');
         }
 
+        this.storeClientSession({ token, openid, profile, phone, account: phone });
+
+        wx.showToast({ title: '登录成功', icon: 'success' });
+    },
+
+    storeClientSession({ token, openid, profile, phone = '', account = '', isUniversal = false }) {
         wx.setStorageSync('user_token', token);
         wx.setStorageSync('user_role', 'CLIENT');
         wx.setStorageSync('user_openid', openid);
-        wx.setStorageSync('client_account_phone', phone);
 
         if (profile) {
             wx.setStorageSync('client_profile_cache', profile);
         }
 
-        wx.showToast({ title: '登录成功', icon: 'success' });
+        if (account) {
+            wx.setStorageSync('client_last_account', account);
+        }
+
+        const profilePhone = profile && profile.phone;
+        const resolvedPhone = phone || profilePhone;
+        if (resolvedPhone) {
+            wx.setStorageSync('client_account_phone', resolvedPhone);
+        } else if (!isUniversal && account && /^1\d{10}$/.test(account)) {
+            wx.setStorageSync('client_account_phone', account);
+        }
     },
 
     async simulateDevtoolsClientLogin() {
         try {
             wx.showLoading({ title: '模拟登录中...', mask: true });
-            await this.handleClientLogin('13800000000');
+            await this.handleClientWechatLogin('13800000000');
             this.resetModalState();
             this.redirectToHomePage('CLIENT');
         } catch (error) {
@@ -229,7 +335,8 @@ Page({
             isAuthorizing: false,
             inputPlaceholder: '请输入手机号或万能账号',
             account: '',
-            password: ''
+            password: '',
+            clientLoginMethod: 'WECHAT'
         });
     },
 
