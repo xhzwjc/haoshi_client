@@ -95,8 +95,9 @@ Page({
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
                 // 格式化最近订单数据
-                if (data.dashboardData && data.dashboardData.recentOrders) {
-                    data.dashboardData.recentOrders = data.dashboardData.recentOrders.map(order => {
+                if (data.dashboardData && Array.isArray(data.dashboardData.recentOrders)) {
+                    const limitedRecentOrders = data.dashboardData.recentOrders.slice(0, 5);
+                    data.dashboardData.recentOrders = limitedRecentOrders.map(order => {
                         // 格式化价格显示
                         let priceDisplay = '待核价';
                         if (order.final_price) {

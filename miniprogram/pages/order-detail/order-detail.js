@@ -37,10 +37,10 @@ function formatTimestamp(value) {
 
 function buildTimeline(order = {}) {
     const timeline = [];
-    const pushIfExists = (label, value) => {
+    const pushIfExists = (label, value, extra = {}) => {
         const formatted = formatTimestamp(value);
         if (formatted) {
-            timeline.push({ label, value: formatted });
+            timeline.push({ label, value: formatted, ...extra });
         }
     };
 
@@ -51,7 +51,35 @@ function buildTimeline(order = {}) {
     pushIfExists('提交报价', order.quote_submitted_at);
     pushIfExists('确认金额', order.amount_confirmed_at);
     pushIfExists('支付', order.paid_at);
-    pushIfExists('评价', order.review_submitted_at);
+
+    const review = order.review || {};
+    if (order.review_submitted_at) {
+        const reviewExtra = {};
+        const comment = review.comment || order.review_comment || '';
+        if (comment) {
+            reviewExtra.comment = comment;
+        }
+        const rating = review.rating !== undefined && review.rating !== null
+            ? review.rating
+            : order.review_rating;
+        if (rating !== undefined && rating !== null && rating !== '') {
+            const numericRating = typeof rating === 'number' ? rating : Number(rating);
+            reviewExtra.rating = Number.isNaN(numericRating) ? rating : numericRating;
+        }
+        const replyContent = review.reply || order.review_reply;
+        if (replyContent) {
+            reviewExtra.reply = replyContent;
+            const replyTime = review.reply_at || order.review_reply_at;
+            const formattedReplyTime = formatTimestamp(replyTime);
+            if (formattedReplyTime) {
+                reviewExtra.reply_at = formattedReplyTime;
+            }
+        }
+        pushIfExists('评价', order.review_submitted_at, reviewExtra);
+    } else {
+        pushIfExists('评价', order.review_submitted_at);
+    }
+
     pushIfExists('售后申请', order.after_sale_submitted_at);
     pushIfExists('取消', order.cancelled_at);
 

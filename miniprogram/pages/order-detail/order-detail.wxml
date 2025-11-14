@@ -81,6 +81,22 @@
                     <view class="timeline-content">
                         <text class="timeline-label">{{item.label}}</text>
                         <text class="timeline-value">{{item.value}}</text>
+                        <view class="timeline-review" wx:if="{{item.comment || item.reply}}">
+                            <view class="review-block" wx:if="{{item.comment}}">
+                                <view class="review-header">
+                                    <text class="review-title">客户评价</text>
+                                    <text class="review-rating" wx:if="{{item.rating !== undefined && item.rating !== ''}}">评分：{{item.rating}}分</text>
+                                </view>
+                                <text class="review-content">{{item.comment}}</text>
+                            </view>
+                            <view class="review-block reply" wx:if="{{item.reply}}">
+                                <view class="review-header">
+                                    <text class="review-title">师傅回复</text>
+                                    <text class="review-time" wx:if="{{item.reply_at}}">{{item.reply_at}}</text>
+                                </view>
+                                <text class="review-content">{{item.reply}}</text>
+                            </view>
+                        </view>
                     </view>
                 </view>
             </view>
