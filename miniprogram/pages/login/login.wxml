@@ -12,7 +12,7 @@
 
     <view class="headline">
       <text class="headline-main">选择你的角色</text>
-      <text class="headline-sub">使用微信手机号授权登录，即可同步个人资料、地址和全部订单数据。</text>
+      <text class="headline-sub">客户可通过微信手机号快捷登录并同步数据，家政端沿用账号密码登录（万能账号 1，默认密码 6666）。</text>
     </view>
 
     <view class="role-panel">
@@ -28,7 +28,7 @@
       </view>
     </view>
 
-    <view class="statement">授权后我们仅用于账号验证，所有订单与资料都会按手机号自动隔离，确保每位用户的数据安全。</view>
+    <view class="statement">授权或登录仅用于身份验证，系统会按手机号隔离客户数据；家政端稍后也会接入管理后台统一分配账号。</view>
   </view>
 </view>
 
@@ -37,19 +37,32 @@
   <view class="modal-card">
     <view class="modal-header">
       <text class="modal-title">{{modalTitle}}</text>
-      <text class="modal-subtitle">{{modalSubtitle}}</text>
+      <text class="modal-subtitle" wx:if="{{modalSubtitle}}">{{modalSubtitle}}</text>
     </view>
     <view class="modal-body">
-      <view class="auth-tip">
-        <text class="auth-tip-text">{{currentRole === 'CLIENT' ? '我们仅会将手机号用于识别您的客户账号，保障订单、地址等数据仅本人可见。' : '手机号仅用于验证师傅身份并绑定工作台，避免不同账号之间的数据交叉。'}}</text>
-      </view>
-      <button class="auth-button" open-type="getPhoneNumber" bindgetphonenumber="onAuthorizePhone" loading="{{isAuthorizing}}" disabled="{{isAuthorizing}}">
-        授权微信手机号登录
-      </button>
-      <view class="privacy-hint">点击授权即代表您同意《用户隐私政策》和《服务协议》</view>
+      <block wx:if="{{currentRole === 'CLIENT'}}">
+        <view class="auth-tip">
+          <text class="auth-tip-text">我们仅会将手机号用于识别您的客户账号，保障订单、地址等数据仅本人可见。</text>
+        </view>
+        <button class="auth-button" open-type="getPhoneNumber" bindgetphonenumber="onAuthorizePhone" loading="{{isAuthorizing}}" disabled="{{isAuthorizing}}">
+          授权微信手机号登录
+        </button>
+        <view class="privacy-hint">点击授权即代表您同意《用户隐私政策》和《服务协议》</view>
+      </block>
+      <block wx:elif="{{currentRole === 'TECHNICIAN'}}">
+        <view class="input-group">
+          <text class="input-label">账号</text>
+          <input placeholder="{{inputPlaceholder}}" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+        </view>
+        <view class="input-group">
+          <text class="input-label">密码</text>
+          <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+        </view>
+      </block>
     </view>
-    <view class="modal-actions">
+    <view class="modal-actions {{currentRole === 'TECHNICIAN' ? 'align-end' : 'center'}}">
       <button class="modal-btn ghost" bindtap="onCancelLogin" disabled="{{isAuthorizing}}">取消</button>
+      <button wx:if="{{currentRole === 'TECHNICIAN'}}" class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
     </view>
   </view>
 </view>
