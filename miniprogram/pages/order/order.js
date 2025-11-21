@@ -2,6 +2,34 @@
 const db = wx.cloud.database();
 const _ = db.command;
 
+function getCurrentClientOpenid() {
+  return wx.getStorageSync('user_openid') || '';
+}
+
+function buildClientOwnershipMatcher(openid) {
+  return _.or([
+    { client_openid: openid },
+    { _openid: openid },
+    { bound_openids: _.in([openid]) },
+    { client_bound_openids: _.in([openid]) }
+  ]);
+}
+
+function orderBelongsToClient(order = {}, openid) {
+  if (!openid) return false;
+  const candidates = new Set();
+  if (order.client_openid) candidates.add(order.client_openid);
+  if (order._openid) candidates.add(order._openid);
+  if (order.clientOpenid) candidates.add(order.clientOpenid);
+  if (Array.isArray(order.bound_openids)) {
+    order.bound_openids.forEach((value) => value && candidates.add(value));
+  }
+  if (Array.isArray(order.client_bound_openids)) {
+    order.client_bound_openids.forEach((value) => value && candidates.add(value));
+  }
+  return candidates.has(openid);
+}
+
 Page({
   data: {
     tabs: [
@@ -73,29 +101,42 @@ Page({
 
     const { page, pageSize, activeTab, tabs } = this.data;
     const currentTab = tabs[activeTab];
-
-    const currentPage = reset ? 1 : page; // 页码
+    const currentPage = reset ? 1 : page;
     const skipCount = (currentPage - 1) * pageSize;
+    const openid = getCurrentClientOpenid();
+
+    if (!openid) {
+      this.setData({
+        loading: false,
+        filteredOrders: reset ? [] : this.data.filteredOrders,
+        hasMore: false
+      });
+      if (reset) {
+        wx.hideLoading();
+      }
+      wx.showToast({ title: '请先登录后查看订单', icon: 'none' });
+      if (typeof callback === 'function') callback();
+      return;
+    }
 
     this.setData({ loading: true });
     if (reset) wx.showLoading({ title: '加载中...' });
 
-    let condition = {};
-    if (currentTab.status === 'all') {
-      // 全部订单不过滤
-    } else if (currentTab.status === 'running') {
-      condition.status = _.in([10, 30, 35]);
+    const matchers = [buildClientOwnershipMatcher(openid)];
+    if (currentTab.status === 'running') {
+      matchers.push({ status: _.in([10, 30, 35]) });
     } else if (currentTab.status === 'completed') {
-      condition.status = _.in([50, 60]);
+      matchers.push({ status: _.in([50, 60]) });
     } else if (currentTab.status === 'cancelled') {
-      condition.status = _.in([0, -1]);
-    } else {
-      condition.status = currentTab.status;
+      matchers.push({ status: _.in([0, -1]) });
+    } else if (currentTab.status !== 'all') {
+      matchers.push({ status: currentTab.status });
     }
 
-    // 分页查询
+    const whereCondition = matchers.length === 1 ? matchers[0] : _.and(...matchers);
+
     db.collection('bookings')
-      .where(condition)
+      .where(whereCondition)
       .orderBy('created_at', 'desc')
       .skip(skipCount)
       .limit(pageSize)
@@ -201,8 +242,38 @@ Page({
     }
   },
 
+  async ensureOrderOwned(id) {
+    const openid = getCurrentClientOpenid();
+    if (!openid) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return false;
+    }
+
+    const localOrder = this.data.filteredOrders.find(item => item._id === id);
+    if (localOrder && orderBelongsToClient(localOrder, openid)) {
+      return true;
+    }
+
+    try {
+      const res = await db.collection('bookings').doc(id).get();
+      if (res.data && orderBelongsToClient(res.data, openid)) {
+        return true;
+      }
+    } catch (err) {
+      console.warn('校验订单归属失败', err);
+    }
+
+    wx.showToast({ title: '无权操作该订单', icon: 'none' });
+    return false;
+  },
+
   contactMasterFromList(orderId) {
     const order = this.data.filteredOrders.find(item => item._id === orderId);
+    const openid = getCurrentClientOpenid();
+    if (!order || !orderBelongsToClient(order, openid)) {
+      wx.showToast({ title: '无权查看该订单', icon: 'none' });
+      return;
+    }
     const phone = order?.master_phone || order?.masterPhone;
     if (!phone) {
       wx.showToast({ title: '暂无师傅电话', icon: 'none' });
@@ -216,19 +287,25 @@ Page({
     });
   },
 
-  goToAfterSale(orderId, scene = 'afterSale') {
+  async goToAfterSale(orderId, scene = 'afterSale') {
+    const canOperate = await this.ensureOrderOwned(orderId);
+    if (!canOperate) return;
     wx.navigateTo({
       url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
     });
   },
 
-  goToReview(orderId) {
+  async goToReview(orderId) {
+    const canOperate = await this.ensureOrderOwned(orderId);
+    if (!canOperate) return;
     wx.navigateTo({
       url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
     });
   },
 
-  cancelOrder(id) {
+  async cancelOrder(id) {
+    const canOperate = await this.ensureOrderOwned(id);
+    if (!canOperate) return;
     wx.showModal({
       title: '确认取消',
       content: '确定要取消这个订单吗?',
@@ -250,7 +327,9 @@ Page({
     });
   },
 
-  confirmPrice(id, price) {
+  async confirmPrice(id, price) {
+    const canOperate = await this.ensureOrderOwned(id);
+    if (!canOperate) return;
     wx.showModal({
       title: '确认金额',
       content: `请确认服务金额为 ¥${price} ?`,
@@ -276,7 +355,9 @@ Page({
     });
   },
 
-  payNow(id) {
+  async payNow(id) {
+    const canOperate = await this.ensureOrderOwned(id);
+    if (!canOperate) return;
     wx.showLoading({ title: '正在唤起支付...' });
     setTimeout(() => {
       db.collection('bookings').doc(id).update({

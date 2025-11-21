@@ -228,6 +228,11 @@ page {
   margin-left: 6rpx;
 }
 
+.payment-info .price .currency {
+  font-size: 24rpx;
+  margin-right: 4rpx;
+}
+
 .card-actions {
   display: flex;
   flex-shrink: 0;

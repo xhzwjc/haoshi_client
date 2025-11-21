@@ -66,11 +66,35 @@ Page({
             confirmText: '退出',
             cancelText: '取消',
             success: (res) => {
-                if (res.confirm) {
-                    app.logout();
-                }
+                if (!res.confirm) return;
+                this.performLogout();
             }
         });
+    },
+
+    performLogout() {
+        if (app && typeof app.logout === 'function') {
+            app.logout();
+            return;
+        }
+
+        try {
+            wx.removeStorageSync('user_token');
+            wx.removeStorageSync('user_role');
+            wx.removeStorageSync('user_openid');
+            wx.removeStorageSync('client_profile_cache');
+            wx.removeStorageSync('client_account_phone');
+            wx.removeStorageSync('client_last_account');
+            wx.removeStorageSync('technician_profile_cache');
+            wx.removeStorageSync('technician_account_phone');
+        } catch (err) {
+            console.warn('技师端登出兜底逻辑异常', err);
+        }
+
+        wx.showToast({ title: '已退出登录', icon: 'none' });
+        setTimeout(() => {
+            wx.reLaunch({ url: app?.globalData?.loginUrl || '/pages/login/login' });
+        }, 300);
     },
 
     /**
@@ -95,8 +119,9 @@ Page({
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
                 // 格式化最近订单数据
-                if (data.dashboardData && data.dashboardData.recentOrders) {
-                    data.dashboardData.recentOrders = data.dashboardData.recentOrders.map(order => {
+                if (data.dashboardData && Array.isArray(data.dashboardData.recentOrders)) {
+                    const limitedRecentOrders = data.dashboardData.recentOrders.slice(0, 5);
+                    data.dashboardData.recentOrders = limitedRecentOrders.map(order => {
                         // 格式化价格显示
                         let priceDisplay = '待核价';
                         if (order.final_price) {

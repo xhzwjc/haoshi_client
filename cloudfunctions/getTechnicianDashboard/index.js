@@ -109,7 +109,7 @@ exports.main = async (event, context) => {
         }
       ]))
       .orderBy('created_at', 'desc')
-      .limit(10) // 增加到10条，显示更多订单
+      .limit(5) // 仅返回最近的5条订单
       .get();
 
     const dashboardData = {

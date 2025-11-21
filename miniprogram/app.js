@@ -108,6 +108,8 @@ App({
       wx.removeStorageSync('client_profile_cache');
       wx.removeStorageSync('client_account_phone');
       wx.removeStorageSync('client_last_account');
+      wx.removeStorageSync('technician_profile_cache');
+      wx.removeStorageSync('technician_account_phone');
     } catch (err) {
       console.warn('清理登录状态失败', err);
     }

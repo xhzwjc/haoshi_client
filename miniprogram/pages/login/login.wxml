@@ -12,7 +12,7 @@
 
     <view class="headline">
       <text class="headline-main">选择你的角色</text>
-      <text class="headline-sub">登录后即可同步个人资料、常用地址与全部订单数据。</text>
+      <text class="headline-sub">客户可通过微信手机号或账号密码登录并同步数据，家政端沿用账号密码登录（万能账号 1，默认密码 6666）。</text>
     </view>
 
     <view class="role-panel">
@@ -28,7 +28,7 @@
       </view>
     </view>
 
-    <view class="statement">模拟登录仅用于产品演示，不会产生真实扣费。新客户首次登录请使用默认密码 6666。</view>
+    <view class="statement">授权或登录仅用于身份验证，系统会按手机号隔离客户数据；家政端稍后也会接入管理后台统一分配账号。</view>
   </view>
 </view>
 
@@ -37,21 +37,56 @@
   <view class="modal-card">
     <view class="modal-header">
       <text class="modal-title">{{modalTitle}}</text>
-      <text class="modal-subtitle">账号需为已填写资料的手机号，首次登录默认密码 6666</text>
+      <text class="modal-subtitle" wx:if="{{modalSubtitle}}">{{modalSubtitle}}</text>
     </view>
     <view class="modal-body">
-      <view class="input-group">
-        <text class="input-label">账号</text>
-        <input placeholder="{{inputPlaceholder}}" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
-      </view>
-      <view class="input-group">
-        <text class="input-label">密码</text>
-        <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
-      </view>
+      <block wx:if="{{currentRole === 'CLIENT'}}">
+        <view class="method-switch">
+          <view class="method-pill {{clientLoginMethod === 'WECHAT' ? 'active' : ''}}" bindtap="onSwitchClientLoginMethod" data-method="WECHAT">
+            <text class="method-title">微信授权</text>
+            <text class="method-desc">免输账号密码</text>
+          </view>
+          <view class="method-pill {{clientLoginMethod === 'PASSWORD' ? 'active' : ''}}" bindtap="onSwitchClientLoginMethod" data-method="PASSWORD">
+            <text class="method-title">手机号密码</text>
+            <text class="method-desc">沿用原登录方式</text>
+          </view>
+        </view>
+
+        <block wx:if="{{clientLoginMethod === 'WECHAT'}}">
+          <view class="auth-tip">
+            <text class="auth-tip-text">我们仅会将手机号用于识别您的客户账号，保障订单、地址等数据仅本人可见。</text>
+          </view>
+          <button class="auth-button" open-type="getPhoneNumber" bindgetphonenumber="onAuthorizePhone" loading="{{isAuthorizing}}" disabled="{{isAuthorizing}}">
+            授权微信手机号登录
+          </button>
+          <view class="privacy-hint">点击授权即代表您同意《用户隐私政策》和《服务协议》</view>
+        </block>
+
+        <block wx:elif="{{clientLoginMethod === 'PASSWORD'}}">
+          <view class="input-group">
+            <text class="input-label">账号</text>
+            <input placeholder="请输入手机号或万能账号" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">密码</text>
+            <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+          </view>
+        </block>
+      </block>
+      <block wx:elif="{{currentRole === 'TECHNICIAN'}}">
+        <view class="input-group">
+          <text class="input-label">账号</text>
+          <input placeholder="{{inputPlaceholder}}" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+        </view>
+        <view class="input-group">
+          <text class="input-label">密码</text>
+          <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+        </view>
+      </block>
     </view>
-    <view class="modal-actions">
-      <button class="modal-btn ghost" bindtap="onCancelLogin">取消</button>
-      <button class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
+    <view class="modal-actions {{(currentRole === 'TECHNICIAN' || (currentRole === 'CLIENT' && clientLoginMethod === 'PASSWORD')) ? 'align-end' : 'center'}}">
+      <button class="modal-btn ghost" bindtap="onCancelLogin" disabled="{{isAuthorizing}}">取消</button>
+      <button wx:if="{{currentRole === 'TECHNICIAN' || (currentRole === 'CLIENT' && clientLoginMethod === 'PASSWORD')}}" class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
     </view>
   </view>
 </view>
