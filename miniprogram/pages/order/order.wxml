@@ -61,9 +61,7 @@
             <view class="payment-info">
               <text wx:if="{{item.is_range}}">报价:</text>
               <text wx:else>实付:</text>
-              <text class="price">
-                {{item.payment_fmt}}
-              </text>
+              <text class="price">{{item.payment_fmt}}</text>
             </view>
             <view class="card-actions">
               <block wx:if="{{item.status === 10}}">

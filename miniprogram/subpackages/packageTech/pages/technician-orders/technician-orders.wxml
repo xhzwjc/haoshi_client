@@ -59,9 +59,7 @@
             <view class="payment-info">
               <text wx:if="{{item.status < 35}}">报价:</text>
               <text wx:else>实付:</text>
-              <text class="price">
-                {{item.payment_fmt || '待核价'}}
-              </text>
+              <text class="price">{{item.payment_fmt || '待核价'}}</text>
             </view>
             <view class="card-actions">
               <button class="btn btn-plain" bindtap="viewDetail" data-order="{{item}}">查看详情</button>
