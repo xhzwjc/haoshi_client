@@ -262,8 +262,45 @@ page { background-color: #F7F8FA; }
 .order-card-mini .payment-info { font-size: 26rpx; color: #666; display: flex; align-items: baseline; flex-shrink: 0; margin-right: 10rpx; }
 .order-card-mini .payment-info .price { font-size: 30rpx; color: #FA5151; font-weight: bold; margin-left: 6rpx; }
 .order-card-mini .card-actions { display: flex; gap: 8rpx; flex-wrap: wrap; justify-content: flex-end; }
-.order-card-mini .btn { font-size: 24rpx; height: 56rpx; line-height: 56rpx; padding: 0 16rpx; border-radius: 28rpx; margin: 0; width: 160rpx; }
-.order-card-mini .btn::after { border: none; }
-.order-card-mini .btn-plain { background: #fff; border: 1rpx solid #ccc; color: #333; }
-.order-card-mini .btn-dark { background: #333; color: #fff; border: 1rpx solid #333; }
+/* 订单卡片按钮样式优化 */
+.order-card-mini .btn { 
+  font-size: 24rpx; 
+  font-weight: 600;
+  height: 60rpx; 
+  padding: 0 16rpx; 
+  border-radius: 30rpx; 
+  margin: 0; 
+  width: 160rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.25s ease;
+}
+
+.order-card-mini .btn::after { 
+  border: none; 
+}
+
+.order-card-mini .btn-plain { 
+  background: #ffffff; 
+  border: 2rpx solid #e1e8ed; 
+  color: #536471; 
+}
+
+.order-card-mini .btn-plain:active {
+  background: #f7f9fa;
+  transform: scale(0.96);
+}
+
+.order-card-mini .btn-dark { 
+  background: linear-gradient(135deg, #0f1419 0%, #1c2938 100%); 
+  color: #ffffff; 
+  border: none;
+  box-shadow: 0 2rpx 8rpx rgba(15, 20, 25, 0.15);
+}
+
+.order-card-mini .btn-dark:active {
+  transform: scale(0.96);
+}
 .empty-recent { text-align: center; color: #999; font-size: 26rpx; padding: 40rpx 0; }

@@ -428,22 +428,34 @@ Page({
   async payNow(id) {
     const canOperate = await this.ensureOrderOwned(id);
     if (!canOperate) return;
+
     wx.showLoading({ title: '正在唤起支付...' });
-    setTimeout(() => {
-      db.collection('bookings').doc(id).update({
-        data: {
-          status: 50,
-          paid_at: db.serverDate(),
-          updated_at: db.serverDate()
+
+    // 模拟支付延迟
+    setTimeout(async () => {
+      try {
+        const result = await wx.cloud.callFunction({
+          name: 'payOrder',
+          data: { orderId: id }
+        });
+
+        console.info('支付订单云函数返回:', result);
+
+        if (result.result && result.result.code === 0) {
+          wx.showToast({ title: result.result.message || '支付成功', icon: 'success' });
+          await this.loadOrders(true, null, { skipLoading: true, force: true });
+        } else {
+          wx.showToast({
+            title: result.result?.message || '支付失败',
+            icon: 'none'
+          });
         }
-      }).then(() => {
-        wx.hideLoading();
-        wx.showToast({ title: '支付成功', icon: 'success' });
-        this.loadOrders(true);
-      }).catch(() => {
-        wx.hideLoading();
+      } catch (err) {
+        console.error('调用支付订单云函数失败:', err);
         wx.showToast({ title: '支付失败', icon: 'none' });
-      });
+      } finally {
+        wx.hideLoading();
+      }
     }, 1000);
   }
 });
