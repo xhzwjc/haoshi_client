@@ -17,7 +17,7 @@
                 
                 <text class="price-value">
                     <block wx:if="{{orderDetail.is_final_price}}">
-                        <text>实付: ¥{{orderDetail.price_display}}</text>
+                        <text>1: ¥{{orderDetail.price_display}}</text>
                     </block>
                     <block wx:else>
                         <text>价格范围: ¥{{orderDetail.price_display}}</text>
