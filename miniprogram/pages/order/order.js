@@ -207,12 +207,21 @@ Page({
   },
 
   handleListAction(e) {
-    const { action, id, price } = e.currentTarget.dataset;
+    const dataset = (e && (e.currentTarget?.dataset || e.target?.dataset)) || {};
+    const normalizedAction = (dataset.action || '').trim();
+    const id = dataset.id || dataset.orderId;
+    const price = dataset.price;
+
+    if (!id) {
+      wx.showToast({ title: '未找到订单信息', icon: 'none' });
+      return;
+    }
+
     if (e && typeof e.stopPropagation === 'function') {
       e.stopPropagation();
     }
 
-    switch (action) {
+    switch (normalizedAction) {
       case '取消订单':
         this.cancelOrder(id);
         break;
@@ -330,9 +339,17 @@ Page({
   async confirmPrice(id, price) {
     const canOperate = await this.ensureOrderOwned(id);
     if (!canOperate) return;
+
+    const order = this.data.filteredOrders.find(item => item._id === id) || {};
+    const rawPrice = price ?? order.final_price ?? order.payment_fmt;
+    const numericPrice = parseFloat(rawPrice);
+    const displayPrice = Number.isFinite(numericPrice)
+      ? numericPrice.toFixed(2)
+      : (rawPrice || '');
+
     wx.showModal({
       title: '确认金额',
-      content: `请确认服务金额为 ¥${price} ?`,
+      content: displayPrice ? `请确认服务金额为 ¥${displayPrice} ?` : '请确认服务金额是否正确？',
       success: (res) => {
         if (res.confirm) {
           wx.showLoading({ title: '确认中...' });
