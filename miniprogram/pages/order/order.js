@@ -226,6 +226,7 @@ Page({
         this.goToAfterSale(id, 'amount');
         break;
       case '立即支付':
+      case '即支付':
         this.payNow(id);
         break;
       case '评价服务':

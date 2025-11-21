@@ -109,8 +109,7 @@ Page({
     data: {
         orderId: '',
         orderDetail: null,
-        loading: true,
-        actions: []
+        loading: true
     },
 
     ensureOwned() {
@@ -214,176 +213,15 @@ Page({
 
               this.setData({
                   orderDetail: order,
-                  actions: this.getActions(order.status),
                   loading: false
               });
             },
             fail: (err) => {
                 console.error('获取订单详情失败:', err);
                 wx.showToast({ title: '加载失败', icon: 'error' });
-                this.setData({ loading: false, actions: [] });
+                this.setData({ loading: false });
             }
         });
-    },
-
-    /**
-     * 【修改】 根据订单状态获取操作按钮组
-     */
-    getActions: function(status) {
-        if (!status) return [];
-        
-        switch (status) {
-          case 10: // 待接单
-              return [{ text: '联系客服', type: 'default' }, { text: '取消订单', type: 'warn' }];
-          case 20: // 待服务
-              return [{ text: '联系师傅', type: 'default' }, { text: '取消订单', type: 'warn' }];
-          case 30: // 服务中
-              return [{ text: '联系客服', type: 'default' }, { text: '联系师傅', type: 'primary' }];
-          case 35: // 待确认金额 (新状态)
-              return [{ text: '金额有误', type: 'warn' }, { text: '确认金额', type: 'primary' }];
-          case 40: // 待支付
-              return [{ text: '联系客服', type: 'default' }, { text: '立即支付', type: 'primary' }];
-          case 50: // 待评价
-              return [{ text: '申请售后', type: 'default' }, { text: '评价服务', type: 'primary' }];
-          case 60: // 已完成
-              return [{ text: '再次预约', type: 'default' }, { text: '申请售后', type: 'default' }];
-          case 0: // 已取消
-          case -1: // 已拒单
-              return [{ text: '再次预约', type: 'primary' }];
-          default:
-              return [];
-        }
-    },
-    
-    /**
-     * 统一处理底部按钮点击事件
-     */
-    handleAction: function(e) {
-        const action = e.currentTarget.dataset.action;
-        const orderId = this.data.orderId;
-        const finalPrice = this.data.orderDetail.final_price;
-        
-        // 确保不会触发其他元素
-        e.stopPropagation();
-
-        switch (action) {
-            case '取消订单':
-                this.cancelOrder(orderId);
-                break;
-            case '确认金额':
-                this.confirmPrice(orderId, finalPrice);
-                break;
-            case '立即支付':
-                this.payNow(orderId);
-                break;
-            case '联系客服':
-                this.contactSupport();
-                break;
-            case '金额有误':
-                this.goToAfterSale('amount');
-                break;
-            case '申请售后':
-                this.goToAfterSale('afterSale');
-                break;
-            case '联系师傅':
-                this.contactMaster();
-                break;
-            case '评价服务':
-                this.goToReview();
-                break;
-            case '再次预约':
-                // 跳转到服务详情页
-                wx.showToast({ title: '跳转服务详情页...', icon: 'none' });
-                break;
-            default:
-                wx.showToast({ title: '未知操作', icon: 'none' });
-        }
-    },
-
-    /**
-     * 【重用方法】 取消订单 (Status 10, 20 -> 0)
-     */
-    cancelOrder: function(id) {
-        if (!this.ensureOwned()) return;
-        wx.showModal({
-            title: '确认取消',
-            content: '确定要取消这个订单吗?',
-            success: (res) => {
-                if (res.confirm) {
-                    wx.showLoading({ title: '取消中...' });
-                    db.collection('bookings').doc(id).update({
-                      data: {
-                        status: 0,
-                        cancelled_at: db.serverDate(),
-                        updated_at: db.serverDate()
-                      }
-                    }).then(() => {
-                      wx.hideLoading();
-                      wx.showToast({ title: '取消成功', icon: 'success' });
-                      this.fetchOrderDetail(id); // 刷新详情页状态
-                    }).catch(err => {
-                      wx.hideLoading();
-                      wx.showToast({ title: '操作失败', icon: 'none' });
-                    });
-                }
-            }
-        });
-    },
-    
-    /**
-     * 【新增方法】 确认金额 (Status 35 -> 40)
-     */
-    confirmPrice: function(id, price) {
-        if (!this.ensureOwned()) return;
-        wx.showModal({
-            title: '确认金额',
-            content: `请确认服务金额为 ¥${parseFloat(price).toFixed(2)} ?`,
-            success: (res) => {
-                if (res.confirm) {
-                    wx.showLoading({ title: '确认中...' });
-                    db.collection('bookings').doc(id).update({
-                      data: {
-                        status: 40, // 变为 "待支付"
-                        amount_confirmed_at: db.serverDate(),
-                        updated_at: db.serverDate()
-                      }
-                    }).then(() => {
-                      wx.hideLoading();
-                      wx.showToast({ title: '请支付', icon: 'none' });
-                      this.fetchOrderDetail(id); // 刷新详情页状态
-                    }).catch(err => {
-                      wx.hideLoading();
-                      wx.showToast({ title: '操作失败', icon: 'none' });
-                    });
-                }
-            }
-        });
-    },
-
-    /**
-     * 【重用方法】 立即支付 (Status 40 -> 50)
-     */
-    payNow: function(id) {
-        if (!this.ensureOwned()) return;
-        wx.showLoading({ title: '正在唤起支付...' });
-
-        // 【模拟支付成功】
-        setTimeout(() => {
-          db.collection('bookings').doc(id).update({
-            data: {
-              status: 50, // 变为 "待评价"
-              paid_at: db.serverDate(),
-              updated_at: db.serverDate()
-            }
-          }).then(() => {
-            wx.hideLoading();
-            wx.showToast({ title: '支付成功', icon: 'success' });
-            this.fetchOrderDetail(id); // 刷新详情页状态
-          }).catch(err => {
-            wx.hideLoading();
-            wx.showToast({ title: '支付失败', icon: 'none' });
-          });
-        }, 1000);
     },
 
     contactMaster() {
@@ -396,35 +234,6 @@ Page({
         wx.makePhoneCall({
             phoneNumber: phone.toString(),
             fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
-        });
-    },
-
-    contactSupport() {
-        const app = getApp();
-        const phone = app?.globalData?.servicePhone;
-        if (!phone) {
-            wx.showToast({ title: '暂未配置客服', icon: 'none' });
-            return;
-        }
-        wx.makePhoneCall({
-            phoneNumber: phone,
-            fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
-        });
-    },
-
-    goToAfterSale(scene = 'afterSale') {
-        if (!this.ensureOwned()) return;
-        const orderId = this.data.orderId;
-        wx.navigateTo({
-            url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
-        });
-    },
-
-    goToReview() {
-        if (!this.ensureOwned()) return;
-        const orderId = this.data.orderId;
-        wx.navigateTo({
-            url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
         });
     },
 

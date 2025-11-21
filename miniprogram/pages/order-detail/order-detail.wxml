@@ -54,7 +54,7 @@
                 <view class="info-item" wx:if="{{orderDetail.master_phone}}">
                     <text class="label">联系电话</text>
                     <text class="value">{{orderDetail.master_phone}}</text>
-                    <text class="copy-btn" bindtap="handleAction" data-action="联系师傅">拨打</text> 
+                    <text class="copy-btn" bindtap="contactMaster">拨打</text>
                 </view>
             </view>
         </view>
@@ -122,15 +122,4 @@
         </view>
     </block>
     
-    <view class="bottom-bar action-bar" wx:if="{{!loading}}">
-        <block wx:for="{{actions}}" wx:key="text">
-            <button
-                class="action-btn {{item.type === 'primary' ? 'primary-btn' : (item.type === 'warn' ? 'warn-btn' : 'default-btn')}}"
-                data-action="{{item.text}}"
-                bindtap="handleAction"
-            >
-                {{item.text}}
-            </button>
-        </block>
-    </view>
 </view>
