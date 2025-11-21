@@ -62,7 +62,7 @@
               <text wx:if="{{item.is_range}}">报价:</text>
               <text wx:else>实付:</text>
               <text class="price">
-                <text wx:if="{{!item.is_range}}">¥</text>{{item.payment_fmt}}
+                {{item.payment_fmt}}
               </text>
             </view>
             <view class="card-actions">

@@ -24,7 +24,7 @@ page {
   font-weight: bold;
 }
 
-/* 价格 */
+/* 价格 - 统一通过::before添加￥符号 */
 .price {
   font-size: 32rpx;
   color: #FA5151;
