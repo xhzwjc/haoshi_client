@@ -207,12 +207,19 @@ Page({
   },
 
   handleListAction(e) {
-    const { action, id, price } = e.currentTarget.dataset;
+    const { action = '', id, price } = e.currentTarget.dataset || {};
+    const normalizedAction = action.trim();
+
+    if (!id) {
+      wx.showToast({ title: '未找到订单信息', icon: 'none' });
+      return;
+    }
+
     if (e && typeof e.stopPropagation === 'function') {
       e.stopPropagation();
     }
 
-    switch (action) {
+    switch (normalizedAction) {
       case '取消订单':
         this.cancelOrder(id);
         break;
