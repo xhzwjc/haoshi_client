@@ -96,8 +96,13 @@ Page({
    * @param {boolean} reset 是否重置列表（true=第一页）
    * @param {function} callback 加载完成后的回调
    */
-  loadOrders(reset = false, callback) {
-    if (this.data.loading) return;
+  loadOrders(reset = false, callback, options = {}) {
+    const { skipLoading = false } = options || {};
+
+    if (this.data.loading) {
+      if (typeof callback === 'function') callback();
+      return Promise.resolve();
+    }
 
     const { page, pageSize, activeTab, tabs } = this.data;
     const currentTab = tabs[activeTab];
@@ -111,7 +116,7 @@ Page({
         filteredOrders: reset ? [] : this.data.filteredOrders,
         hasMore: false
       });
-      if (reset) {
+      if (reset && !skipLoading) {
         wx.hideLoading();
       }
       wx.showToast({ title: '请先登录后查看订单', icon: 'none' });
@@ -120,7 +125,7 @@ Page({
     }
 
     this.setData({ loading: true });
-    if (reset) wx.showLoading({ title: '加载中...' });
+    if (reset && !skipLoading) wx.showLoading({ title: '加载中...' });
 
     const matchers = [buildClientOwnershipMatcher(openid)];
     if (currentTab.status === 'running') {
@@ -135,7 +140,7 @@ Page({
 
     const whereCondition = matchers.length === 1 ? matchers[0] : _.and(...matchers);
 
-    db.collection('bookings')
+    return db.collection('bookings')
       .where(whereCondition)
       .orderBy('created_at', 'desc')
       .skip(skipCount)
@@ -187,13 +192,13 @@ Page({
           hasMore: list.length === pageSize,
           loading: false,
         });
-        wx.hideLoading();
+        if (!skipLoading) wx.hideLoading();
         if (callback) callback();
       })
       .catch(err => {
         console.error('加载订单失败:', err);
         this.setData({ loading: false });
-        wx.hideLoading();
+        if (!skipLoading) wx.hideLoading();
         wx.showToast({ title: '加载失败', icon: 'none' });
         if (callback) callback();
       });
@@ -359,7 +364,7 @@ Page({
       const res = await db.collection('bookings').doc(id).update({ data: updateData });
       console.info('订单更新结果', id, updateData, res);
       wx.showToast({ title: successToast, icon: 'success' });
-      this.loadOrders(true);
+      await this.loadOrders(true, null, { skipLoading: true });
     } catch (err) {
       console.error('订单更新失败', err);
       wx.showToast({ title: '操作失败', icon: 'none' });
