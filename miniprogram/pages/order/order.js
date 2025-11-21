@@ -96,12 +96,20 @@ Page({
    * @param {boolean} reset 是否重置列表（true=第一页）
    * @param {function} callback 加载完成后的回调
    */
-  loadOrders(reset = false, callback, options = {}) {
-    const { skipLoading = false } = options || {};
+  async loadOrders(reset = false, callback, options = {}) {
+    const { skipLoading = false, force = false } = options || {};
 
-    if (this.data.loading) {
+    if (this.data.loading && !force) {
       if (typeof callback === 'function') callback();
       return Promise.resolve();
+    }
+
+    if (force && this._loadingPromise) {
+      try {
+        await this._loadingPromise;
+      } catch (err) {
+        console.warn('等待前一次加载完成时出错', err);
+      }
     }
 
     const { page, pageSize, activeTab, tabs } = this.data;
@@ -109,6 +117,8 @@ Page({
     const currentPage = reset ? 1 : page;
     const skipCount = (currentPage - 1) * pageSize;
     const openid = getCurrentClientOpenid();
+    const token = Date.now();
+    this._lastLoadToken = token;
 
     if (!openid) {
       this.setData({
@@ -125,7 +135,8 @@ Page({
     }
 
     this.setData({ loading: true });
-    if (reset && !skipLoading) wx.showLoading({ title: '加载中...' });
+    const shouldShowLoading = reset && !skipLoading;
+    if (shouldShowLoading) wx.showLoading({ title: '加载中...' });
 
     const matchers = [buildClientOwnershipMatcher(openid)];
     if (currentTab.status === 'running') {
@@ -140,13 +151,15 @@ Page({
 
     const whereCondition = matchers.length === 1 ? matchers[0] : _.and(...matchers);
 
-    return db.collection('bookings')
+    const loadPromise = db.collection('bookings')
       .where(whereCondition)
       .orderBy('created_at', 'desc')
       .skip(skipCount)
       .limit(pageSize)
       .get()
       .then(res => {
+        if (this._lastLoadToken !== token) return;
+
         const list = res.data || [];
         const formatted = list.map(order => {
           let priceDisplay = '0.00';
@@ -192,16 +205,23 @@ Page({
           hasMore: list.length === pageSize,
           loading: false,
         });
-        if (!skipLoading) wx.hideLoading();
-        if (callback) callback();
       })
       .catch(err => {
+        if (this._lastLoadToken !== token) return;
         console.error('加载订单失败:', err);
         this.setData({ loading: false });
-        if (!skipLoading) wx.hideLoading();
         wx.showToast({ title: '加载失败', icon: 'none' });
+      })
+      .finally(() => {
+        if (this._lastLoadToken === token) {
+          this.setData({ loading: false });
+        }
+        if (shouldShowLoading) wx.hideLoading();
         if (callback) callback();
       });
+
+    this._loadingPromise = loadPromise;
+    return loadPromise;
   },
 
   toOrderDetail(e) {
@@ -364,7 +384,7 @@ Page({
       const res = await db.collection('bookings').doc(id).update({ data: updateData });
       console.info('订单更新结果', id, updateData, res);
       wx.showToast({ title: successToast, icon: 'success' });
-      await this.loadOrders(true, null, { skipLoading: true });
+      await this.loadOrders(true, null, { skipLoading: true, force: true });
     } catch (err) {
       console.error('订单更新失败', err);
       wx.showToast({ title: '操作失败', icon: 'none' });
