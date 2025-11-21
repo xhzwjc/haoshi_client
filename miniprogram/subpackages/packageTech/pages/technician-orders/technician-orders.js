@@ -227,58 +227,7 @@ Page({
              // Format date/time better if needed
              service_date: order.service_date || '',
              service_time_slot: order.service_time_slot || '',
-             timeline: this.buildTimeline(order)
          };
-    },
-    buildTimeline(order = {}) {
-        const timeline = [];
-        const pushIfExists = (label, value) => {
-            const formatted = this.formatTimelineTimestamp(value);
-            if (formatted) {
-                timeline.push({ label, value: formatted });
-            }
-        };
-
-        pushIfExists('下单', order.created_at);
-        pushIfExists('师傅接单', order.accepted_at);
-        pushIfExists('确认上门', order.service_started_at);
-        pushIfExists('完成服务', order.service_completed_at);
-        pushIfExists('提交报价', order.quote_submitted_at);
-        pushIfExists('客户确认金额', order.amount_confirmed_at);
-        pushIfExists('客户支付', order.paid_at);
-        pushIfExists('客户评价', order.review_submitted_at);
-        pushIfExists('售后申请', order.after_sale_submitted_at);
-        pushIfExists('订单取消', order.cancelled_at);
-
-        return timeline;
-    },
-    formatTimelineTimestamp(value) {
-        if (!value) return '';
-        let dateObj = null;
-        if (value instanceof Date) {
-            dateObj = value;
-        } else if (typeof value === 'number') {
-            dateObj = new Date(value);
-        } else if (typeof value === 'string') {
-            const parsed = new Date(value);
-            if (!isNaN(parsed.getTime())) dateObj = parsed;
-        } else if (value && typeof value === 'object') {
-            if (typeof value.toDate === 'function') {
-                dateObj = value.toDate();
-            } else if (value.$date) {
-                dateObj = new Date(value.$date);
-            }
-        }
-
-        if (!dateObj || isNaN(dateObj.getTime())) return '';
-
-        const pad = (num) => (num < 10 ? `0${num}` : `${num}`);
-        const y = dateObj.getFullYear();
-        const m = pad(dateObj.getMonth() + 1);
-        const d = pad(dateObj.getDate());
-        const hh = pad(dateObj.getHours());
-        const mm = pad(dateObj.getMinutes());
-        return `${y}-${m}-${d} ${hh}:${mm}`;
     },
     mapStatusToText: function(status) {
         switch (status) {
@@ -316,10 +265,18 @@ Page({
     },
     completeAndQuote: function(e) {
          const orderId = e.currentTarget.dataset.id;
-         wx.navigateTo({
-             url: `/subpackages/packageTech/pages/quote-order/quote-order?id=${orderId}`
-         });
+         // This needs to open a new page or modal to input the final price
+         // Example: Navigate to a quote page
+         wx.navigateTo({ url: `/pages/quote-order/quote-order?id=${orderId}` }); 
+         // The quote page will then call a cloud function `completeServiceAndQuote`
+         // which sets status 30 -> 35 and saves final_price
     },
+    remindPayment: function(e) {
+        const orderId = e.currentTarget.dataset.id;
+        // Call a cloud function to send a notification/message to the client
+        this.callCloudFunction('remindPayment', { orderId: orderId }, '提醒成功', '提醒失败');
+    },
+
     // --- Modal Action Callbacks ---
     acceptOrderFromModal: function(e) {
          this.callCloudFunction('acceptOrder', { orderId: e.detail.orderId }, '接单成功', '接单失败', true);

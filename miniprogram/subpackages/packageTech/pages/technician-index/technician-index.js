@@ -20,8 +20,9 @@ Page({
                 title: '您有3个新订单待处理',
                 desc: '请及时接单，避免订单流失'
             },
-            totalPendingService: 8,
-            totalCompleted: 312,
+            todayPendingService: 2,
+            todayCompleted: 3,
+            todayIncome: 540,
             recentOrders: [ // Example recent orders
                 { _id: 'order1', service_name: '深度保洁', status: 20, status_text: '待服务', service_time_display: '今天 14:00', address: '幸福路123号', final_price: 299 },
                 { _id: 'order2', service_name: '油烟机清洗', status: 10, status_text: '待接单', service_time_display: '今天 16:00', address: '建设路456号', price_range: '120-150' },
@@ -48,31 +49,6 @@ Page({
         this.loadDashboardData();
     },
 
-    openMoreActions() {
-        wx.showActionSheet({
-            itemList: ['退出登录'],
-            success: (res) => {
-                if (res.tapIndex === 0) {
-                    this.handleLogout();
-                }
-            }
-        });
-    },
-
-    handleLogout() {
-        wx.showModal({
-            title: '确认退出',
-            content: '确定要退出当前账号吗？',
-            confirmText: '退出',
-            cancelText: '取消',
-            success: (res) => {
-                if (res.confirm) {
-                    app.logout();
-                }
-            }
-        });
-    },
-
     /**
      * 【核心修改】 Load dashboard data from cloud function
      * 使用 app.waitClientCloudReady() 确保环境初始化完成
@@ -95,9 +71,8 @@ Page({
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
                 // 格式化最近订单数据
-                if (data.dashboardData && Array.isArray(data.dashboardData.recentOrders)) {
-                    const limitedRecentOrders = data.dashboardData.recentOrders.slice(0, 5);
-                    data.dashboardData.recentOrders = limitedRecentOrders.map(order => {
+                if (data.dashboardData && data.dashboardData.recentOrders) {
+                    data.dashboardData.recentOrders = data.dashboardData.recentOrders.map(order => {
                         // 格式化价格显示
                         let priceDisplay = '待核价';
                         if (order.final_price) {
@@ -105,25 +80,18 @@ Page({
                         } else if (order.price_range) {
                             priceDisplay = order.price_range;
                         }
-
-                        const formattedOrder = {
+                        
+                        return {
                             ...order,
                             status_text: this.mapStatusToText(order.status),
                             service_time_display: this.formatServiceTime(order.service_date, order.service_time_slot),
                             price_display: priceDisplay
                         };
-                        formattedOrder.timeline = this.buildTimeline(formattedOrder);
-                        return formattedOrder;
                     });
                 }
-                const dashboardData = Object.assign({
-                    totalPendingService: 0,
-                    totalCompleted: 0
-                }, data.dashboardData || {});
-
-                this.setData({
-                    dashboardData,
-                    technicianInfo: data.technicianInfo
+                this.setData({ 
+                    dashboardData: data.dashboardData, 
+                    technicianInfo: data.technicianInfo 
                 });
             } else {
                 wx.showToast({ title: (res.result && res.result.message) || '加载失败', icon: 'none' });
@@ -292,59 +260,9 @@ Page({
         const today = new Date().toDateString();
         const orderDate = new Date(date).toDateString();
         if (orderDate === today) {
-            return `今天 ${timeSlot ? timeSlot.split('-')[0] : ''}`;
+            return `今天 ${timeSlot ? timeSlot.split('-')[0] : ''}`; 
         }
         // 简化日期格式
-        return `${date.substring(5)} ${timeSlot ? timeSlot.split('-')[0] : ''}`;
-    },
-    buildTimeline(order = {}) {
-        const timeline = [];
-        const pushIfExists = (label, value) => {
-            const formatted = this.formatTimelineTimestamp(value);
-            if (formatted) {
-                timeline.push({ label, value: formatted });
-            }
-        };
-
-        pushIfExists('下单', order.created_at);
-        pushIfExists('师傅接单', order.accepted_at);
-        pushIfExists('确认上门', order.service_started_at);
-        pushIfExists('完成服务', order.service_completed_at);
-        pushIfExists('提交报价', order.quote_submitted_at);
-        pushIfExists('客户确认金额', order.amount_confirmed_at);
-        pushIfExists('客户支付', order.paid_at);
-        pushIfExists('客户评价', order.review_submitted_at);
-        pushIfExists('售后申请', order.after_sale_submitted_at);
-        pushIfExists('订单取消', order.cancelled_at);
-
-        return timeline;
-    },
-    formatTimelineTimestamp(value) {
-        if (!value) return '';
-        let dateObj = null;
-        if (value instanceof Date) {
-            dateObj = value;
-        } else if (typeof value === 'number') {
-            dateObj = new Date(value);
-        } else if (typeof value === 'string') {
-            const parsed = new Date(value);
-            if (!isNaN(parsed.getTime())) dateObj = parsed;
-        } else if (value && typeof value === 'object') {
-            if (typeof value.toDate === 'function') {
-                dateObj = value.toDate();
-            } else if (value.$date) {
-                dateObj = new Date(value.$date);
-            }
-        }
-
-        if (!dateObj || isNaN(dateObj.getTime())) return '';
-
-        const pad = (num) => (num < 10 ? `0${num}` : `${num}`);
-        const y = dateObj.getFullYear();
-        const m = pad(dateObj.getMonth() + 1);
-        const d = pad(dateObj.getDate());
-        const hh = pad(dateObj.getHours());
-        const mm = pad(dateObj.getMinutes());
-        return `${y}-${m}-${d} ${hh}:${mm}`;
+        return `${date.substring(5)} ${timeSlot ? timeSlot.split('-')[0] : ''}`; 
     }
 });

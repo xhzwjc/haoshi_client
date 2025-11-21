@@ -27,9 +27,7 @@ exports.main = async (event, context) => {
       .update({
         data: {
           status: 20,
-          technician_openid: tech_openid,
-          accepted_at: db.serverDate(),
-          updated_at: db.serverDate()
+          technician_openid: tech_openid
         }
       });
 

@@ -228,11 +228,6 @@ page {
   margin-left: 6rpx;
 }
 
-.payment-info .price .currency {
-  font-size: 24rpx;
-  margin-right: 4rpx;
-}
-
 .card-actions {
   display: flex;
   flex-shrink: 0;
@@ -327,4 +322,14 @@ page {
   height: 180rpx;
   margin-bottom: 20rpx;
   opacity: 0.6;
+}
+
+/* Help Button */
+.help-btn {
+  position: fixed;
+  right: 32rpx;
+  bottom: 40rpx;
+  width: 80rpx;
+  height: 80rpx;
+  z-index: 100;
 }
