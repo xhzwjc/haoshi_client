@@ -109,7 +109,8 @@ Page({
     data: {
         orderId: '',
         orderDetail: null,
-        loading: true
+        loading: true,
+        actions: []
     },
 
     ensureOwned() {
@@ -213,13 +214,14 @@ Page({
 
               this.setData({
                   orderDetail: order,
+                  actions: this.getActions(order.status),
                   loading: false
               });
             },
             fail: (err) => {
                 console.error('获取订单详情失败:', err);
                 wx.showToast({ title: '加载失败', icon: 'error' });
-                this.setData({ loading: false });
+                this.setData({ loading: false, actions: [] });
             }
         });
     },
