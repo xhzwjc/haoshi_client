@@ -336,14 +336,32 @@ Page({
     wx.showModal({
       title: '确认取消',
       content: '确定要取消这个订单吗?',
-      success: (res) => {
+      success: async (res) => {
         if (res.confirm) {
-          this.runOrderUpdate({
-            id,
-            loadingText: '取消中...',
-            successToast: '取消成功',
-            updateData: { status: 0, cancelled_at: db.serverDate(), updated_at: db.serverDate() }
-          });
+          wx.showLoading({ title: '取消中...' });
+          try {
+            const result = await wx.cloud.callFunction({
+              name: 'cancelOrder',
+              data: { orderId: id }
+            });
+
+            console.info('取消订单云函数返回:', result);
+
+            if (result.result && result.result.code === 0) {
+              wx.showToast({ title: result.result.message || '取消成功', icon: 'success' });
+              await this.loadOrders(true, null, { skipLoading: true, force: true });
+            } else {
+              wx.showToast({
+                title: result.result?.message || '取消失败',
+                icon: 'none'
+              });
+            }
+          } catch (err) {
+            console.error('调用取消订单云函数失败:', err);
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          } finally {
+            wx.hideLoading();
+          }
         }
       }
     });
@@ -356,18 +374,32 @@ Page({
     wx.showModal({
       title: '确认金额',
       content: `请确认服务金额为 ¥${price} ?`,
-      success: (res) => {
+      success: async (res) => {
         if (res.confirm) {
-          this.runOrderUpdate({
-            id,
-            loadingText: '确认中...',
-            successToast: '请支付',
-            updateData: {
-              status: 40,
-              amount_confirmed_at: db.serverDate(),
-              updated_at: db.serverDate()
+          wx.showLoading({ title: '确认中...' });
+          try {
+            const result = await wx.cloud.callFunction({
+              name: 'confirmAmount',
+              data: { orderId: id }
+            });
+
+            console.info('确认金额云函数返回:', result);
+
+            if (result.result && result.result.code === 0) {
+              wx.showToast({ title: result.result.message || '请支付', icon: 'success' });
+              await this.loadOrders(true, null, { skipLoading: true, force: true });
+            } else {
+              wx.showToast({
+                title: result.result?.message || '确认失败',
+                icon: 'none'
+              });
             }
-          });
+          } catch (err) {
+            console.error('调用确认金额云函数失败:', err);
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          } finally {
+            wx.hideLoading();
+          }
         }
       }
     });

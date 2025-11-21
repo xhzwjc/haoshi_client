@@ -1,0 +1,9 @@
+{
+    "name": "confirm-amount",
+    "version": "1.0.0",
+    "description": "客户确认金额云函数",
+    "main": "index.js",
+    "dependencies": {
+        "wx-server-sdk": "~2.6.3"
+    }
+}
