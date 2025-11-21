@@ -307,21 +307,17 @@ Page({
   async cancelOrder(id) {
     const canOperate = await this.ensureOrderOwned(id);
     if (!canOperate) return;
+    console.info('准备取消订单', id);
     wx.showModal({
       title: '确认取消',
       content: '确定要取消这个订单吗?',
       success: (res) => {
         if (res.confirm) {
-          wx.showLoading({ title: '取消中...' });
-          db.collection('bookings').doc(id).update({
-            data: { status: 0, cancelled_at: db.serverDate(), updated_at: db.serverDate() }
-          }).then(() => {
-            wx.hideLoading();
-            wx.showToast({ title: '取消成功', icon: 'success' });
-            this.loadOrders(true);
-          }).catch(() => {
-            wx.hideLoading();
-            wx.showToast({ title: '操作失败', icon: 'none' });
+          this.runOrderUpdate({
+            id,
+            loadingText: '取消中...',
+            successToast: '取消成功',
+            updateData: { status: 0, cancelled_at: db.serverDate(), updated_at: db.serverDate() }
           });
         }
       }
@@ -331,29 +327,45 @@ Page({
   async confirmPrice(id, price) {
     const canOperate = await this.ensureOrderOwned(id);
     if (!canOperate) return;
+    console.info('准备确认金额', id, price);
     wx.showModal({
       title: '确认金额',
       content: `请确认服务金额为 ¥${price} ?`,
       success: (res) => {
         if (res.confirm) {
-          wx.showLoading({ title: '确认中...' });
-          db.collection('bookings').doc(id).update({
-            data: {
+          this.runOrderUpdate({
+            id,
+            loadingText: '确认中...',
+            successToast: '请支付',
+            updateData: {
               status: 40,
               amount_confirmed_at: db.serverDate(),
               updated_at: db.serverDate()
             }
-          }).then(() => {
-            wx.hideLoading();
-            wx.showToast({ title: '请支付', icon: 'none' });
-            this.loadOrders(true);
-          }).catch(() => {
-            wx.hideLoading();
-            wx.showToast({ title: '操作失败', icon: 'none' });
           });
         }
       }
     });
+  },
+
+  async runOrderUpdate({ id, updateData, loadingText = '提交中...', successToast = '操作成功' }) {
+    if (!id) {
+      wx.showToast({ title: '订单信息缺失', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: loadingText });
+    try {
+      const res = await db.collection('bookings').doc(id).update({ data: updateData });
+      console.info('订单更新结果', id, updateData, res);
+      wx.showToast({ title: successToast, icon: 'success' });
+      this.loadOrders(true);
+    } catch (err) {
+      console.error('订单更新失败', err);
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   async payNow(id) {
