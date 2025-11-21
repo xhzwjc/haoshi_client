@@ -2,11 +2,8 @@
   <view class="header-bg">
     <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
     <view class="title-bar" style="height: {{titleBarHeight}}px;">
-      <view class="title-icon-button" bindtap="openMoreActions">
-        <image class="title-icon" src="/packageCommon/images/icon_more_technician.png"></image>
-      </view>
-      <text class="title-text">师傅首页</text>
-      <view class="title-actions-spacer"></view>
+      <text>师傅首页</text>
+      <image class="profile-icon" src="/packageCommon/images/default_avatar.png"></image>
     </view>
     <view class="technician-info">
       <view class="info-left">
@@ -72,17 +69,22 @@
       </view>
     </view>
 
-    <view class="section-title">服务数据</view>
-    <view class="card service-stats">
-      <view class="stat-item pending">
+    <view class="section-title">今日数据</view>
+    <view class="card today-stats">
+      <view class="stat-item">
         <image src="/packageCommon/images/icon_time_blue.png"></image>
-        <view class="value">{{dashboardData.totalPendingService || 0}}</view>
-        <view class="label">待服务订单</view>
+        <view class="value">{{dashboardData.todayPendingService || 2}}</view>
+        <view class="label">待服务</view>
       </view>
-      <view class="stat-item completed">
+      <view class="stat-item">
         <image src="/packageCommon/images/icon_check_green.png"></image>
-        <view class="value">{{dashboardData.totalCompleted || 0}}</view>
-        <view class="label">已完成订单</view>
+        <view class="value">{{dashboardData.todayCompleted || 3}}</view>
+        <view class="label">已完成</view>
+      </view>
+      <view class="stat-item">
+        <image src="/packageCommon/images/icon_income_red.png"></image>
+        <view class="value">¥{{dashboardData.todayIncome || 540}}</view>
+        <view class="label">今日收入</view>
       </view>
     </view>
 

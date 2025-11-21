@@ -26,7 +26,6 @@ App({
     clientIndexUrl: '/pages/index/index',
     technicianIndexUrl: '/subpackages/packageTech/pages/technician-index/technician-index',
     loginUrl: '/pages/login/login', // 统一登录页
-    servicePhone: '400-889-8898',
   },
 
   /**
@@ -98,24 +97,5 @@ App({
         }, 100);
       }
     });
-  },
-
-  logout() {
-    try {
-      wx.removeStorageSync('user_token');
-      wx.removeStorageSync('user_role');
-      wx.removeStorageSync('user_openid');
-      wx.removeStorageSync('client_profile_cache');
-      wx.removeStorageSync('client_account_phone');
-      wx.removeStorageSync('client_last_account');
-    } catch (err) {
-      console.warn('清理登录状态失败', err);
-    }
-
-    wx.showToast({ title: '已退出登录', icon: 'none' });
-
-    setTimeout(() => {
-      wx.reLaunch({ url: this.globalData.loginUrl });
-    }, 300);
   }
 })

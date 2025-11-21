@@ -245,3 +245,54 @@
   margin-top: 4rpx;
   display: block;
 }
+
+.order-timeline .timeline-review {
+  margin-top: 16rpx;
+  background: #f8f9fb;
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.order-timeline .review-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.order-timeline .review-block.reply {
+  border-top: 1rpx dashed #e4e7ec;
+  padding-top: 16rpx;
+  margin-top: 6rpx;
+}
+
+.order-timeline .review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-timeline .review-title {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.order-timeline .review-rating {
+  font-size: 24rpx;
+  color: #ff9f0a;
+}
+
+.order-timeline .review-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.order-timeline .review-content {
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.5;
+  word-break: break-word;
+}

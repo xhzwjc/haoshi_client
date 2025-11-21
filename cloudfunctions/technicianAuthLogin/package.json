@@ -1,0 +1,9 @@
+{
+  "name": "technicianAuthLogin",
+  "version": "1.0.0",
+  "description": "Technician phone authorization login",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

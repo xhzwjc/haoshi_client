@@ -2,34 +2,10 @@
 // (这个函数部署在【客户端】共享环境中)
 const cloud = require('wx-server-sdk');
 cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV
+  env: cloud.DYNAMIC_CURRENT_ENV 
 });
 const db = cloud.database();
 const _ = db.command;
-
-function pad(num) {
-  return num < 10 ? `0${num}` : `${num}`;
-}
-
-function extractMonthKey(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  return `${year}-${month}`;
-}
-
-function safeAmount(value) {
-  if (typeof value === 'number') {
-    return value >= 0 ? value : 0;
-  }
-  const parsed = parseFloat(value);
-  if (Number.isNaN(parsed) || parsed < 0) {
-    return 0;
-  }
-  return parsed;
-}
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
@@ -62,37 +38,51 @@ exports.main = async (event, context) => {
       technician_openid: tech_openid 
     }).count();
     
-    // 服务状态维度
-    const totalPendingServiceRes = await db.collection('bookings').where({
-      status: 20,
-      technician_openid: tech_openid
-    }).count();
+    // 今日维度
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
-    const totalCompletedRes = await db.collection('bookings').where({
-      status: 60,
-      technician_openid: tech_openid
+    // 今日待服务：严格等于今日服务日期，且分配给我
+    const todayPendingServiceRes = await db.collection('bookings').where({
+      status: 20,
+      technician_openid: tech_openid,
+      service_date: todayStr
     }).count();
     
-    // 本月收入 (与收入明细保持一致)
-    const now = new Date();
-    const currentMonthKey = extractMonthKey(now);
-    const incomeRes = await db.collection('bookings')
+    // 今日已完成 (状态60 且 分配给我的，今日更新的)
+    const todayCompletedRes = await db.collection('bookings').where({
+      status: 60,
+      technician_openid: tech_openid,
+      updated_at: db.command.gte(today)
+    }).count();
+    
+    // 今日收入 (状态60且今日完成的订单金额)
+    const todayIncomeRes = await db.collection('bookings')
       .where({
+        status: 60,
         technician_openid: tech_openid,
-        status: _.in([50, 60]),
-        paid_at: _.exists(true)
+        updated_at: db.command.gte(today)
       })
-      .orderBy('paid_at', 'desc')
-      .limit(200)
       .get();
-
-    let monthIncome = 0;
-    (incomeRes.data || []).forEach((order) => {
-      const paidAt = order.paid_at || order.completed_at || order.updated_at || order.created_at;
-      if (extractMonthKey(paidAt) === currentMonthKey) {
-        monthIncome += safeAmount(order.final_price);
-      }
-    });
+    const todayIncome = todayIncomeRes.data.reduce((sum, order) => {
+      return sum + (parseFloat(order.final_price) || 0);
+    }, 0);
+    
+    // 本月收入 (状态60且本月完成的订单金额)
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const monthIncomeRes = await db.collection('bookings')
+      .where({
+        status: 60,
+        technician_openid: tech_openid,
+        updated_at: db.command.gte(monthStart)
+      })
+      .get();
+    const monthIncome = monthIncomeRes.data.reduce((sum, order) => {
+      return sum + (parseFloat(order.final_price) || 0);
+    }, 0);
     
     // 3. 获取最近订单：所有待接单的订单 + 该技师接单后的所有订单（排除已取消和已拒单）
     const recentOrdersRes = await db.collection('bookings')
@@ -115,13 +105,14 @@ exports.main = async (event, context) => {
     const dashboardData = {
         pendingCount: pendingCountRes.total,
         runningCount: runningCountRes.total,
-        monthIncome: monthIncome.toFixed(2),
+        monthIncome: monthIncome.toFixed(2), // 本月收入（保留2位小数）
         notification: {
             title: `您有 ${pendingCountRes.total} 个新订单待处理`,
             desc: pendingCountRes.total > 0 ? '请及时接单，避免订单流失' : '暂无新订单'
         },
-        totalPendingService: totalPendingServiceRes.total,
-        totalCompleted: totalCompletedRes.total,
+        todayPendingService: todayPendingServiceRes.total,
+        todayCompleted: todayCompletedRes.total,
+        todayIncome: todayIncome.toFixed(2),
         recentOrders: recentOrdersRes.data
     };
 
