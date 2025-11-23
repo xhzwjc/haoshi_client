@@ -75,7 +75,7 @@
                 <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" catchtap="handleListAction">联系师傅</button>
               </block>
               <block wx:if="{{item.status === 35}}">
-                <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" catchtap="handleListAction">金额有误</button>
+                <!-- <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" catchtap="handleListAction">金额有误</button> -->
                 <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" catchtap="handleListAction">确认金额</button>
               </block>
               <block wx:if="{{item.status === 40}}">

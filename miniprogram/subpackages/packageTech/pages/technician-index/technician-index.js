@@ -6,26 +6,23 @@ Page({
         statusBarHeight: 0,
         titleBarHeight: 0,
         technicianInfo: { // Placeholder data
-            name: '李师傅',
-            badge: '金牌',
-            rating: 4.9,
-            servedOrders: 856,
+            name: '--',
+            badge: '--',
+            rating: '--',
+            servedOrders: '--',
             avatar: '/packageCommon/images/default_avatar.png' 
         },
         dashboardData: { // Placeholder data
-            pendingCount: 3,
-            runningCount: 5,
-            monthIncome: '12,580',
+            pendingCount: '--',
+            runningCount: '--',
+            monthIncome: '--',
             notification: {
-                title: '您有3个新订单待处理',
+                title: '您有--个新订单待处理',
                 desc: '请及时接单，避免订单流失'
             },
-            totalPendingService: 8,
-            totalCompleted: 312,
-            recentOrders: [ // Example recent orders
-                { _id: 'order1', service_name: '深度保洁', status: 20, status_text: '待服务', service_time_display: '今天 14:00', address: '幸福路123号', final_price: 299 },
-                { _id: 'order2', service_name: '油烟机清洗', status: 10, status_text: '待接单', service_time_display: '今天 16:00', address: '建设路456号', price_range: '120-150' },
-            ] 
+            totalPendingService: '--',
+            totalCompleted: '--',
+            recentOrders: [] 
         },
         showDetailModal: false,
         modalOrderDetail: null,

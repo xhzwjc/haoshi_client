@@ -247,9 +247,9 @@ Page({
       case '确认金额':
         this.confirmPrice(id, price);
         break;
-      case '金额有误':
-        this.goToAfterSale(id, 'amount');
-        break;
+      // case '金额有误':
+      //   this.goToAfterSale(id, 'amount');
+      //   break;
       case '立即支付':
       case '即支付':
         this.payNow(id);
@@ -372,8 +372,9 @@ Page({
     if (!canOperate) return;
     console.info('准备确认金额', id, price);
     wx.showModal({
-      title: '确认金额',
-      content: `请确认服务金额为 ¥${price} ?`,
+      title: '请确认服务费用',
+      content: `请确认服务金额为 ¥${price}
+      请仔细核对，确认后不可更改`,
       success: async (res) => {
         if (res.confirm) {
           wx.showLoading({ title: '确认中...' });
