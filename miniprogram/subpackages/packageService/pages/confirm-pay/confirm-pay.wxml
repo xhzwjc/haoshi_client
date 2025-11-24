@@ -13,16 +13,16 @@
         <view class="step-line active"></view>
         <view class="step active">
             <view class="step-num">3</view>
-            <view class="step-text">确认支付</view>
+            <view class="step-text">确认预约</view>
         </view>
     </view>
 
     <!-- 订单状态卡片 -->
     <view class="status-card">
-        <view class="status-title">待支付</view>
-        <view class="status-desc">请在 15 分钟内完成支付</view>
+        <view class="status-title">确认订单</view>
+        <view class="status-desc">预约后等待师傅上门报价</view>
         <view class="total-price">
-            <text class="currency">¥</text>{{orderSummary.total_price_display}}
+            <text class="currency">¥</text>{{orderSummary.total_price_display}}<text class="unit">/{{orderSummary.service_unit}}</text>
         </view>
     </view>
     
@@ -60,7 +60,8 @@
         </view>
     </view>
     
-    <!-- 支付方式 -->
+    <!-- 支付方式 (隐藏，因为是预约) -->
+    <!-- 
     <view class="info-card pay-card">
         <view class="card-title">支付方式</view>
         <view class="pay-method selected">
@@ -71,16 +72,18 @@
             <image class="check-icon" src="/packageCommon/images/icon_checked_blue.png" mode="aspectFit"></image>
         </view>
     </view>
+    -->
 
     <!-- 底部支付栏 -->
     <view class="bottom-bar-safe">
         <view class="bottom-bar-content">
             <view class="price-container">
-                <text class="label">合计:</text>
+                <text class="label">参考报价:</text>
                 <text class="currency">¥</text>
                 <text class="amount">{{orderSummary.total_price_display}}</text>
+                <text class="unit" style="font-size: 24rpx; color: #FF5722; margin-left: 4rpx;">/{{orderSummary.service_unit}}</text>
             </view>
-            <button class="pay-btn" bindtap="onConfirmPay">立即支付</button>
+            <button class="pay-btn" bindtap="onConfirmPay">立即预约</button>
         </view>
     </view>
 </view>

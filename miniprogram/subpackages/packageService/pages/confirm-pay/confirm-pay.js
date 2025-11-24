@@ -7,32 +7,36 @@ Page({
         orderSummary: {
             // (省略...)
             service_name: '加载中...',
-            service_desc: '...', 
+            service_desc: '...',
             service_date: '...',
             service_time_slot: '...',
             address: '...',
-            contact_name: '...', 
-            contact_phone: '...', 
+            contact_name: '...',
+            contact_phone: '...',
             total_price_display: '0.00', // (这是价格范围，如 "100-250")
             service_unit: '次'
         }
     },
 
     onLoad: function (options) {
+        wx.setNavigationBarTitle({
+            title: '确认预约'
+        });
+
         // (您的 onLoad 逻辑是正确的，保留)
         if (options.data) {
             const bookingData = JSON.parse(decodeURIComponent(options.data));
-            
+
             this.setData({
                 bookingData: bookingData,
                 orderSummary: {
                     service_name: bookingData.service_name,
-                    service_desc: bookingData.service_description || '...', 
+                    service_desc: bookingData.service_description || '...',
                     service_date: bookingData.service_date,
                     service_time_slot: bookingData.service_time_slot,
                     address: bookingData.address,
-                    contact_name: bookingData.contact_name, 
-                    contact_phone: bookingData.contact_phone, 
+                    contact_name: bookingData.contact_name,
+                    contact_phone: bookingData.contact_phone,
                     // 【重要】 total_price_display 现在是 价格范围 字符串
                     total_price_display: bookingData.service_price, // e.g., "100-250"
                     service_unit: bookingData.service_unit
@@ -45,7 +49,7 @@ Page({
      * 【修改】上一步/返回按钮逻辑：
      * (新流程: 预约第一步退出，不创建订单)
      */
-    onPrevStep: function() {
+    onPrevStep: function () {
         wx.showModal({
             title: '确认退出',
             content: '您确定要退出预约吗？（信息不会被保存）',
@@ -64,11 +68,11 @@ Page({
     /**
      * (删除 saveOrderAsPendingAndExit 方法, 新流程不再需要)
      */
-    
+
     /**
      * 【修改】 确认预约 (核心逻辑: 保存订单为 待接单)
      */
-    onConfirmPay: async function() {
+    onConfirmPay: async function () {
         if (!this.data.bookingData) {
             return wx.showToast({ title: '订单数据丢失', icon: 'error' });
         }

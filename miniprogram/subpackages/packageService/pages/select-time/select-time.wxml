@@ -14,15 +14,7 @@
         <view class="step-line"></view>
         <view class="step">
             <view class="step-num">3</view>
-            <view class="step-text">确认支付</view>
-        </view>
-    </view>
-
-    <!-- 服务信息简略展示 -->
-    <view class="service-header">
-        <view class="service-name">{{service.name}}</view>
-        <view class="service-price">
-            <text class="currency">¥</text>{{service.price}}<text class="unit">/{{service.unit}}</text>
+            <view class="step-text">确认预约</view>
         </view>
     </view>
 

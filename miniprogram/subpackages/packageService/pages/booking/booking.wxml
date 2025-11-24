@@ -12,7 +12,7 @@
     <view class="step-line"></view>
     <view class="step">
       <view class="step-num">3</view>
-      <view class="step-text">确认支付</view>
+      <view class="step-text">确认预约</view>
     </view>
   </view>
 
