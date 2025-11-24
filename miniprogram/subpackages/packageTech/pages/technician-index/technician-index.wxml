@@ -9,27 +9,27 @@
     <view class="technician-info">
       <view class="info-left">
         <view class="name-rating">
-          <text class="name">{{technicianInfo.name || '李师傅'}}</text>
+          <text class="name">{{technicianInfo.name || '师傅'}}</text>
           <text class="badge">{{technicianInfo.badge || '金牌'}}</text>
         </view>
         <view class="rating-served">
-          <text class="rating">★ {{technicianInfo.rating || '4.9'}}分</text>
-          <text class="served">· 已服务{{technicianInfo.servedOrders || 856}}单</text>
+          <text class="rating">★ {{technicianInfo.rating || '--'}}分</text>
+          <text class="served">· 已服务{{technicianInfo.servedOrders || 0}}单</text>
         </view>
       </view>
       <image class="avatar" src="{{technicianInfo.avatar || '/images/icon_profile_white.png'}}"></image>
     </view>
     <view class="header-stats">
       <view class="stat-item">
-        <view class="value">{{dashboardData.pendingCount || 3}}</view>
+        <view class="value">{{dashboardData.pendingCount || 0}}</view>
         <view class="label">待接单</view>
       </view>
       <view class="stat-item">
-        <view class="value">{{dashboardData.runningCount || 5}}</view>
+        <view class="value">{{dashboardData.runningCount || 0}}</view>
         <view class="label">进行中</view>
       </view>
       <view class="stat-item">
-        <view class="value">¥{{dashboardData.monthIncome || '12,580'}}</view>
+        <view class="value">¥{{dashboardData.monthIncome || '0'}}</view>
         <view class="label">本月收入</view>
       </view>
     </view>
@@ -39,7 +39,7 @@
     <view class="card notification-card" wx:if="{{dashboardData.notification}}">
       <image class="noti-icon" src="/packageCommon/images/icon_notification_orange.png"></image>
       <view class="noti-text">
-        <view class="title">{{dashboardData.notification.title || '您有31个新订单待处理'}}</view>
+        <view class="title">{{dashboardData.notification.title || '您有0个新订单待处理'}}</view>
         <view class="desc">{{dashboardData.notification.desc || '请及时接单，避免订单流失'}}</view>
       </view>
       <button class="noti-btn" bindtap="goToTaskCenter">查看</button>
@@ -61,12 +61,12 @@
       <view class="func-item" bindtap="goToIncome">
         <image src="/packageCommon/images/icon_income_green.png"></image>
         <text>收入明细</text>
-        <text class="sub-label">¥{{dashboardData.monthIncome || '12,580'}}</text>
+        <text class="sub-label">¥{{dashboardData.monthIncome || '0.00'}}</text>
       </view>
       <view class="func-item" bindtap="goToRatings">
         <image src="/packageCommon/images/icon_rating_yellow.png"></image>
         <text>我的评价</text>
-         <text class="sub-label">{{technicianInfo.rating || '4.9'}}分</text>
+         <text class="sub-label">{{technicianInfo.rating || '--'}}分</text>
       </view>
     </view>
 

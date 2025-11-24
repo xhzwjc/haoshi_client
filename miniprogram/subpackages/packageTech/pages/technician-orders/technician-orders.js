@@ -1,47 +1,41 @@
 // pages/order-list/order-list.js
 const db = wx.cloud.database();
 const _ = db.command;
-const PAGE_SIZE = 10; // Orders per page
+const PAGE_SIZE = 10;
 
 Page({
     data: {
-        tabs: [ // Recommended Tabs
+        tabs: [
             { name: '全部', status: 'all' },
             { name: '待接单', status: 10 },
-            { name: '待服务', status: 20 }, // Replaced '已接单'
+            { name: '待服务', status: 20 },
             { name: '服务中', status: 30 },
-            { name: '待收款', status: 'pending_payment' }, // Combined 35, 40
-            { name: '已完成', status: 'completed' },       // Combined 50, 60
+            { name: '待收款', status: 'pending_payment' },
+            { name: '已完成', status: 'completed' },
         ],
         activeTab: 0,
-        pendingCount: 0, // For the badge on '待接单'
-        orders: [],      // Displayed orders
-
-        // Loading & Pagination
-        loading: false,         // Initial loading state
-        isPulling: false,       // Refresher state
-        isReachingBottom: false,// Scroll to bottom loading state
+        pendingCount: 0,
+        orders: [],
+        loading: false,
+        isPulling: false,
+        isReachingBottom: false,
         page: 1,
         pageSize: PAGE_SIZE,
         hasMore: true,
         bottomText: '正在加载...',
-
-        // Modal
         showDetailModal: false,
         modalOrderDetail: null,
     },
 
-    // Internal state to track initial load vs. subsequent refreshes
     _initialLoadDone: false,
 
     onLoad: function (options) {
         let initialIndex = 0;
-        // Check if navigated with a specific status (e.g., from dashboard notification)
         if (options && options.status) {
             let statusNum = parseInt(options.status, 10);
             if (!isNaN(statusNum)) {
                 initialIndex = this.data.tabs.findIndex(tab => tab.status === statusNum);
-                if (initialIndex === -1) { // Handle combined statuses if needed
+                if (initialIndex === -1) {
                     if (statusNum === 35 || statusNum === 40) initialIndex = this.data.tabs.findIndex(tab => tab.status === 'pending_payment');
                     if (statusNum === 50 || statusNum === 60) initialIndex = this.data.tabs.findIndex(tab => tab.status === 'completed');
                 }
@@ -50,67 +44,63 @@ Page({
         }
 
         this.setData({ activeTab: initialIndex }, () => {
-            this.loadOrders(true); // Load first page on initial entry
+            this.loadOrders(true);
         });
     },
 
     onShow: function () {
-        // Refresh data if it's not the initial load and data might be dirty
         if (this._initialLoadDone && this._isDataDirty) {
-            this.loadOrders(true); // Refresh first page
+            this.loadOrders(true);
             this._isDataDirty = false;
         }
-        this._initialLoadDone = true; // Mark initial load as done after first onShow
+        this._initialLoadDone = true;
     },
 
     onHide: function () {
-        this._isDataDirty = true; // Mark data as potentially dirty when page hides
+        this._isDataDirty = true;
     },
 
-    // --- Pull Down Refresh & Scroll To Bottom ---
     onRefresherRefresh: function () {
         if (this.data.loading || this.data.isPulling) return;
         this.setData({ isPulling: true, isReachingBottom: false });
-        this.loadOrders(true); // Load first page
+        this.loadOrders(true);
     },
+
     onScrollToLower: function () {
         if (!this.data.hasMore || this.data.isReachingBottom || this.data.isPulling) return;
         this.setData({ isReachingBottom: true, bottomText: '正在加载...' });
-        this.loadOrders(false); // Load next page
+        this.loadOrders(false);
     },
 
-    // --- Tab Click ---
     onTabClick: function (e) {
         const index = e.currentTarget.dataset.index;
         if (this.data.activeTab === index) return;
         this.setData({ activeTab: index }, () => {
-            this.loadOrders(true); // Load first page for new tab
+            this.loadOrders(true);
         });
     },
 
-    // --- Data Loading ---
     loadOrders: function (reset = false) {
-        if (this.data.loading && !reset) return; // Prevent concurrent loads unless resetting
+        if (this.data.loading && !reset) return;
 
         const currentPage = reset ? 1 : this.data.page;
         const skipCount = (currentPage - 1) * this.data.pageSize;
 
-        // Set loading states
         this.setData({ loading: true });
         if (!this.data.isPulling && !this.data.isReachingBottom && reset) {
-            wx.showLoading({ title: '加载中...' }); // Show global loading only on initial load/tab switch
+            wx.showLoading({ title: '加载中...' });
         }
 
         const currentTab = this.data.tabs[this.data.activeTab];
-
-        // 使用云函数获取订单数据（云函数会自动过滤当前技师的openid）
         const app = getApp();
+
         Promise.all([
-            // 使用云函数获取订单
             app.waitClientCloudReady().then(clientCloud => {
+                const masterId = wx.getStorageSync('master_id');
                 return clientCloud.callFunction({
                     name: 'getTechnicianOrders',
                     data: {
+                        masterId: masterId,
                         status: currentTab.status,
                         page: currentPage,
                         pageSize: this.data.pageSize
@@ -118,54 +108,29 @@ Page({
                 });
             }).then(res => {
                 console.log('云函数返回结果:', res);
-                if (res.result) {
-                    if (res.result.code === 0) {
-                        return { data: res.result.data || [], error: null };
-                    } else {
-                        // 输出详细错误信息（降为 warn，不中断流程，触发本地降级）
-                        console.warn('云函数返回错误:', res.result);
-                        return { data: [], error: new Error(res.result.message || res.result.error || '获取订单失败') };
-                    }
+                if (res.result && res.result.code === 0) {
+                    return { data: res.result.data?.list || [], error: null };
                 } else {
-                    console.warn('云函数返回格式错误');
-                    return { data: [], error: new Error('云函数返回格式错误') };
+                    console.warn('云函数返回错误:', res.result);
+                    return { data: [], error: new Error(res.result?.message || '获取订单失败') };
                 }
             }).catch(err => {
                 console.warn('调用云函数失败:', err);
                 return { data: [], error: err };
             }),
-            // 获取待接单数量用于badge（仅重置时）
             reset ? db.collection('bookings').where({
                 status: 10,
                 technician_openid: _.exists(false)
             }).count() : Promise.resolve(null)
-        ]).then(async ([orderRes, countRes]) => {
+        ]).then(([orderRes, countRes]) => {
             let list = orderRes.data || [];
 
-            // 云函数失败时，进行本地降级查询
             if (orderRes.error) {
-                try {
-                    if (currentTab.status === 'all' || currentTab.status === 10) {
-                        // 本地查询：仅查询待接单（未分配）的订单，保证页面可用
-                        const fallbackRes = await db.collection('bookings')
-                            .where({ status: 10, technician_openid: _.exists(false) })
-                            .orderBy('created_at', 'desc')
-                            .skip(skipCount)
-                            .limit(this.data.pageSize)
-                            .get();
-                        list = fallbackRes.data || [];
-                    } else {
-                        // 其他Tab在没有技师openid情况下无法可靠查询，返回空列表
-                        list = [];
-                    }
-                } catch (fallbackErr) {
-                    console.error('降级查询失败:', fallbackErr);
-                    list = [];
-                }
+                console.error('获取订单失败:', orderRes.error);
+                list = [];
             }
 
             const formatted = list.map(order => this.formatOrderData(order));
-
             const newList = reset ? formatted : [...this.data.orders, ...formatted];
             const hasMore = list.length === this.data.pageSize;
 
@@ -179,14 +144,13 @@ Page({
                 bottomText: hasMore ? '上拉加载更多' : (newList.length > 0 ? '我是有底线的' : '')
             };
 
-            // Update badge count if it was fetched
             if (countRes !== null) {
                 updateData.pendingCount = countRes.total;
             }
 
             this.setData(updateData);
             wx.hideLoading();
-            if (reset && this.data.isPulling) { // Only stop pull down if it was triggered by it
+            if (reset && this.data.isPulling) {
                 wx.showToast({ title: '刷新成功', icon: 'success', duration: 800 });
             }
 
@@ -199,15 +163,13 @@ Page({
                 icon: 'none'
             });
         }).finally(() => {
-            // Ensure pull-down animation stops even on error
             if (this.data.isPulling) {
-                wx.stopPullDownRefresh(); // Use wx API if refresher-enabled is not stopping automatically
+                wx.stopPullDownRefresh();
                 this.setData({ isPulling: false });
             }
         });
     },
 
-    // --- Order Formatting ---
     formatOrderData: function (order) {
         let priceDisplay = '0.00';
         let isRange = false;
@@ -302,40 +264,43 @@ Page({
         }
     },
 
-    // --- Actions ---
     viewDetail: function (e) {
         this.setData({
             modalOrderDetail: e.currentTarget.dataset.order,
             showDetailModal: true
         });
     },
+
     hideOrderDetailModal: function () {
         this.setData({ showDetailModal: false, modalOrderDetail: null });
     },
+
     acceptOrder: function (e) {
         const orderId = e.currentTarget.dataset.id;
-        // Optionally show modal first for confirmation, or accept directly
         this.callCloudFunction('acceptOrder', { orderId: orderId }, '接单成功', '接单失败');
     },
-    startService: function (e) { // 对应“确认上门” 20 -> 30
+
+    startService: function (e) {
         const orderId = e.currentTarget.dataset.id;
-        this.callCloudFunction('startService', { orderId }, '操作成功', '操作失败');
+        const masterId = wx.getStorageSync('master_id');
+        this.callCloudFunction('startService', { orderId, masterId }, '操作成功', '操作失败');
     },
+
     completeAndQuote: function (e) {
         const orderId = e.currentTarget.dataset.id;
         wx.navigateTo({
             url: `/subpackages/packageTech/pages/quote-order/quote-order?id=${orderId}`
         });
     },
-    // --- Modal Action Callbacks ---
+
     acceptOrderFromModal: function (e) {
         this.callCloudFunction('acceptOrder', { orderId: e.detail.orderId }, '接单成功', '接单失败', true);
     },
+
     rejectOrderFromModal: function (e) {
         this.callCloudFunction('rejectOrder', { orderId: e.detail.orderId }, '拒单成功', '拒单失败', true);
     },
 
-    // --- Generic Cloud Function Caller ---
     callCloudFunction: function (name, data, successTitle, failTitle, closeModal = false) {
         wx.showLoading({ title: '请稍候...' });
         wx.cloud.callFunction({
@@ -346,9 +311,9 @@ Page({
             if (res.result && res.result.code === 0) {
                 wx.showToast({ title: successTitle, icon: 'success' });
                 if (closeModal) this.hideOrderDetailModal();
-                this.loadOrders(true); // Refresh list
+                this.loadOrders(true);
             } else {
-                wx.showToast({ title: res.result.message || failTitle, icon: 'none' });
+                wx.showToast({ title: res.result?.message || failTitle, icon: 'none' });
             }
         }).catch(err => {
             wx.hideLoading();

@@ -1,0 +1,132 @@
+page {
+  background: #f5f7fb;
+}
+
+.audit-page {
+  min-height: 100vh;
+}
+
+.status-filters {
+  background: #ffffff;
+  padding: 24rpx;
+  display: flex;
+  gap: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+
+.filter-item {
+  flex: 1;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  background: #f5f7fb;
+  text-align: center;
+  font-size: 26rpx;
+  color: rgba(31, 41, 51, 0.7);
+  transition: all 0.3s ease;
+}
+
+.filter-item.active {
+  background: #4a6cf0;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.content {
+  padding: 24rpx;
+}
+
+.tech-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.tech-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.tech-info {
+  margin-bottom: 24rpx;
+}
+
+.tech-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.tech-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.status-badge {
+  padding: 12rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.status-ACTIVE {
+  background: rgba(67, 233, 123, 0.2);
+  color: #38c172;
+}
+
+.status-PENDING {
+  background: rgba(255, 179, 0, 0.2);
+  color: #f59e0b;
+}
+
+.status-DISABLED {
+  background: rgba(245, 95, 108, 0.2);
+  color: #f56565;
+}
+
+.tech-phone,
+.tech-service {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(31, 41, 51, 0.6);
+  margin-top: 8rpx;
+}
+
+.tech-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  border: none;
+}
+
+.approve {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #ffffff;
+}
+
+.disable {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+  color: #ffffff;
+}
+
+.activate {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.empty {
+  text-align: center;
+  padding: 120rpx 0;
+  font-size: 28rpx;
+  color: rgba(31, 41, 51, 0.5);
+}

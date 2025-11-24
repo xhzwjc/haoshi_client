@@ -39,7 +39,9 @@ Page({
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交中...', mask: true });
 
+    const masterId = wx.getStorageSync('master_id');
     const payload = {
+      masterId: masterId,
       orderId: this.data.orderId,
       finalPrice: normalizedPrice,
       remark: this.data.remark.trim()

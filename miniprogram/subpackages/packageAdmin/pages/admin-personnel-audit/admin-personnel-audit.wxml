@@ -1,0 +1,52 @@
+<view class="audit-page">
+  <view class="status-filters">
+    <view class="filter-item {{currentStatus === 'all' ? 'active' : ''}}" bindtap="onStatusChange" data-status="all">
+      <text>全部</text>
+    </view>
+    <view class="filter-item {{currentStatus === 'PENDING' ? 'active' : ''}}" bindtap="onStatusChange" data-status="PENDING">
+      <text>待审核</text>
+    </view>
+    <view class="filter-item {{currentStatus === 'ACTIVE' ? 'active' : ''}}" bindtap="onStatusChange" data-status="ACTIVE">
+      <text>正常</text>
+    </view>
+    <view class="filter-item {{currentStatus === 'DISABLED' ? 'active' : ''}}" bindtap="onStatusChange" data-status="DISABLED">
+      <text>已禁用</text>
+    </view>
+  </view>
+
+  <view class="content">
+    <view class="tech-list" wx:if="{{technicians.length > 0}}">
+      <view class="tech-card" wx:for="{{technicians}}" wx:key="_id">
+        <view class="tech-info">
+          <view class="tech-header">
+            <text class="tech-name">{{item.name}}</text>
+            <view class="status-badge status-{{item.status}}">
+              {{item.status === 'ACTIVE' ? '正常' : item.status === 'PENDING' ? '待审核' : '已禁用'}}
+            </view>
+          </view>
+          <text class="tech-phone">手机号: {{item.phone}}</text>
+          <text class="tech-service" wx:if="{{item.service_type}}">服务类型: {{item.service_type}}</text>
+        </view>
+
+        <view class="tech-actions">
+          <button class="action-btn approve" wx:if="{{item.status === 'PENDING'}}" 
+                  bindtap="updateStatus" data-id="{{item._id}}" data-status="ACTIVE">
+            通过审核
+          </button>
+          <button class="action-btn disable" wx:if="{{item.status === 'ACTIVE'}}" 
+                  bindtap="updateStatus" data-id="{{item._id}}" data-status="DISABLED">
+            禁用
+          </button>
+          <button class="action-btn activate" wx:if="{{item.status === 'DISABLED'}}" 
+                  bindtap="updateStatus" data-id="{{item._id}}" data-status="ACTIVE">
+            启用
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty" wx:else>
+      <text>暂无数据</text>
+    </view>
+  </view>
+</view>

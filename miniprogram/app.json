@@ -81,6 +81,16 @@
         "pages/feedback/feedback",
         "pages/address-list/address-list"
       ]
+    },
+    {
+      "root": "subpackages/packageAdmin",
+      "pages": [
+        "pages/admin-dashboard/admin-dashboard",
+        "pages/admin-user-list/admin-user-list",
+        "pages/admin-personnel-audit/admin-personnel-audit",
+        "pages/admin-order-list/admin-order-list",
+        "pages/admin-service-list/admin-service-list"
+      ]
     }
   ],
   "style": "v2",

@@ -5,18 +5,21 @@ const db = cloud.database();
 const _ = db.command;
 
 exports.main = async (event, context) => {
-  const wxContext = cloud.getWXContext();
-  const tech_openid = wxContext.OPENID;
+  const masterId = event.masterId; // 直接从前端获取
   const { orderId } = event || {};
 
   if (!orderId) {
     return { code: -1, message: '缺少订单ID' };
   }
 
+  if (!masterId) {
+    return { code: -1, message: '缺少师傅ID' };
+  }
+
   try {
     // 仅允许当前技师将自己接到的订单从 待服务(20) 改为 服务中(30)
     const res = await db.collection('bookings')
-      .where({ _id: orderId, status: 20, technician_openid: tech_openid })
+      .where({ _id: orderId, status: 20, master_id: masterId })
       .update({
         data: {
           status: 30,
@@ -31,8 +34,7 @@ exports.main = async (event, context) => {
 
     return { code: 0, message: '操作成功' };
   } catch (e) {
+    console.error('startService error:', e);
     return { code: -1, message: '操作失败', error: e };
   }
 };
-
-

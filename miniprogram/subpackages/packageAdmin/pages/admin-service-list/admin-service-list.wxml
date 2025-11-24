@@ -1,0 +1,15 @@
+<view class="service-list-page">
+  <view class="header">
+    <text class="title">服务管理</text>
+    <button class="add-btn" bindtap="addService">新增服务</button>
+  </view>
+  <view class="service-list" wx:if="{{services.length > 0}}">
+    <view class="service-item" wx:for="{{services}}" wx:key="_id">
+      <text class="service-name">{{item.name}}</text>
+      <text class="service-price">{{item.price_range}}/{{item.service_unit}}</text>
+    </view>
+  </view>
+  <view class="empty" wx:else>
+    <text>暂无服务数据</text>
+  </view>
+</view>

@@ -151,6 +151,7 @@ exports.main = async (event = {}, context) => {
     }
 
     const technicianOpenid = booking.technician_openid || '';
+    const technicianMasterId = booking.master_id || '';
     const clientOpenid = booking.client_openid || booking._openid || userOpenId || OPENID || '';
     const profile = await fetchClientProfile(clientOpenid, booking.contact_phone || '');
 
@@ -166,6 +167,7 @@ exports.main = async (event = {}, context) => {
         service_name: serviceName || booking.service_name || '',
         user_openid: clientOpenid,
         technician_openid: technicianOpenid,
+        technician_id: technicianMasterId,
         client_name: clientName,
         client_avatar: clientAvatar,
         client_phone: booking.contact_phone || (profile && profile.phone) || '',

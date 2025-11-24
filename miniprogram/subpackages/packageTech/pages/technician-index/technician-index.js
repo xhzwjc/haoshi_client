@@ -5,14 +5,14 @@ Page({
     data: {
         statusBarHeight: 0,
         titleBarHeight: 0,
-        technicianInfo: { // Placeholder data
+        technicianInfo: {
             name: '--',
             badge: '--',
             rating: '--',
             servedOrders: '--',
             avatar: '/packageCommon/images/default_avatar.png'
         },
-        dashboardData: { // Placeholder data
+        dashboardData: {
             pendingCount: '--',
             runningCount: '--',
             monthIncome: '--',
@@ -29,7 +29,6 @@ Page({
     },
 
     onLoad: function (options) {
-        // Get status bar and title bar height for custom navigation
         const systemInfo = wx.getSystemInfoSync();
         const menuButtonInfo = wx.getMenuButtonBoundingClientRect();
         this.setData({
@@ -41,7 +40,6 @@ Page({
     },
 
     onShow: function () {
-        // Refresh data when page is shown, e.g., after accepting an order elsewhere
         this.loadDashboardData();
     },
 
@@ -68,6 +66,7 @@ Page({
             wx.removeStorageSync('user_token');
             wx.removeStorageSync('user_role');
             wx.removeStorageSync('user_openid');
+            wx.removeStorageSync('master_id');
             wx.removeStorageSync('client_profile_cache');
             wx.removeStorageSync('client_account_phone');
             wx.removeStorageSync('client_last_account');
@@ -83,21 +82,24 @@ Page({
         }, 300);
     },
 
-    /**
-     * 【核心修改】 Load dashboard data from cloud function
-     * 使用 app.waitClientCloudReady() 确保环境初始化完成
-     */
     async loadDashboardData() {
         wx.showLoading({ title: '加载中...' });
 
         try {
-            // 1. 【等待】等待 app.js 中的共享环境初始化完成
-            const clientCloud = await app.waitClientCloudReady();
+            const masterId = wx.getStorageSync('master_id');
+            if (!masterId) {
+                wx.hideLoading();
+                wx.showToast({ title: '未找到师傅ID，请重新登录', icon: 'none' });
+                setTimeout(() => {
+                    wx.reLaunch({ url: '/pages/login/login' });
+                }, 1500);
+                return;
+            }
 
-            // 2. 【调用】使用获取到的共享环境实例调用云函数
+            const clientCloud = await app.waitClientCloudReady();
             const res = await clientCloud.callFunction({
-                name: 'getTechnicianDashboard', // 客户端的云函数名
-                // data: {} // 如果需要传递参数
+                name: 'getTechnicianDashboard',
+                data: { masterId: masterId }
             });
 
             wx.hideLoading();
@@ -105,7 +107,6 @@ Page({
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
 
-                // 格式化最近订单数据
                 if (data.dashboardData && Array.isArray(data.dashboardData.recentOrders)) {
                     const limitedRecentOrders = data.dashboardData.recentOrders.slice(0, 5);
                     data.dashboardData.recentOrders = limitedRecentOrders.map(order => {
@@ -152,32 +153,30 @@ Page({
         }
     },
 
-    // --- Navigation ---
     goToTaskCenter: function () {
         wx.navigateTo({
             url: '/subpackages/packageTech/pages/technician-orders/technician-orders'
         });
     },
+
     goToSchedule: function () {
         wx.navigateTo({
             url: '/subpackages/packageTech/pages/schedule/schedule'
         });
     },
+
     goToIncome: function () {
         wx.navigateTo({
             url: '/subpackages/packageTech/pages/income/income'
         });
     },
+
     goToRatings: function () {
         wx.navigateTo({
             url: '/subpackages/packageTech/pages/ratings/ratings'
         });
     },
 
-    // --- Order Actions ---
-    /**
-     * Show prompt before accepting order
-     */
     acceptOrderPrompt: function (e) {
         let order = e.currentTarget.dataset.order;
         const id = e.currentTarget.dataset.id;
@@ -189,9 +188,6 @@ Page({
         this.setData({ modalOrderDetail: order, showDetailModal: true });
     },
 
-    /**
-     * View order detail (Show Modal)
-     */
     viewOrderDetail: function (e) {
         let order = e.currentTarget.dataset.order;
         const id = e.currentTarget.dataset.id;
@@ -202,15 +198,10 @@ Page({
         this.setData({ modalOrderDetail: order, showDetailModal: true });
     },
 
-    // --- Modal Callbacks ---
     hideOrderDetailModal: function () {
         this.setData({ showDetailModal: false, modalOrderDetail: null });
     },
 
-    /**
-     * 【核心修改】 Accept order from modal
-     * 使用 app.waitClientCloudReady() 确保环境初始化完成
-     */
     async acceptOrderFromModal(e) {
         const orderId = e.detail.orderId;
         if (!orderId) return;
@@ -218,12 +209,9 @@ Page({
         wx.showLoading({ title: '正在接单...' });
 
         try {
-            // 1. 【等待】等待共享环境
             const clientCloud = await app.waitClientCloudReady();
-
-            // 2. 【调用】
             const res = await clientCloud.callFunction({
-                name: 'acceptOrder', // 客户端的云函数
+                name: 'acceptOrder',
                 data: { orderId: orderId }
             });
 
@@ -232,7 +220,7 @@ Page({
             if (res.result && res.result.code === 0) {
                 wx.showToast({ title: '接单成功', icon: 'success' });
                 this.hideOrderDetailModal();
-                this.loadDashboardData(); // Refresh list
+                this.loadDashboardData();
             } else {
                 wx.showToast({ title: (res.result && res.result.message) || '接单失败', icon: 'none' });
             }
@@ -246,10 +234,6 @@ Page({
         }
     },
 
-    /**
-     * 【核心修改】 Reject order from modal
-     * 使用 app.waitClientCloudReady() 确保环境初始化完成
-     */
     async rejectOrderFromModal(e) {
         const orderId = e.detail.orderId;
         if (!orderId) return;
@@ -257,12 +241,9 @@ Page({
         wx.showLoading({ title: '正在拒单...' });
 
         try {
-            // 1. 【等待】等待共享环境
             const clientCloud = await app.waitClientCloudReady();
-
-            // 2. 【调用】
             const res = await clientCloud.callFunction({
-                name: 'rejectOrder', // 客户端的云函数
+                name: 'rejectOrder',
                 data: { orderId: orderId }
             });
 
@@ -285,7 +266,6 @@ Page({
         }
     },
 
-    // --- Helper Functions ---
     mapStatusToText: function (status) {
         switch (status) {
             case 10: return '待接单';
@@ -308,9 +288,9 @@ Page({
         if (orderDate === today) {
             return `今天 ${timeSlot ? timeSlot.split('-')[0] : ''}`;
         }
-        // 简化日期格式
         return `${date.substring(5)} ${timeSlot ? timeSlot.split('-')[0] : ''}`;
     },
+
     buildTimeline(order = {}) {
         const timeline = [];
         const pushIfExists = (label, value) => {
@@ -333,6 +313,7 @@ Page({
 
         return timeline;
     },
+
     formatTimelineTimestamp(value) {
         if (!value) return '';
         let dateObj = null;

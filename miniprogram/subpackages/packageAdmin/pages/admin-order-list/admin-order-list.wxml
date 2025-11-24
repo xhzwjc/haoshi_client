@@ -1,0 +1,25 @@
+<view class="order-list-page">
+  <view class="filters">
+    <scroll-view scroll-x class="filter-scroll">
+      <view class="filter-item {{currentStatus === 'all' ? 'active' : ''}}" bindtap="onStatusChange" data-status="all">全部</view>
+      <view class="filter-item {{currentStatus === '10' ? 'active' : ''}}" bindtap="onStatusChange" data-status="10">待接单</view>
+      <view class="filter-item {{currentStatus === '20' ? 'active' : ''}}" bindtap="onStatusChange" data-status="20">待服务</view>
+      <view class="filter-item {{currentStatus === '30' ? 'active' : ''}}" bindtap="onStatusChange" data-status="30">服务中</view>
+      <view class="filter-item {{currentStatus === '50' ? 'active' : ''}}" bindtap="onStatusChange" data-status="50">待评价</view>
+      <view class="filter-item {{currentStatus === '60' ? 'active' : ''}}" bindtap="onStatusChange" data-status="60">已完成</view>
+    </scroll-view>
+  </view>
+
+  <view class="content">
+    <view class="order-list" wx:if="{{orders.length > 0}}">
+      <view  class="order-item" wx:for="{{orders}}" wx:key="_id">
+        <text class="order-service">{{item.service_type || '服务'}}</text>
+        <text class="order-price">¥{{item.final_price || item.price_range}}</text>
+        <text class="order-time">{{item.created_at}}</text>
+      </view>
+    </view>
+    <view class="empty" wx:else>
+      <text>暂无订单数据</text>
+    </view>
+  </view>
+</view>
