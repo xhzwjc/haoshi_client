@@ -82,11 +82,11 @@
                 <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" catchtap="handleListAction">立即支付</button>
               </block>
               <block wx:if="{{item.status === 50}}">
-                 <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button>
+                 <!-- <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button> -->
                 <button class="btn btn-dark" data-action="评价服务" data-id="{{item._id}}" catchtap="handleListAction">评价服务</button>
               </block>
               <block wx:if="{{item.status === 60}}">
-                <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button>
+                <!-- <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button> -->
                 <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" catchtap="handleListAction">查看详情</button>
               </block>
             </view>

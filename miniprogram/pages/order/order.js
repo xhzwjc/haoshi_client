@@ -257,9 +257,9 @@ Page({
       case '评价服务':
         this.goToReview(id);
         break;
-      case '申请售后':
-        this.goToAfterSale(id, 'afterSale');
-        break;
+      // case '申请售后':
+      //   this.goToAfterSale(id, 'afterSale');
+      //   break;
       case '查看详情':
         this.toOrderDetail(e);
         break;
