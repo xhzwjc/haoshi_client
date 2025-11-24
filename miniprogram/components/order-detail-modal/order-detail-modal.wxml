@@ -34,7 +34,7 @@
       </view>
       <view class="detail-item fee-item">
         <text class="label">服务费用</text>
-        <text class="value price">￥{{order.final_price || order.price_range || '待核价'}}</text>
+        <text class="value price">￥{{order.price_display || order.final_price || order.price_range || '待核价'}}</text>
       </view>
       <view class="timeline-section" wx:if="{{timeline.length}}">
         <view class="timeline-title">订单进度</view>

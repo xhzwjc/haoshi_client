@@ -225,10 +225,10 @@ Page({
         return {
             ...order,
             payment_fmt: priceDisplay,
+            price_display: priceDisplay,
             is_range: isRange,
             status_text: this.mapStatusToText(order.status),
             service_name: order.service_name || '家政服务',
-            // Format date/time better if needed
             service_date: order.service_date || '',
             service_time_slot: order.service_time_slot || '',
             timeline: this.buildTimeline(order)
