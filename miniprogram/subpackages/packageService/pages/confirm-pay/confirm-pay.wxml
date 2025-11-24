@@ -79,9 +79,11 @@
         <view class="bottom-bar-content">
             <view class="price-container">
                 <text class="label">参考报价:</text>
-                <text class="currency">¥</text>
-                <text class="amount">{{orderSummary.total_price_display}}</text>
-                <text class="unit" style="font-size: 24rpx; color: #FF5722; margin-left: 4rpx;">/{{orderSummary.service_unit}}</text>
+                <view class="price-row">
+                    <text class="currency">¥</text>
+                    <text class="amount">{{orderSummary.total_price_display}}</text>
+                    <text class="unit" style="font-size: 24rpx; color: #FF5722; margin-left: 4rpx;">/{{orderSummary.service_unit}}</text>
+                </view>
             </view>
             <button class="pay-btn" bindtap="onConfirmPay">立即预约</button>
         </view>

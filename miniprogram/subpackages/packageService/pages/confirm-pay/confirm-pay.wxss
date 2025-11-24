@@ -176,22 +176,31 @@
 }
 .price-container {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }
 .price-container .label {
-  font-size: 28rpx;
+  font-size: 24rpx;
   color: #323233;
-  margin-right: 10rpx;
+  margin-right: 0;
+  line-height: 1.2;
+}
+.price-row {
+  display: flex;
+  align-items: baseline;
 }
 .price-container .currency {
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: #FF5722;
   font-weight: bold;
+  margin-right: 2rpx;
 }
 .price-container .amount {
-  font-size: 48rpx;
+  font-size: 44rpx; /* Slightly smaller to accommodate long text */
   color: #FF5722;
   font-weight: bold;
+  line-height: 1.2;
 }
 
 .pay-btn {

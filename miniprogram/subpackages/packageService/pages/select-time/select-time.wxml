@@ -57,7 +57,8 @@
     <view class="bottom-bar-safe">
         <view class="bottom-bar-content">
             <view class="selected-info" wx:if="{{selectedDate && selectedTime}}">
-                <text>已选：{{selectedDate}} {{selectedTime}}</text>
+                <text>已选：
+                {{selectedDate}} {{selectedTime}}</text>
             </view>
             <view class="selected-info placeholder" wx:else>
                 <text>请选择服务时间</text>
