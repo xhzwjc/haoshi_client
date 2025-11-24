@@ -1,4 +1,5 @@
-<view class="page-booking">
+<view class="page-confirm">
+    <!-- 顶部进度条 -->
     <view class="progress-bar">
         <view class="step completed">
             <view class="step-num">1</view>
@@ -16,77 +17,70 @@
         </view>
     </view>
 
-    <view class="section-card total-summary">
-        <view class="summary-header">价格范围</view>
-        <view class="total-price-display">
-            <text class="unit">¥</text>{{orderSummary.total_price_display}}
-            <text class="unit">/</text>{{orderSummary.service_unit}}
+    <!-- 订单状态卡片 -->
+    <view class="status-card">
+        <view class="status-title">待支付</view>
+        <view class="status-desc">请在 15 分钟内完成支付</view>
+        <view class="total-price">
+            <text class="currency">¥</text>{{orderSummary.total_price_display}}
         </view>
     </view>
     
-    <view class="section-card detail-section">
-        <view class="section-title">订单详情</view>
-        <view class="info-list">
-            <view class="info-item">
-                <text class="label">服务名称</text>
-                <text class="value">{{orderSummary.service_name}}</text>
-            </view>
-            <view class="info-item">
-                <text class="label">服务描述</text>
-                <text class="value long-text">{{orderSummary.service_desc}}</text>
-            </view>
-            <view class="info-item">
-                <text class="label">服务时间</text>
-                <text class="value">{{orderSummary.service_date}} {{orderSummary.service_time_slot}}</text>
-            </view>
-            <view class="info-item">
-                <text class="label">服务地址</text>
-                <text class="value long-text">{{orderSummary.address}}</text>
-            </view>
+    <!-- 服务详情卡片 -->
+    <view class="info-card">
+        <view class="card-title">服务详情</view>
+        <view class="info-row">
+            <text class="label">服务名称</text>
+            <text class="value">{{orderSummary.service_name}}</text>
+        </view>
+        <view class="info-row">
+            <text class="label">服务时间</text>
+            <text class="value highlight">{{orderSummary.service_date}} {{orderSummary.service_time_slot}}</text>
+        </view>
+        <view class="info-row">
+            <text class="label">服务地址</text>
+            <text class="value">{{orderSummary.address}}</text>
         </view>
     </view>
     
-    <view class="section-card detail-section">
-        <view class="section-title">联系人信息</view>
-        <view class="info-list">
-            <view class="info-item">
-                <text class="label">联系人</text>
-                <text class="value">{{orderSummary.contact_name}}</text>
-            </view>
-            <view class="info-item">
-                <text class="label">联系电话</text>
-                <text class="value">{{orderSummary.contact_phone}}</text>
-            </view>
-            <view class="info-item">
-                <text class="label">备注</text>
-                <text class="value long-text">{{bookingData.remarks || '无'}}</text>
-            </view>
+    <!-- 联系人信息卡片 -->
+    <view class="info-card">
+        <view class="card-title">联系信息</view>
+        <view class="info-row">
+            <text class="label">联系人</text>
+            <text class="value">{{orderSummary.contact_name}}</text>
+        </view>
+        <view class="info-row">
+            <text class="label">联系电话</text>
+            <text class="value">{{orderSummary.contact_phone}}</text>
+        </view>
+        <view class="info-row">
+            <text class="label">备注信息</text>
+            <text class="value">{{bookingData.remarks || '无'}}</text>
         </view>
     </view>
     
-    <view class="section-card pay-method-section">
-        <view class="section-title">选择支付方式</view>
-        <view class="pay-item selected">
-            <image class="pay-icon" src="/packageCommon/images/icon_wechat_pay.png" mode="aspectFit"></image>
-            <text class="pay-name">微信支付</text>
+    <!-- 支付方式 -->
+    <view class="info-card pay-card">
+        <view class="card-title">支付方式</view>
+        <view class="pay-method selected">
+            <view class="method-left">
+                <image class="icon" src="/packageCommon/images/icon_wechat_pay.png" mode="aspectFit"></image>
+                <text>微信支付</text>
+            </view>
             <image class="check-icon" src="/packageCommon/images/icon_checked_blue.png" mode="aspectFit"></image>
         </view>
     </view>
 
-    <view class="bottom-bar action-group">
-        <button 
-            class="btn-cancel" 
-            bindtap="onPrevStep"
-        >
-            返回/取消
-        </button>
-        <button 
-            class="confirm-btn flex-grow" 
-            bindtap="onConfirmPay"
-        >
-            立即预约
-            <!-- 立即预约 ¥{{orderSummary.total_price_display}} -->
-        </button>
+    <!-- 底部支付栏 -->
+    <view class="bottom-bar-safe">
+        <view class="bottom-bar-content">
+            <view class="price-container">
+                <text class="label">合计:</text>
+                <text class="currency">¥</text>
+                <text class="amount">{{orderSummary.total_price_display}}</text>
+            </view>
+            <button class="pay-btn" bindtap="onConfirmPay">立即支付</button>
+        </view>
     </view>
-    
 </view>

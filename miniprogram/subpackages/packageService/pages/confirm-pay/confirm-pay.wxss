@@ -1,221 +1,209 @@
 /* /subpackages/packageService/pages/confirm-pay/confirm-pay.wxss */
 
-/* === 页面基础样式 === */
-.page-booking {
-  /* 增加底部留白，适应双按钮布局 */
-  padding-bottom: 180rpx; 
-  background-color: #f7f7f7; 
+/* === 基础布局 === */
+.page-confirm {
+  padding-bottom: 140rpx;
+  background-color: #F7F8FA;
   min-height: 100vh;
 }
 
-/* 顶部进度条 */
+/* === 进度条 (保持一致性) === */
 .progress-bar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: space-around;
+  padding: 30rpx 60rpx;
   background-color: #fff;
-  padding: 32rpx 48rpx;
   margin-bottom: 20rpx;
 }
-
 .step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #999;
+  position: relative;
+  z-index: 10;
 }
-
 .step-num {
-  width: 40rpx;
-  height: 40rpx;
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  text-align: center;
   border-radius: 50%;
-  background-color: #EBEDF0;
+  background-color: #F2F3F5;
   color: #C8C9CC;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-bottom: 12rpx;
   font-size: 24rpx;
   font-weight: bold;
-  margin-bottom: 12rpx;
 }
-
 .step-text {
-  font-size: 26rpx;
+  font-size: 24rpx;
+  color: #969799;
 }
 
-.step-line {
-  flex: 1;
-  height: 4rpx;
-  background-color: #EBEDF0;
-  margin: 0 16rpx;
-  position: relative;
-  top: -20rpx;
-}
-
-.step-line.completed {
-  background-color: rgba(64, 158, 255, 0.4);
-}
-
-.step-line.active {
-  background: linear-gradient(90deg, rgba(64, 158, 255, 0.4) 0%, #409EFF 100%);
-}
-
+/* 激活/完成状态 */
+.step.active .step-num,
 .step.completed .step-num {
-  background-color: rgba(64, 158, 255, 0.25);
-  color: #409EFF;
-}
-
-.step.completed .step-text {
-  color: #409EFF;
-}
-
-.step.active .step-num {
-  background-color: #409EFF;
+  background-color: #1677FF;
   color: #fff;
 }
-
-.step.active .step-text {
-  color: #409EFF;
+.step.active .step-text,
+.step.completed .step-text {
+  color: #323233;
   font-weight: bold;
 }
-
-
-/* === 通用卡片样式 === */
-.section-card {
-  background-color: #fff;
-  margin: 0 30rpx 20rpx 30rpx;
-  padding: 30rpx;
-  border-radius: 12rpx; 
-  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.03);
+.step-line {
+  flex-grow: 1;
+  height: 4rpx;
+  background-color: #F2F3F5;
+  margin: 0 20rpx 36rpx 20rpx;
+  border-radius: 2rpx;
 }
-.section-title {
+.step-line.active,
+.step-line.completed {
+  background-color: #1677FF;
+}
+
+/* === 状态卡片 === */
+.status-card {
+  background: linear-gradient(135deg, #1677FF 0%, #409EFF 100%);
+  margin: 20rpx 30rpx;
+  padding: 40rpx;
+  border-radius: 24rpx;
+  color: #fff;
+  box-shadow: 0 8rpx 20rpx rgba(22, 119, 255, 0.2);
+}
+.status-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+.status-desc {
+  font-size: 26rpx;
+  opacity: 0.8;
+  margin-bottom: 30rpx;
+}
+.total-price {
+  font-size: 60rpx;
+  font-weight: bold;
+}
+.total-price .currency {
+  font-size: 32rpx;
+  margin-right: 4rpx;
+}
+
+/* === 通用信息卡片 === */
+.info-card {
+  background-color: #fff;
+  margin: 20rpx 30rpx;
+  padding: 30rpx;
+  border-radius: 24rpx;
+}
+.card-title {
   font-size: 30rpx;
   font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
-  padding-bottom: 10rpx;
-  border-bottom: 1px solid #eee;
+  color: #323233;
+  margin-bottom: 24rpx;
+  padding-left: 10rpx;
+  border-left: 6rpx solid #1677FF;
+  line-height: 1;
 }
-
-/* === 订单总览卡片 (total-summary) === */
-.total-summary {
-  text-align: center;
-  padding: 40rpx 30rpx;
-  margin-top: 20rpx;
-}
-.summary-header {
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 15rpx;
-}
-.total-price-display {
-  font-size: 72rpx; 
-  font-weight: bold;
-  color: #FF5722;
-}
-.total-price-display .unit {
-  font-size: 40rpx;
-  font-weight: bold;
-  margin-right: 5rpx;
-}
-
-/* === 详情列表 (detail-section) === */
-.detail-section .info-item {
+.info-row {
   display: flex;
   justify-content: space-between;
-  padding: 20rpx 0;
+  margin-bottom: 20rpx;
   font-size: 28rpx;
-  border-bottom: 1rpx solid #f4f4f4; 
 }
-.detail-section .info-item:last-child {
-  border-bottom: none;
+.info-row:last-child {
+  margin-bottom: 0;
 }
-.detail-section .label {
-  color: #999;
+.info-row .label {
+  color: #969799;
   flex-shrink: 0;
   margin-right: 30rpx;
 }
-.detail-section .value {
-  color: #333;
+.info-row .value {
+  color: #323233;
   text-align: right;
-  word-break: break-all;
+  flex: 1;
 }
-.detail-section .value.long-text {
-  max-width: 70%; 
+.info-row .value.highlight {
+  color: #1677FF;
+  font-weight: bold;
 }
 
-/* === 支付方式选择 (pay-method-section) === */
-.pay-method-section {
-  padding: 30rpx;
+/* === 支付方式 === */
+.pay-method {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
 }
-.pay-item {
+.method-left {
   display: flex;
   align-items: center;
-  padding: 25rpx 0;
-  border-bottom: 1px solid #eee;
 }
-.pay-item:last-child {
-  border-bottom: none;
-}
-.pay-item .pay-icon {
-  width: 56rpx;
-  height: 56rpx;
+.method-left .icon {
+  width: 48rpx;
+  height: 48rpx;
   margin-right: 20rpx;
 }
-.pay-item .pay-name {
+.method-left text {
   font-size: 30rpx;
-  color: #333;
-  flex-grow: 1;
+  color: #323233;
 }
-.pay-item .check-icon {
-  width: 36rpx;
-  height: 36rpx;
-  opacity: 0.2; 
-}
-.pay-item.selected .check-icon {
-  opacity: 1; 
+.check-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-
-/* === 【核心修改】底部操作栏 (双按钮) === */
-.bottom-bar {
+/* === 底部支付栏 === */
+.bottom-bar-safe {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex; /* 启用 Flex 布局 */
-  padding: 20rpx 30rpx;
   background-color: #fff;
-  box-shadow: 0 -2rpx 5rpx rgba(0, 0, 0, 0.08);
-  z-index: 1000;
-  align-items: center;
-  gap: 20rpx; /* 增加按钮间距 */
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
 }
-.bottom-bar button {
-  height: 96rpx;
-  font-size: 34rpx; /* 略微减小字号以适应双按钮 */
-  border-radius: 12rpx;
-  margin: 0;
-  padding: 0;
+.bottom-bar-content {
+  height: 110rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: normal;
+  padding: 0 30rpx;
+  justify-content: space-between;
 }
-
-/* 确认支付按钮 */
-.bottom-bar .confirm-btn.flex-grow {
-  flex: 1; /* 占据剩余主要空间 */
-  background-color: #FF5722; 
-  color: #fff;
+.price-container {
+  display: flex;
+  align-items: baseline;
+}
+.price-container .label {
+  font-size: 28rpx;
+  color: #323233;
+  margin-right: 10rpx;
+}
+.price-container .currency {
+  font-size: 28rpx;
+  color: #FF5722;
+  font-weight: bold;
+}
+.price-container .amount {
+  font-size: 48rpx;
+  color: #FF5722;
   font-weight: bold;
 }
 
-/* 返回/取消按钮 (新样式) */
-.bottom-bar .btn-cancel {
-  flex-basis: 35%; /* 给予取消按钮一定宽度 */
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
+.pay-btn {
+  margin: 0;
+  padding: 0 60rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(90deg, #FF5722 0%, #FF8D1A 100%);
+  color: #fff;
+  font-size: 30rpx;
+  border-radius: 40rpx;
+  font-weight: bold;
+  box-shadow: 0 6rpx 16rpx rgba(255, 87, 34, 0.3);
 }
 

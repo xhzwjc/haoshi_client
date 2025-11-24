@@ -1,4 +1,5 @@
 <view class="page-booking">
+    <!-- 顶部进度条 -->
     <view class="progress-bar">
         <view class="step finished">
             <view class="step-num">1</view>
@@ -17,49 +18,62 @@
         </view>
     </view>
 
-    <view class="service-info-card">
-        <view class="card-header">
-            <view class="card-title">{{service.name || '服务名称'}}</view>
-            <view class="price-wrap">
-              <text class="price">{{service.price || '...'}}</text>
-              <text class="price-unit">/{{service.unit}}</text>
-            </view>
-        </view>
-        <view class="card-desc">{{service.description || '专业团队, 品质保证'}}</view>
-    </view>
-
-    <view class="form-section">
-        <view class="form-item">
-            <view class="item-label required">选择日期</view>
-            <picker mode="date" value="{{selectedDate}}" start="{{today}}" bindchange="onDateSelect">
-                <view class="item-content date-picker">
-                    <text class="date-text {{selectedDate ? '' : 'ph'}}">
-                        {{selectedDate || '选择服务日期'}}
-                    </text>
-                    <image class="calendar-icon" src="/packageCommon/images/icon_calendar.png" mode="widthFix"></image>
-                </view>
-            </picker>
-        </view>
-
-        <view class="form-item time-slot-group">
-            <view class="item-label required">选择时段</view>
-            <view class="time-slots-container">
-                <view
-                    class="time-slot-item {{item.time === selectedTime ? 'active' : ''}} {{!item.available ? 'disabled' : ''}}"
-                    wx:for="{{timeSlots}}"
-                    wx:key="time"
-                    data-time="{{item.time}}"
-                    bindtap="onTimeSlotSelect"
-                >
-                    <image src="/packageCommon/images/icon_clock.png" mode="widthFix" class="clock-icon"></image>
-                    {{item.time}}
-                </view>
-            </view>
+    <!-- 服务信息简略展示 -->
+    <view class="service-header">
+        <view class="service-name">{{service.name}}</view>
+        <view class="service-price">
+            <text class="currency">¥</text>{{service.price}}<text class="unit">/{{service.unit}}</text>
         </view>
     </view>
 
-    <view class="bottom-bar step-nav">
-        <button class="prev-btn" bindtap="onPrevStep">上一步</button>
-        <button class="next-btn" bindtap="onNextStep">下一步</button>
+    <!-- 日期选择区域 (横向滚动) -->
+    <view class="date-section">
+        <view class="section-title">选择日期</view>
+        <scroll-view class="date-scroll" scroll-x enable-flex>
+            <view 
+                class="date-card {{item.selected ? 'active' : ''}}" 
+                wx:for="{{dateList}}" 
+                wx:key="fullDate"
+                data-date="{{item.fullDate}}"
+                data-index="{{index}}"
+                bindtap="onDateSelect"
+            >
+                <view class="week">{{item.week}}</view>
+                <view class="day">{{item.month}}-{{item.day}}</view>
+            </view>
+        </scroll-view>
+    </view>
+
+    <!-- 时段选择区域 -->
+    <view class="time-section">
+        <view class="section-title">选择时段</view>
+        <view class="time-grid">
+            <view
+                class="time-item {{item.time === selectedTime ? 'active' : ''}} {{!item.available ? 'disabled' : ''}}"
+                wx:for="{{timeSlots}}"
+                wx:key="time"
+                data-time="{{item.time}}"
+                bindtap="onTimeSlotSelect"
+            >
+                <view class="time-text">{{item.time}}</view>
+                <view class="status-text">{{item.available ? (item.time === selectedTime ? '已选' : '可约') : '约满'}}</view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 底部操作栏 -->
+    <view class="bottom-bar-safe">
+        <view class="bottom-bar-content">
+            <view class="selected-info" wx:if="{{selectedDate && selectedTime}}">
+                <text>已选：{{selectedDate}} {{selectedTime}}</text>
+            </view>
+            <view class="selected-info placeholder" wx:else>
+                <text>请选择服务时间</text>
+            </view>
+            
+            <button class="next-btn {{selectedDate && selectedTime ? '' : 'disabled'}}" bindtap="onNextStep">
+                下一步
+            </button>
+        </view>
     </view>
 </view>
