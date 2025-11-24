@@ -169,6 +169,9 @@ Page({
             isRange = false;
           } else {
             priceDisplay = order.price_range || '待核价';
+            if (order.price_range && order.service_unit) {
+              priceDisplay += `/${order.service_unit}`;
+            }
             isRange = true;
           }
 

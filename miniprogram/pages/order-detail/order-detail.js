@@ -134,87 +134,85 @@ Page({
         }
     },
 
-    onShow: function() {
+    onShow: function () {
         // 从其他页面返回（如支付成功后），需要刷新订单状态
         if (this.data.orderId) {
-             this.fetchOrderDetail(this.data.orderId);
+            this.fetchOrderDetail(this.data.orderId);
         }
     },
 
     /**
      * 【修改】根据订单ID从数据库获取详情
      */
-    fetchOrderDetail: function(id) {
+    fetchOrderDetail: function (id) {
         this.setData({ loading: true });
         db.collection('bookings').doc(id).get({
-          success: (res) => {
-              const order = res.data;
+            success: (res) => {
+                const order = res.data;
 
-              const openid = getCurrentClientOpenid();
-              if (!orderBelongsToClient(order, openid)) {
-                  wx.showToast({ title: '无权查看该订单', icon: 'none' });
-                  this.setData({ orderDetail: null, loading: false });
-                  return;
-              }
+                const openid = getCurrentClientOpenid();
+                if (!orderBelongsToClient(order, openid)) {
+                    wx.showToast({ title: '无权查看该订单', icon: 'none' });
+                    this.setData({ orderDetail: null, loading: false });
+                    return;
+                }
 
-              // 【核心修改】 价格显示逻辑
-              let finalFee = parseFloat(order.final_price) || 0; // 最终价格
-              let isFinalPrice = order.status >= 35; // 状态 35 及以后显示最终价格
-              
-              order.is_final_price = isFinalPrice; 
-              order.price_display = isFinalPrice ? finalFee.toFixed(2) : (order.price_range || '待核价');
-              
-              order.created_at_fmt = formatTimestamp(order.created_at);
-              order.timeline = buildTimeline(order);
-              // 如果有支付时间，也可以格式化 order.paid_at
+                // 核心修改：价格显示逻辑
+                let finalFee = parseFloat(order.final_price) || 0;
+                let isFinalPrice = order.status >= 35;
+                order.is_final_price = isFinalPrice;
+                order.price_display = isFinalPrice ? finalFee.toFixed(2) : (order.price_range || '待核价');
 
-              // 【核心修改】 状态文案逻辑
-              switch (order.status) {
-                case 10:
-                    order.status_text = '待接单';
-                    order.status_tip = '订单已提交，正在等待家政人员接单。';
-                    break;
-                case 20:
-                    order.status_text = '待服务';
-                    order.status_tip = `${order.master_info || '家政人员'}已接单，请等待按约定时间上门服务。`;
-                    break;
-                case 30:
-                    order.status_text = '服务中';
-                    order.status_tip = `${order.master_info || '家政人员'}已上门，正在提供服务中。`;
-                    break;
-                case 35:
-                    order.status_text = '待确认金额'; // 新状态
-                    order.status_tip = `${order.master_info || '家政人员'}已服务完毕并提交报价，请您确认最终金额。`;
-                    break;
-                case 40:
-                    order.status_text = '待支付';
-                    order.status_tip = '金额已确认，请在规定时间内完成支付。';
-                    break;
-                case 50:
-                    order.status_text = '待评价';
-                    order.status_tip = '支付成功！请您对本次服务进行评价。';
-                    break;
-                case 60:
-                    order.status_text = '已完成';
-                    order.status_tip = '订单已完成，期待您的再次预约！';
-                    break;
-                case 0:
-                    order.status_text = '已取消';
-                    order.status_tip = '订单已取消。';
-                    break;
-                case -1:
-                    order.status_text = '已拒单';
-                    order.status_tip = '家政人员未接单，订单已关闭。';
-                    break;
-                default:
-                    order.status_text = '状态异常';
-                    order.status_tip = '订单状态异常，请联系客服。';
-              }
+                if (!isFinalPrice && order.price_range && order.service_unit) {
+                    order.price_display += `/${order.service_unit}`;
+                }
 
-              this.setData({
-                  orderDetail: order,
-                  loading: false
-              });
+                switch (order.status) {
+                    case 10:
+                        order.status_text = '待接单';
+                        order.status_tip = '订单已提交，正在等待家政人员接单。';
+                        break;
+                    case 20:
+                        order.status_text = '待服务';
+                        order.status_tip = `${order.master_info || '家政人员'}已接单，请等待按约定时间上门服务。`;
+                        break;
+                    case 30:
+                        order.status_text = '服务中';
+                        order.status_tip = `${order.master_info || '家政人员'}已上门，正在提供服务中。`;
+                        break;
+                    case 35:
+                        order.status_text = '待确认金额'; // 新状态
+                        order.status_tip = `${order.master_info || '家政人员'}已服务完毕并提交报价，请您确认最终金额。`;
+                        break;
+                    case 40:
+                        order.status_text = '待支付';
+                        order.status_tip = '金额已确认，请在规定时间内完成支付。';
+                        break;
+                    case 50:
+                        order.status_text = '待评价';
+                        order.status_tip = '支付成功！请您对本次服务进行评价。';
+                        break;
+                    case 60:
+                        order.status_text = '已完成';
+                        order.status_tip = '订单已完成，期待您的再次预约！';
+                        break;
+                    case 0:
+                        order.status_text = '已取消';
+                        order.status_tip = '订单已取消。';
+                        break;
+                    case -1:
+                        order.status_text = '已拒单';
+                        order.status_tip = '家政人员未接单，订单已关闭。';
+                        break;
+                    default:
+                        order.status_text = '状态异常';
+                        order.status_tip = '订单状态异常，请联系客服。';
+                }
+
+                this.setData({
+                    orderDetail: order,
+                    loading: false
+                });
             },
             fail: (err) => {
                 console.error('获取订单详情失败:', err);
@@ -238,7 +236,7 @@ Page({
     },
 
     // 复制订单编号功能
-    copyContent: function(e) {
+    copyContent: function (e) {
         const content = e.currentTarget.dataset.content;
         wx.setClipboardData({
             data: content,

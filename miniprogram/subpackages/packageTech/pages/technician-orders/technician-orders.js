@@ -30,23 +30,23 @@ Page({
         showDetailModal: false,
         modalOrderDetail: null,
     },
-    
+
     // Internal state to track initial load vs. subsequent refreshes
-    _initialLoadDone: false, 
+    _initialLoadDone: false,
 
     onLoad: function (options) {
         let initialIndex = 0;
         // Check if navigated with a specific status (e.g., from dashboard notification)
         if (options && options.status) {
             let statusNum = parseInt(options.status, 10);
-             if (!isNaN(statusNum)) {
-                 initialIndex = this.data.tabs.findIndex(tab => tab.status === statusNum);
-                 if (initialIndex === -1) { // Handle combined statuses if needed
-                     if (statusNum === 35 || statusNum === 40) initialIndex = this.data.tabs.findIndex(tab => tab.status === 'pending_payment');
-                     if (statusNum === 50 || statusNum === 60) initialIndex = this.data.tabs.findIndex(tab => tab.status === 'completed');
-                 }
-             }
-             if (initialIndex === -1) initialIndex = 0;
+            if (!isNaN(statusNum)) {
+                initialIndex = this.data.tabs.findIndex(tab => tab.status === statusNum);
+                if (initialIndex === -1) { // Handle combined statuses if needed
+                    if (statusNum === 35 || statusNum === 40) initialIndex = this.data.tabs.findIndex(tab => tab.status === 'pending_payment');
+                    if (statusNum === 50 || statusNum === 60) initialIndex = this.data.tabs.findIndex(tab => tab.status === 'completed');
+                }
+            }
+            if (initialIndex === -1) initialIndex = 0;
         }
 
         this.setData({ activeTab: initialIndex }, () => {
@@ -54,33 +54,33 @@ Page({
         });
     },
 
-    onShow: function() {
+    onShow: function () {
         // Refresh data if it's not the initial load and data might be dirty
         if (this._initialLoadDone && this._isDataDirty) {
-             this.loadOrders(true); // Refresh first page
-             this._isDataDirty = false;
+            this.loadOrders(true); // Refresh first page
+            this._isDataDirty = false;
         }
         this._initialLoadDone = true; // Mark initial load as done after first onShow
     },
-    
-    onHide: function() {
+
+    onHide: function () {
         this._isDataDirty = true; // Mark data as potentially dirty when page hides
     },
 
     // --- Pull Down Refresh & Scroll To Bottom ---
-    onRefresherRefresh: function() {
+    onRefresherRefresh: function () {
         if (this.data.loading || this.data.isPulling) return;
         this.setData({ isPulling: true, isReachingBottom: false });
         this.loadOrders(true); // Load first page
     },
-    onScrollToLower: function() {
+    onScrollToLower: function () {
         if (!this.data.hasMore || this.data.isReachingBottom || this.data.isPulling) return;
         this.setData({ isReachingBottom: true, bottomText: '正在加载...' });
         this.loadOrders(false); // Load next page
     },
 
     // --- Tab Click ---
-    onTabClick: function(e) {
+    onTabClick: function (e) {
         const index = e.currentTarget.dataset.index;
         if (this.data.activeTab === index) return;
         this.setData({ activeTab: index }, () => {
@@ -89,7 +89,7 @@ Page({
     },
 
     // --- Data Loading ---
-    loadOrders: function(reset = false) {
+    loadOrders: function (reset = false) {
         if (this.data.loading && !reset) return; // Prevent concurrent loads unless resetting
 
         const currentPage = reset ? 1 : this.data.page;
@@ -135,9 +135,9 @@ Page({
                 return { data: [], error: err };
             }),
             // 获取待接单数量用于badge（仅重置时）
-            reset ? db.collection('bookings').where({ 
-                status: 10, 
-                technician_openid: _.exists(false) 
+            reset ? db.collection('bookings').where({
+                status: 10,
+                technician_openid: _.exists(false)
             }).count() : Promise.resolve(null)
         ]).then(async ([orderRes, countRes]) => {
             let list = orderRes.data || [];
@@ -168,7 +168,7 @@ Page({
 
             const newList = reset ? formatted : [...this.data.orders, ...formatted];
             const hasMore = list.length === this.data.pageSize;
-            
+
             let updateData = {
                 orders: newList,
                 page: currentPage + 1,
@@ -178,7 +178,7 @@ Page({
                 isReachingBottom: false,
                 bottomText: hasMore ? '上拉加载更多' : (newList.length > 0 ? '我是有底线的' : '')
             };
-            
+
             // Update badge count if it was fetched
             if (countRes !== null) {
                 updateData.pendingCount = countRes.total;
@@ -187,49 +187,54 @@ Page({
             this.setData(updateData);
             wx.hideLoading();
             if (reset && this.data.isPulling) { // Only stop pull down if it was triggered by it
-                 wx.showToast({ title: '刷新成功', icon: 'success', duration: 800 });
+                wx.showToast({ title: '刷新成功', icon: 'success', duration: 800 });
             }
 
         }).catch(err => {
             console.error('加载订单失败:', err);
             this.setData({ loading: false, isPulling: false, isReachingBottom: false, bottomText: '加载失败' });
             wx.hideLoading();
-            wx.showToast({ 
-                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '加载失败', 
-                icon: 'none' 
+            wx.showToast({
+                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '加载失败',
+                icon: 'none'
             });
         }).finally(() => {
             // Ensure pull-down animation stops even on error
             if (this.data.isPulling) {
-                 wx.stopPullDownRefresh(); // Use wx API if refresher-enabled is not stopping automatically
-                 this.setData({ isPulling: false });
+                wx.stopPullDownRefresh(); // Use wx API if refresher-enabled is not stopping automatically
+                this.setData({ isPulling: false });
             }
         });
     },
 
     // --- Order Formatting ---
-    formatOrderData: function(order) {
-         let priceDisplay = '0.00';
-         let isRange = false;
-         if (order.status >= 35) {
-             priceDisplay = (parseFloat(order.final_price) || 0).toFixed(2);
-             isRange = false;
-         } else {
-             priceDisplay = order.price_range || '待核价';
-             isRange = true;
-         }
-         return {
-             ...order,
-             payment_fmt: priceDisplay,
-             is_range: isRange,
-             status_text: this.mapStatusToText(order.status),
-             service_name: order.service_name || '家政服务',
-             // Format date/time better if needed
-             service_date: order.service_date || '',
-             service_time_slot: order.service_time_slot || '',
-             timeline: this.buildTimeline(order)
-         };
+    formatOrderData: function (order) {
+        let priceDisplay = '0.00';
+        let isRange = false;
+        if (order.status >= 35) {
+            priceDisplay = (parseFloat(order.final_price) || 0).toFixed(2);
+            isRange = false;
+        } else {
+            priceDisplay = order.price_range || '待核价';
+            if (order.price_range && order.service_unit) {
+                priceDisplay += `/${order.service_unit}`;
+            }
+            isRange = true;
+        }
+
+        return {
+            ...order,
+            payment_fmt: priceDisplay,
+            is_range: isRange,
+            status_text: this.mapStatusToText(order.status),
+            service_name: order.service_name || '家政服务',
+            // Format date/time better if needed
+            service_date: order.service_date || '',
+            service_time_slot: order.service_time_slot || '',
+            timeline: this.buildTimeline(order)
+        };
     },
+
     buildTimeline(order = {}) {
         const timeline = [];
         const pushIfExists = (label, value) => {
@@ -252,6 +257,7 @@ Page({
 
         return timeline;
     },
+
     formatTimelineTimestamp(value) {
         if (!value) return '';
         let dateObj = null;
@@ -280,7 +286,8 @@ Page({
         const mm = pad(dateObj.getMinutes());
         return `${y}-${m}-${d} ${hh}:${mm}`;
     },
-    mapStatusToText: function(status) {
+
+    mapStatusToText: function (status) {
         switch (status) {
             case 10: return '待接单';
             case 20: return '待服务';
@@ -296,40 +303,40 @@ Page({
     },
 
     // --- Actions ---
-    viewDetail: function(e) {
+    viewDetail: function (e) {
         this.setData({
             modalOrderDetail: e.currentTarget.dataset.order,
             showDetailModal: true
         });
     },
-    hideOrderDetailModal: function() {
+    hideOrderDetailModal: function () {
         this.setData({ showDetailModal: false, modalOrderDetail: null });
     },
-    acceptOrder: function(e) {
+    acceptOrder: function (e) {
         const orderId = e.currentTarget.dataset.id;
         // Optionally show modal first for confirmation, or accept directly
         this.callCloudFunction('acceptOrder', { orderId: orderId }, '接单成功', '接单失败');
     },
-    startService: function(e) { // 对应“确认上门” 20 -> 30
+    startService: function (e) { // 对应“确认上门” 20 -> 30
         const orderId = e.currentTarget.dataset.id;
         this.callCloudFunction('startService', { orderId }, '操作成功', '操作失败');
     },
-    completeAndQuote: function(e) {
-         const orderId = e.currentTarget.dataset.id;
-         wx.navigateTo({
-             url: `/subpackages/packageTech/pages/quote-order/quote-order?id=${orderId}`
-         });
+    completeAndQuote: function (e) {
+        const orderId = e.currentTarget.dataset.id;
+        wx.navigateTo({
+            url: `/subpackages/packageTech/pages/quote-order/quote-order?id=${orderId}`
+        });
     },
     // --- Modal Action Callbacks ---
-    acceptOrderFromModal: function(e) {
-         this.callCloudFunction('acceptOrder', { orderId: e.detail.orderId }, '接单成功', '接单失败', true);
+    acceptOrderFromModal: function (e) {
+        this.callCloudFunction('acceptOrder', { orderId: e.detail.orderId }, '接单成功', '接单失败', true);
     },
-    rejectOrderFromModal: function(e) {
-         this.callCloudFunction('rejectOrder', { orderId: e.detail.orderId }, '拒单成功', '拒单失败', true);
+    rejectOrderFromModal: function (e) {
+        this.callCloudFunction('rejectOrder', { orderId: e.detail.orderId }, '拒单成功', '拒单失败', true);
     },
 
     // --- Generic Cloud Function Caller ---
-    callCloudFunction: function(name, data, successTitle, failTitle, closeModal = false) {
+    callCloudFunction: function (name, data, successTitle, failTitle, closeModal = false) {
         wx.showLoading({ title: '请稍候...' });
         wx.cloud.callFunction({
             name: name,

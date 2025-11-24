@@ -10,7 +10,7 @@ Page({
             badge: '--',
             rating: '--',
             servedOrders: '--',
-            avatar: '/packageCommon/images/default_avatar.png' 
+            avatar: '/packageCommon/images/default_avatar.png'
         },
         dashboardData: { // Placeholder data
             pendingCount: '--',
@@ -22,7 +22,7 @@ Page({
             },
             totalPendingService: '--',
             totalCompleted: '--',
-            recentOrders: [] 
+            recentOrders: []
         },
         showDetailModal: false,
         modalOrderDetail: null,
@@ -36,11 +36,11 @@ Page({
             statusBarHeight: systemInfo.statusBarHeight,
             titleBarHeight: menuButtonInfo.height + (menuButtonInfo.top - systemInfo.statusBarHeight) * 2
         });
-        
+
         this.loadDashboardData();
     },
 
-    onShow: function() {
+    onShow: function () {
         // Refresh data when page is shown, e.g., after accepting an order elsewhere
         this.loadDashboardData();
     },
@@ -89,11 +89,11 @@ Page({
      */
     async loadDashboardData() {
         wx.showLoading({ title: '加载中...' });
-        
+
         try {
             // 1. 【等待】等待 app.js 中的共享环境初始化完成
             const clientCloud = await app.waitClientCloudReady();
-            
+
             // 2. 【调用】使用获取到的共享环境实例调用云函数
             const res = await clientCloud.callFunction({
                 name: 'getTechnicianDashboard', // 客户端的云函数名
@@ -101,19 +101,22 @@ Page({
             });
 
             wx.hideLoading();
-            
+
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
+
                 // 格式化最近订单数据
                 if (data.dashboardData && Array.isArray(data.dashboardData.recentOrders)) {
                     const limitedRecentOrders = data.dashboardData.recentOrders.slice(0, 5);
                     data.dashboardData.recentOrders = limitedRecentOrders.map(order => {
-                        // 格式化价格显示
                         let priceDisplay = '待核价';
                         if (order.final_price) {
                             priceDisplay = parseFloat(order.final_price).toFixed(2);
                         } else if (order.price_range) {
                             priceDisplay = order.price_range;
+                            if (order.service_unit) {
+                                priceDisplay += `/${order.service_unit}`;
+                            }
                         }
 
                         const formattedOrder = {
@@ -126,6 +129,7 @@ Page({
                         return formattedOrder;
                     });
                 }
+
                 const dashboardData = Object.assign({
                     totalPendingService: 0,
                     totalCompleted: 0
@@ -141,32 +145,32 @@ Page({
         } catch (err) {
             wx.hideLoading();
             console.error('Failed to load dashboard data:', err);
-            wx.showToast({ 
-                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '网络错误，请稍后重试', 
-                icon: 'none' 
+            wx.showToast({
+                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '网络错误，请稍后重试',
+                icon: 'none'
             });
         }
     },
-    
+
     // --- Navigation ---
-    goToTaskCenter: function() {
-        wx.navigateTo({ 
-            url: '/subpackages/packageTech/pages/technician-orders/technician-orders' 
+    goToTaskCenter: function () {
+        wx.navigateTo({
+            url: '/subpackages/packageTech/pages/technician-orders/technician-orders'
         });
     },
-    goToSchedule: function() {
-        wx.navigateTo({ 
-            url: '/subpackages/packageTech/pages/schedule/schedule' 
+    goToSchedule: function () {
+        wx.navigateTo({
+            url: '/subpackages/packageTech/pages/schedule/schedule'
         });
     },
-    goToIncome: function() {
-        wx.navigateTo({ 
-            url: '/subpackages/packageTech/pages/income/income' 
+    goToIncome: function () {
+        wx.navigateTo({
+            url: '/subpackages/packageTech/pages/income/income'
         });
     },
-    goToRatings: function() {
-        wx.navigateTo({ 
-            url: '/subpackages/packageTech/pages/ratings/ratings' 
+    goToRatings: function () {
+        wx.navigateTo({
+            url: '/subpackages/packageTech/pages/ratings/ratings'
         });
     },
 
@@ -174,7 +178,7 @@ Page({
     /**
      * Show prompt before accepting order
      */
-    acceptOrderPrompt: function(e) {
+    acceptOrderPrompt: function (e) {
         let order = e.currentTarget.dataset.order;
         const id = e.currentTarget.dataset.id;
         if (!order && id && this.data.dashboardData && this.data.dashboardData.recentOrders) {
@@ -188,7 +192,7 @@ Page({
     /**
      * View order detail (Show Modal)
      */
-    viewOrderDetail: function(e) {
+    viewOrderDetail: function (e) {
         let order = e.currentTarget.dataset.order;
         const id = e.currentTarget.dataset.id;
         if (!order && id && this.data.dashboardData && this.data.dashboardData.recentOrders) {
@@ -199,7 +203,7 @@ Page({
     },
 
     // --- Modal Callbacks ---
-    hideOrderDetailModal: function() {
+    hideOrderDetailModal: function () {
         this.setData({ showDetailModal: false, modalOrderDetail: null });
     },
 
@@ -208,11 +212,11 @@ Page({
      * 使用 app.waitClientCloudReady() 确保环境初始化完成
      */
     async acceptOrderFromModal(e) {
-        const orderId = e.detail.orderId; 
+        const orderId = e.detail.orderId;
         if (!orderId) return;
 
         wx.showLoading({ title: '正在接单...' });
-        
+
         try {
             // 1. 【等待】等待共享环境
             const clientCloud = await app.waitClientCloudReady();
@@ -224,7 +228,7 @@ Page({
             });
 
             wx.hideLoading();
-            
+
             if (res.result && res.result.code === 0) {
                 wx.showToast({ title: '接单成功', icon: 'success' });
                 this.hideOrderDetailModal();
@@ -235,9 +239,9 @@ Page({
         } catch (err) {
             wx.hideLoading();
             console.error('Accept order failed:', err);
-            wx.showToast({ 
-                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '操作失败', 
-                icon: 'none' 
+            wx.showToast({
+                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '操作失败',
+                icon: 'none'
             });
         }
     },
@@ -249,9 +253,9 @@ Page({
     async rejectOrderFromModal(e) {
         const orderId = e.detail.orderId;
         if (!orderId) return;
-        
+
         wx.showLoading({ title: '正在拒单...' });
-        
+
         try {
             // 1. 【等待】等待共享环境
             const clientCloud = await app.waitClientCloudReady();
@@ -263,7 +267,7 @@ Page({
             });
 
             wx.hideLoading();
-            
+
             if (res.result && res.result.code === 0) {
                 wx.showToast({ title: '拒单成功', icon: 'success' });
                 this.hideOrderDetailModal();
@@ -274,15 +278,15 @@ Page({
         } catch (err) {
             wx.hideLoading();
             console.error('Reject order failed:', err);
-            wx.showToast({ 
-                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '操作失败', 
-                icon: 'none' 
+            wx.showToast({
+                title: err.message && err.message.includes('初始化') ? '系统初始化中' : '操作失败',
+                icon: 'none'
             });
         }
     },
 
     // --- Helper Functions ---
-    mapStatusToText: function(status) {
+    mapStatusToText: function (status) {
         switch (status) {
             case 10: return '待接单';
             case 20: return '待服务';
@@ -296,8 +300,8 @@ Page({
             default: return '未知';
         }
     },
-    
-    formatServiceTime: function(date, timeSlot) {
+
+    formatServiceTime: function (date, timeSlot) {
         if (!date) return '时间待定';
         const today = new Date().toDateString();
         const orderDate = new Date(date).toDateString();
