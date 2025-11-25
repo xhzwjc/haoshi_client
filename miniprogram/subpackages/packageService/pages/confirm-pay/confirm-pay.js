@@ -101,9 +101,10 @@ Page({
 
         try {
             const cloud = await app.waitClientCloudReady();
+            const clientId = wx.getStorageSync('client_id');  // 添加这行
             const res = await cloud.callFunction({
                 name: 'createBooking',
-                data: { action: 'create', booking: finalData }
+                data: { action: 'create', clientId, booking: finalData }  // 修改这行
             });
 
             const result = (res && res.result) || {};
@@ -122,7 +123,7 @@ Page({
                     if (modalRes.confirm) {
                         // 【修改】 跳转到订单列表页，并选中 '进行中' Tab (因为 10 属于进行中)
                         wx.reLaunch({
-                            url: `/pages/order/order?status=running`
+                            url: `/pages/order/order?status=pending_service`
                         });
                     }
                 }

@@ -225,6 +225,7 @@ Page({
         wx.setStorageSync('user_openid', openid);
         wx.setStorageSync('user_role', 'CLIENT');
         wx.setStorageSync('user_info', profile);
+        wx.setStorageSync('client_id', profile.id); // 【关键修改】存储client_id
 
         wx.showToast({ title: '登录成功', icon: 'success' });
 

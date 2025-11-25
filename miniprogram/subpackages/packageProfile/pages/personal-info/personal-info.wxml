@@ -24,7 +24,7 @@
     <view class="form-item">
       <text class="label">性别</text>
       <picker class="picker-field" mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
-        <view class="picker-value">{{profile.gender || '保密'}}</view>
+        <view class="picker-value">{{profile.gender || '不愿透露'}}</view>
       </picker>
     </view>
     <view class="form-item">

@@ -1,41 +1,11 @@
 // pages/order/order.js
-const db = wx.cloud.database();
-const _ = db.command;
-
-function getCurrentClientOpenid() {
-  return wx.getStorageSync('user_openid') || '';
-}
-
-function buildClientOwnershipMatcher(openid) {
-  return _.or([
-    { client_openid: openid },
-    { _openid: openid },
-    { bound_openids: _.in([openid]) },
-    { client_bound_openids: _.in([openid]) }
-  ]);
-}
-
-function orderBelongsToClient(order = {}, openid) {
-  if (!openid) return false;
-  const candidates = new Set();
-  if (order.client_openid) candidates.add(order.client_openid);
-  if (order._openid) candidates.add(order._openid);
-  if (order.clientOpenid) candidates.add(order.clientOpenid);
-  if (Array.isArray(order.bound_openids)) {
-    order.bound_openids.forEach((value) => value && candidates.add(value));
-  }
-  if (Array.isArray(order.client_bound_openids)) {
-    order.client_bound_openids.forEach((value) => value && candidates.add(value));
-  }
-  return candidates.has(openid);
-}
 
 Page({
   data: {
     tabs: [
       { name: '全部', status: 'all' },
-      { name: '待支付', status: 40 },
-      { name: '待服务', status: 20 },
+      { name: '待支付', status: 'pending_pay' },
+      { name: '待服务', status: 'pending_service' },
       { name: '进行中', status: 'running' },
       { name: '已完成', status: 'completed' },
       { name: '已取消', status: 'cancelled' },
@@ -43,9 +13,9 @@ Page({
     activeTab: 0,
     filteredOrders: [],
     loading: false,
-    page: 1,              // 当前页数
-    pageSize: 10,         // 每页数量
-    hasMore: true,        // 是否还有更多数据
+    page: 1,
+    pageSize: 10,
+    hasMore: true,
   },
 
   onLoad(options) {
@@ -63,7 +33,7 @@ Page({
     }
 
     this.setData({ activeTab: initialIndex }, () => {
-      this.loadOrders(true); // 初次加载第一页
+      this.loadOrders(true);
     });
   },
 
@@ -78,7 +48,6 @@ Page({
     });
   },
 
-  // scroll-view 上滑触底
   onScrollToLower() {
     if (!this.data.loading && this.data.hasMore) {
       this.loadOrders(false);
@@ -91,79 +60,50 @@ Page({
     this.setData({ activeTab: index }, () => this.loadOrders(true));
   },
 
-  /**
-   * 分页加载订单
-   * @param {boolean} reset 是否重置列表（true=第一页）
-   * @param {function} callback 加载完成后的回调
-   */
-  async loadOrders(reset = false, callback, options = {}) {
-    const { skipLoading = false, force = false } = options || {};
-
-    if (this.data.loading && !force) {
+  async loadOrders(reset = false, callback) {
+    if (this.data.loading) {
       if (typeof callback === 'function') callback();
-      return Promise.resolve();
+      return;
     }
 
-    if (force && this._loadingPromise) {
-      try {
-        await this._loadingPromise;
-      } catch (err) {
-        console.warn('等待前一次加载完成时出错', err);
-      }
-    }
-
-    const { page, pageSize, activeTab, tabs } = this.data;
+    const { activeTab, tabs } = this.data;
     const currentTab = tabs[activeTab];
-    const currentPage = reset ? 1 : page;
-    const skipCount = (currentPage - 1) * pageSize;
-    const openid = getCurrentClientOpenid();
-    const token = Date.now();
-    this._lastLoadToken = token;
 
-    if (!openid) {
+    // 【核心修改】使用client_id而非openid
+    const clientId = wx.getStorageSync('client_id');
+
+    if (!clientId) {
       this.setData({
         loading: false,
-        filteredOrders: reset ? [] : this.data.filteredOrders,
+        filteredOrders: [],
         hasMore: false
       });
-      if (reset && !skipLoading) {
-        wx.hideLoading();
-      }
       wx.showToast({ title: '请先登录后查看订单', icon: 'none' });
       if (typeof callback === 'function') callback();
       return;
     }
 
     this.setData({ loading: true });
-    const shouldShowLoading = reset && !skipLoading;
-    if (shouldShowLoading) wx.showLoading({ title: '加载中...' });
+    if (reset) wx.showLoading({ title: '加载中...' });
 
-    const matchers = [buildClientOwnershipMatcher(openid)];
-    if (currentTab.status === 'running') {
-      matchers.push({ status: _.in([10, 30, 35]) });
-    } else if (currentTab.status === 'completed') {
-      matchers.push({ status: _.in([50, 60]) });
-    } else if (currentTab.status === 'cancelled') {
-      matchers.push({ status: _.in([0, -1]) });
-    } else if (currentTab.status !== 'all') {
-      matchers.push({ status: currentTab.status });
-    }
+    try {
+      // 【核心修改】调用云函数而非直接查询数据库
+      const res = await wx.cloud.callFunction({
+        name: 'getOrders',
+        data: {
+          clientId: clientId,  // 传入client_id
+          status: currentTab.status
+        }
+      });
 
-    const whereCondition = matchers.length === 1 ? matchers[0] : _.and(...matchers);
+      if (res.result && res.result.code === 0) {
+        const list = res.result.data || [];
 
-    const loadPromise = db.collection('bookings')
-      .where(whereCondition)
-      .orderBy('created_at', 'desc')
-      .skip(skipCount)
-      .limit(pageSize)
-      .get()
-      .then(res => {
-        if (this._lastLoadToken !== token) return;
-
-        const list = res.data || [];
+        // 格式化订单数据
         const formatted = list.map(order => {
           let priceDisplay = '0.00';
           let isRange = false;
+
           if (order.status >= 35) {
             priceDisplay = (parseFloat(order.final_price) || 0).toFixed(2);
             isRange = false;
@@ -198,33 +138,22 @@ Page({
           };
         });
 
-        const newList = reset
-          ? formatted
-          : [...this.data.filteredOrders, ...formatted];
-
         this.setData({
-          filteredOrders: newList,
-          page: currentPage + 1,
-          hasMore: list.length === pageSize,
+          filteredOrders: formatted,
+          hasMore: false,  // 云函数返回所有数据，不分页
           loading: false,
         });
-      })
-      .catch(err => {
-        if (this._lastLoadToken !== token) return;
-        console.error('加载订单失败:', err);
-        this.setData({ loading: false });
-        wx.showToast({ title: '加载失败', icon: 'none' });
-      })
-      .finally(() => {
-        if (this._lastLoadToken === token) {
-          this.setData({ loading: false });
-        }
-        if (shouldShowLoading) wx.hideLoading();
-        if (callback) callback();
-      });
-
-    this._loadingPromise = loadPromise;
-    return loadPromise;
+      } else {
+        throw new Error(res.result?.message || '加载失败');
+      }
+    } catch (err) {
+      console.error('加载订单失败:', err);
+      this.setData({ loading: false, filteredOrders: [] });
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    } finally {
+      if (reset) wx.hideLoading();
+      if (typeof callback === 'function') callback();
+    }
   },
 
   toOrderDetail(e) {
@@ -250,9 +179,6 @@ Page({
       case '确认金额':
         this.confirmPrice(id, price);
         break;
-      // case '金额有误':
-      //   this.goToAfterSale(id, 'amount');
-      //   break;
       case '立即支付':
       case '即支付':
         this.payNow(id);
@@ -260,9 +186,6 @@ Page({
       case '评价服务':
         this.goToReview(id);
         break;
-      // case '申请售后':
-      //   this.goToAfterSale(id, 'afterSale');
-      //   break;
       case '查看详情':
         this.toOrderDetail(e);
         break;
@@ -271,36 +194,10 @@ Page({
     }
   },
 
-  async ensureOrderOwned(id) {
-    const openid = getCurrentClientOpenid();
-    if (!openid) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
-      return false;
-    }
-
-    const localOrder = this.data.filteredOrders.find(item => item._id === id);
-    if (localOrder && orderBelongsToClient(localOrder, openid)) {
-      return true;
-    }
-
-    try {
-      const res = await db.collection('bookings').doc(id).get();
-      if (res.data && orderBelongsToClient(res.data, openid)) {
-        return true;
-      }
-    } catch (err) {
-      console.warn('校验订单归属失败', err);
-    }
-
-    wx.showToast({ title: '无权操作该订单', icon: 'none' });
-    return false;
-  },
-
   contactMasterFromList(orderId) {
     const order = this.data.filteredOrders.find(item => item._id === orderId);
-    const openid = getCurrentClientOpenid();
-    if (!order || !orderBelongsToClient(order, openid)) {
-      wx.showToast({ title: '无权查看该订单', icon: 'none' });
+    if (!order) {
+      wx.showToast({ title: '订单不存在', icon: 'none' });
       return;
     }
     const phone = order?.master_phone || order?.masterPhone;
@@ -316,26 +213,13 @@ Page({
     });
   },
 
-  async goToAfterSale(orderId, scene = 'afterSale') {
-    const canOperate = await this.ensureOrderOwned(orderId);
-    if (!canOperate) return;
-    wx.navigateTo({
-      url: `/subpackages/packageOrder/pages/after-sale/after-sale?id=${orderId}&scene=${scene}`
-    });
-  },
-
   async goToReview(orderId) {
-    const canOperate = await this.ensureOrderOwned(orderId);
-    if (!canOperate) return;
     wx.navigateTo({
       url: `/subpackages/packageOrder/pages/rate-order/rate-order?id=${orderId}`
     });
   },
 
   async cancelOrder(id) {
-    const canOperate = await this.ensureOrderOwned(id);
-    if (!canOperate) return;
-    console.info('准备取消订单', id);
     wx.showModal({
       title: '确认取消',
       content: '确定要取消这个订单吗?',
@@ -348,19 +232,14 @@ Page({
               data: { orderId: id }
             });
 
-            console.info('取消订单云函数返回:', result);
-
             if (result.result && result.result.code === 0) {
-              wx.showToast({ title: result.result.message || '取消成功', icon: 'success' });
-              await this.loadOrders(true, null, { skipLoading: true, force: true });
+              wx.showToast({ title: '取消成功', icon: 'success' });
+              await this.loadOrders(true);
             } else {
-              wx.showToast({
-                title: result.result?.message || '取消失败',
-                icon: 'none'
-              });
+              wx.showToast({ title: result.result?.message || '取消失败', icon: 'none' });
             }
           } catch (err) {
-            console.error('调用取消订单云函数失败:', err);
+            console.error('取消订单失败:', err);
             wx.showToast({ title: '操作失败', icon: 'none' });
           } finally {
             wx.hideLoading();
@@ -371,35 +250,25 @@ Page({
   },
 
   async confirmPrice(id, price) {
-    const canOperate = await this.ensureOrderOwned(id);
-    if (!canOperate) return;
-    console.info('准备确认金额', id, price);
     wx.showModal({
-      title: '请确认服务费用',
-      content: `请确认服务金额为 ¥${price}
-      请仔细核对，确认后不可更改`,
+      title: '确认金额',
+      content: `师傅报价：${price}元，确认后将进入支付流程`,
       success: async (res) => {
         if (res.confirm) {
           wx.showLoading({ title: '确认中...' });
           try {
             const result = await wx.cloud.callFunction({
-              name: 'confirmAmount',
+              name: 'confirmAmount', // 使用已有的云函数
               data: { orderId: id }
             });
-
-            console.info('确认金额云函数返回:', result);
-
             if (result.result && result.result.code === 0) {
-              wx.showToast({ title: result.result.message || '请支付', icon: 'success' });
-              await this.loadOrders(true, null, { skipLoading: true, force: true });
+              wx.showToast({ title: '确认成功', icon: 'success' });
+              this.loadOrders(true); // 刷新列表
             } else {
-              wx.showToast({
-                title: result.result?.message || '确认失败',
-                icon: 'none'
-              });
+              wx.showToast({ title: result.result?.message || '确认失败', icon: 'none' });
             }
           } catch (err) {
-            console.error('调用确认金额云函数失败:', err);
+            console.error('确认失败', err);
             wx.showToast({ title: '操作失败', icon: 'none' });
           } finally {
             wx.hideLoading();
@@ -409,57 +278,33 @@ Page({
     });
   },
 
-  async runOrderUpdate({ id, updateData, loadingText = '提交中...', successToast = '操作成功' }) {
-    if (!id) {
-      wx.showToast({ title: '订单信息缺失', icon: 'none' });
-      return;
-    }
-
-    wx.showLoading({ title: loadingText });
-    try {
-      const res = await db.collection('bookings').doc(id).update({ data: updateData });
-      console.info('订单更新结果', id, updateData, res);
-      wx.showToast({ title: successToast, icon: 'success' });
-      await this.loadOrders(true, null, { skipLoading: true, force: true });
-    } catch (err) {
-      console.error('订单更新失败', err);
-      wx.showToast({ title: '操作失败', icon: 'none' });
-    } finally {
-      wx.hideLoading();
-    }
-  },
-
   async payNow(id) {
-    const canOperate = await this.ensureOrderOwned(id);
-    if (!canOperate) return;
+    wx.showModal({
+      title: '确认支付',
+      content: '是否确认立即支付？(模拟支付)',
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: '支付中...' });
+          try {
+            const result = await wx.cloud.callFunction({
+              name: 'payOrder',
+              data: { orderId: id }
+            });
 
-    wx.showLoading({ title: '正在唤起支付...' });
-
-    // 模拟支付延迟
-    setTimeout(async () => {
-      try {
-        const result = await wx.cloud.callFunction({
-          name: 'payOrder',
-          data: { orderId: id }
-        });
-
-        console.info('支付订单云函数返回:', result);
-
-        if (result.result && result.result.code === 0) {
-          wx.showToast({ title: result.result.message || '支付成功', icon: 'success' });
-          await this.loadOrders(true, null, { skipLoading: true, force: true });
-        } else {
-          wx.showToast({
-            title: result.result?.message || '支付失败',
-            icon: 'none'
-          });
+            if (result.result && result.result.code === 0) {
+              wx.showToast({ title: '支付成功', icon: 'success' });
+              this.loadOrders(true);
+            } else {
+              wx.showToast({ title: result.result?.message || '支付失败', icon: 'none' });
+            }
+          } catch (err) {
+            console.error('支付失败', err);
+            wx.showToast({ title: '支付异常', icon: 'none' });
+          } finally {
+            wx.hideLoading();
+          }
         }
-      } catch (err) {
-        console.error('调用支付订单云函数失败:', err);
-        wx.showToast({ title: '支付失败', icon: 'none' });
-      } finally {
-        wx.hideLoading();
       }
-    }, 1000);
+    });
   }
 });

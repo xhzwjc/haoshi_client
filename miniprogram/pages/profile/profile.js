@@ -5,7 +5,7 @@ const DEFAULT_PROFILE = {
   name: '张三',
   phone: '138****5678',
   avatar: '',
-  gender: '保密',
+  gender: '不愿透露',
   birthday: '',
   address: '',
   historyOrders: 0,
@@ -50,8 +50,10 @@ Page({
 
     try {
       const clientCloud = await app.waitClientCloudReady();
+      const clientId = wx.getStorageSync('client_id');
       const res = await clientCloud.callFunction({
-        name: 'getClientProfile'
+        name: 'getClientProfile',
+        data: { clientId }
       });
 
       if (res.result && res.result.code === 0) {

@@ -25,6 +25,7 @@ Page({
           wx.removeStorageSync('client_last_account');
           wx.removeStorageSync('technician_profile_cache');
           wx.removeStorageSync('technician_account_phone');
+          wx.removeStorageSync('client_id'); // 【核心修改】清除client_id防止数据串号
         } catch (e) {
           console.warn('本地登出兜底逻辑异常', e);
         }

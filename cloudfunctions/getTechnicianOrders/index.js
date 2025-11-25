@@ -30,13 +30,21 @@ exports.main = async (event, context) => {
     } else if (status === 'accepted') {
       whereCondition = { status: 20, master_id: masterId };
     } else if (status === 'ongoing') {
-      whereCondition = { status: 30, master_id: masterId };
+      // 服务中：包含 30(服务中) 和 35(待客户确认)
+      whereCondition = { status: _.in([30, 35]), master_id: masterId };
     } else if (status === 'completed') {
-      whereCondition = { status: 60, master_id: masterId };
+      // 已完成：包含 50(已收款/待评价) 和 60(已完成)
+      whereCondition = { status: _.in([50, 60]), master_id: masterId };
     } else if (status === 'pending_payment') {
       whereCondition = { status: _.in([35, 40]), master_id: masterId };
     } else {
-      whereCondition = { status: parseInt(status), master_id: masterId };
+      const statusNum = parseInt(status);
+      if (statusNum === 10) {
+        // 特殊处理待接单：查询没有master_id的订单
+        whereCondition = { status: 10, master_id: _.exists(false) };
+      } else {
+        whereCondition = { status: statusNum, master_id: masterId };
+      }
     }
 
     // 分页查询

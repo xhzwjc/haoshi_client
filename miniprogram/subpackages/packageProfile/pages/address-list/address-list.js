@@ -32,9 +32,10 @@ Page({
 
     try {
       const clientCloud = await app.waitClientCloudReady();
+      const clientId = wx.getStorageSync('client_id');  // 【添加】获取client_id
       const res = await clientCloud.callFunction({
         name: 'manageClientAddresses',
-        data: { action: 'list' }
+        data: { action: 'list', clientId: clientId }  // 【添加】传入client_id
       });
 
       if (res.result && res.result.code === 0) {
@@ -93,7 +94,7 @@ Page({
     this.setData({ showEditor: false });
   },
 
-  noop() {},
+  noop() { },
 
   onFieldChange(e) {
     const field = e.currentTarget.dataset.field;
@@ -130,10 +131,12 @@ Page({
 
     try {
       const clientCloud = await app.waitClientCloudReady();
+      const clientId = wx.getStorageSync('client_id');  // 【添加】获取client_id
       const res = await clientCloud.callFunction({
         name: 'manageClientAddresses',
         data: {
           action: 'save',
+          clientId: clientId,  // 【添加】传入client_id
           data: {
             id: this.data.editingId,
             ...this.data.form
@@ -175,9 +178,10 @@ Page({
         wx.showLoading({ title: '删除中', mask: true });
         try {
           const clientCloud = await app.waitClientCloudReady();
+          const clientId = wx.getStorageSync('client_id');  // 【添加】获取client_id
           const result = await clientCloud.callFunction({
             name: 'manageClientAddresses',
-            data: { action: 'delete', id }
+            data: { action: 'delete', clientId: clientId, id }  // 【添加】传入client_id
           });
 
           if (result.result && result.result.code === 0) {
@@ -203,9 +207,10 @@ Page({
     wx.showLoading({ title: '设置中', mask: true });
     try {
       const clientCloud = await app.waitClientCloudReady();
+      const clientId = wx.getStorageSync('client_id');  // 【添加】获取client_id
       const res = await clientCloud.callFunction({
         name: 'manageClientAddresses',
-        data: { action: 'setDefault', id }
+        data: { action: 'setDefault', clientId: clientId, id }  // 【添加】传入client_id
       });
 
       if (res.result && res.result.code === 0) {

@@ -4,7 +4,6 @@ const db = cloud.database();
 const _ = db.command;
 
 const PROFILE_COLLECTION = 'client_profiles';
-const UNIVERSAL_ACCOUNT = '1';
 
 async function ensureCollection(collectionName) {
   try {
@@ -18,15 +17,17 @@ async function ensureCollection(collectionName) {
 }
 
 exports.main = async (event) => {
-  const { OPENID } = cloud.getWXContext();
-  if (!OPENID) {
-    return { code: -1, message: '未登录' };
+  // 【核心修改】接收clientId参数
+  const clientId = event.clientId;
+
+  if (!clientId) {
+    return { code: -1, message: '缺少客户ID' };
   }
 
   const {
     name,
     phone,
-    gender = '保密',
+    gender = '不愿透露',
     birthday = '',
     address = '',
     avatar = '',
@@ -55,80 +56,27 @@ exports.main = async (event) => {
     await ensureCollection(PROFILE_COLLECTION);
 
     const collection = db.collection(PROFILE_COLLECTION);
-    const existingRes = await collection
-      .where(
-        _.or([
-          { _openid: OPENID },
-          { client_openid: OPENID },
-          { bound_openids: _.in([OPENID]) },
-          { phone: normalizedData.phone }
-        ])
-      )
-      .limit(1)
-      .get();
 
-    const existingDoc = existingRes.data && existingRes.data.length > 0 ? existingRes.data[0] : null;
+    // 【核心修改】检查手机号是否被其他账号使用
+    const duplicate = await collection
+      .where({
+        phone: normalizedData.phone,
+        _id: _.neq(clientId)
+      })
+      .count();
 
-    if (existingDoc) {
-      const duplicate = await collection
-        .where({
-          phone: normalizedData.phone,
-          _id: _.neq(existingDoc._id)
-        })
-        .count();
-
-      if (duplicate.total > 0) {
-        return { code: -1, message: '该手机号已被其他账号使用' };
-      }
-    } else {
-      const duplicate = await collection
-        .where({
-          phone: normalizedData.phone,
-          _openid: _.neq(OPENID)
-        })
-        .count();
-
-      if (duplicate.total > 0) {
-        return { code: -1, message: '该手机号已被其他账号使用' };
-      }
+    if (duplicate.total > 0) {
+      return { code: -1, message: '该手机号已被其他账号使用' };
     }
 
     if (password && String(password).trim()) {
       normalizedData.password = String(password).trim();
     }
 
-    if (existingDoc) {
-      const aliasSet = new Set(Array.isArray(existingDoc.alias_accounts) ? existingDoc.alias_accounts : []);
-      const boundSet = new Set(Array.isArray(existingDoc.bound_openids) ? existingDoc.bound_openids : []);
-
-      if (aliasSet.has(UNIVERSAL_ACCOUNT)) {
-        aliasSet.add(UNIVERSAL_ACCOUNT);
-      }
-      boundSet.add(OPENID);
-
-      await collection.doc(existingDoc._id).update({
-        data: {
-          ...normalizedData,
-          client_openid: OPENID,
-          alias_accounts: Array.from(aliasSet),
-          bound_openids: Array.from(boundSet)
-        }
-      });
-    } else {
-      const aliasAccounts = [];
-      const boundOpenids = [OPENID];
-
-      await collection.add({
-        data: {
-          ...normalizedData,
-          password: password && String(password).trim() ? String(password).trim() : '6666',
-          client_openid: OPENID,
-          alias_accounts: aliasAccounts,
-          bound_openids: boundOpenids,
-          created_at: db.serverDate()
-        }
-      });
-    }
+    // 【核心修改】直接通过clientId更新文档
+    await collection.doc(clientId).update({
+      data: normalizedData
+    });
 
     return { code: 0, message: 'success' };
   } catch (error) {
