@@ -83,8 +83,10 @@ Page({
       return;
     }
 
+
     this.setData({ loading: true });
     if (reset) wx.showLoading({ title: '加载中...' });
+
 
     try {
       // 【核心修改】调用云函数而非直接查询数据库
@@ -196,19 +198,19 @@ Page({
 
   contactMasterFromList(orderId) {
     const order = this.data.filteredOrders.find(item => item._id === orderId);
-  
+
     if (!order) {
       wx.showToast({ title: '订单不存在', icon: 'none' });
       return;
     }
-  
+
     const phone = order?.master_phone || order?.masterPhone;
-  
+
     if (!phone) {
       wx.showToast({ title: '暂无师傅电话', icon: 'none' });
       return;
     }
-  
+
     wx.makePhoneCall({
       phoneNumber: String(phone),
       fail: (err) => {
@@ -216,7 +218,7 @@ Page({
         if (err && err.errMsg && err.errMsg.includes('cancel')) {
           return;
         }
-  
+
         // 其他失败才提示
         wx.showToast({
           title: '拨号失败，请稍后再试',
@@ -225,7 +227,7 @@ Page({
       }
     });
   },
-  
+
 
   async goToReview(orderId) {
     wx.navigateTo({

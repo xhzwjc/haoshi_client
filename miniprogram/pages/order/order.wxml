@@ -23,7 +23,6 @@
   >
     <view class="list-container">
       <view class="loading-state" wx:if="{{loading && filteredOrders.length === 0}}">
-        <text>加载中...</text>
       </view>
 
       <block wx:elif="{{filteredOrders.length > 0}}">

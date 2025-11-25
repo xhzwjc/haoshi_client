@@ -25,7 +25,6 @@
     <view class="list-container">
       <view class="loading-state" wx:if="{{loading && orders.length === 0}}">
           <view class="loading-spinner"></view>
-          <text>正在加载订单...</text>
       </view>
 
       <block wx:elif="{{orders.length > 0}}">
