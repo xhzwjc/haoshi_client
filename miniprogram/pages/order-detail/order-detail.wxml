@@ -44,6 +44,7 @@
             </view>
         </view>
         
+        <!-- 师傅信息 - 修复拨打按钮顶出去问题 -->
         <view class="section-card master-info" wx:if="{{orderDetail.status >= 20}}">
             <view class="section-title">师傅信息</view>
             <view class="info-list">
@@ -51,10 +52,14 @@
                     <text class="label">师傅姓名</text>
                     <text class="value">{{orderDetail.master_info || '等待分配'}}</text>
                 </view>
-                <view class="info-item" wx:if="{{orderDetail.master_phone}}" style="display:flex; align-items:center;">
+
+                <view class="info-item phone-item" wx:if="{{orderDetail.master_phone}}">
                     <text class="label">联系电话</text>
-                    <text class="value" style="flex:1;">{{orderDetail.master_phone}}</text>
-                    <text class="copy-btn" bindtap="contactMaster" style="flex-shrink:0; margin-left:10px;">拨打</text>
+                    <view class="phone-wrapper">
+                        <text class="phone-number">{{orderDetail.master_phone}}</text>
+                        <!-- <button class="call-btn" bindtap="contactMaster">拨打</button> -->
+                        <button class="call-btn primary" bindtap="contactMaster">拨打</button>
+                    </view>
                 </view>
             </view>
         </view>

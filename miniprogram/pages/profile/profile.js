@@ -2,10 +2,10 @@
 const app = getApp();
 
 const DEFAULT_PROFILE = {
-  name: '张三',
-  phone: '138****5678',
+  name: '--',
+  phone: '***********',
   avatar: '',
-  gender: '不愿透露',
+  gender: '',
   birthday: '',
   address: '',
   historyOrders: 0,

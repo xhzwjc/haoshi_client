@@ -7,8 +7,8 @@
       <view class="user-info">
         <image class="avatar" src="{{userInfo.avatar || '/packageCommon/images/default_avatar.png'}}"></image>
         <view class="user-details">
-          <view class="user-name">{{userInfo.name || '张三2'}}</view>
-          <view class="user-phone">{{userInfo.phone || '138****5678'}}</view>
+          <view class="user-name">{{userInfo.name || '用户001'}}</view>
+          <view class="user-phone">{{userInfo.phone || '***********'}}</view>
         </view>
       </view>
       <view class="edit-btn" bindtap="onEditProfile">
