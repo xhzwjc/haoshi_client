@@ -32,10 +32,31 @@ exports.main = async (event = {}) => {
 
             const countRes = await db.collection('client_profiles').count();
 
+            // 为每个客户统计订单数 - 只使用client_id
+            const clientsWithOrders = await Promise.all(
+                clientsRes.data.map(async (client) => {
+                    let total = 0;
+                    try {
+                        if (client._id) {
+                            const res = await db.collection('bookings')
+                                .where({ client_id: client._id })
+                                .count();
+                            total = res.total || 0;
+                        }
+                    } catch (err) {
+                        console.error('Count orders failed:', err);
+                    }
+                    return {
+                        ...client,
+                        historyOrders: total
+                    };
+                })
+            );
+
             return {
                 code: 0,
                 data: {
-                    list: clientsRes.data || [],
+                    list: clientsWithOrders || [],
                     total: countRes.total || 0,
                     page,
                     pageSize
