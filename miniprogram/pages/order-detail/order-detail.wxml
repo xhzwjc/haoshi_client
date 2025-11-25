@@ -45,6 +45,22 @@
         </view>
         
         <view class="section-card master-info" wx:if="{{orderDetail.status >= 20}}">
+            <view class="section-title">师傅信息</view>
+            <view class="info-list">
+                <view class="info-item">
+                    <text class="label">师傅姓名</text>
+                    <text class="value">{{orderDetail.master_info || '等待分配'}}</text>
+                </view>
+                <view class="info-item" wx:if="{{orderDetail.master_phone}}" style="display:flex; align-items:center;">
+                    <text class="label">联系电话</text>
+                    <text class="value" style="flex:1;">{{orderDetail.master_phone}}</text>
+                    <text class="copy-btn" bindtap="contactMaster" style="flex-shrink:0; margin-left:10px;">拨打</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="section-card price-detail" wx:if="{{orderDetail.is_final_price}}">
+            <view class="section-title">费用明细</view>
             <view class="info-list">
                 <view class="info-item">
                     <text class="label">服务费</text>
