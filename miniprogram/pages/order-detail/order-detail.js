@@ -84,14 +84,23 @@ function buildTimeline(order = {}) {
     return timeline;
 }
 
-// Helper to get current user's openid (mock or real)
+// Helper to get current user's openid
 function getCurrentClientOpenid() {
-    // Fix: App stores it as 'user_openid', but we also check 'openid' as fallback
     return wx.getStorageSync('user_openid') || wx.getStorageSync('openid') || '';
 }
 
-// Helper to check if order belongs to client
-function orderBelongsToClient(order, openid) {
+// Helper to get current user's client_id
+function getCurrentClientId() {
+    return wx.getStorageSync('client_id') || '';
+}
+
+// Helper to check if order belongs to client (supports both new client_id and legacy openid)
+function orderBelongsToClient(order, openid, clientId) {
+    // Check client_id first (new data model)
+    if (clientId && order.client_id === clientId) {
+        return true;
+    }
+    // Fallback to openid (legacy data model)
     return order._openid === openid || order.openid === openid;
 }
 
@@ -104,11 +113,12 @@ Page({
 
     ensureOwned() {
         const openid = getCurrentClientOpenid();
+        const clientId = getCurrentClientId();
         const order = this.data.orderDetail;
-        if (order && orderBelongsToClient(order, openid)) {
+        if (order && orderBelongsToClient(order, openid, clientId)) {
             return true;
         }
-        console.warn('Permission denied. Client OpenID:', openid, 'Order OpenID:', order?._openid || order?.openid);
+        console.warn('Permission denied. Client ID:', clientId, 'OpenID:', openid, 'Order client_id:', order?.client_id, 'Order OpenID:', order?._openid || order?.openid);
         wx.showToast({ title: '无权操作该订单', icon: 'none' });
         return false;
     },
@@ -126,15 +136,11 @@ Page({
     },
 
     onShow: function () {
-        // 从其他页面返回（如支付成功后），需要刷新订单状态
         if (this.data.orderId) {
             this.fetchOrderDetail(this.data.orderId);
         }
     },
 
-    /**
-     * 【修改】根据订单ID从数据库获取详情
-     */
     fetchOrderDetail: function (id) {
         this.setData({ loading: true });
         db.collection('bookings').doc(id).get({
@@ -142,13 +148,11 @@ Page({
                 const order = res.data;
 
                 const openid = getCurrentClientOpenid();
-                // Removed strict client-side check to restore previous behavior.
-                // Database security rules should handle access control.
-                if (!orderBelongsToClient(order, openid)) {
-                    console.warn('Notice: OpenID mismatch. Client:', openid, 'Order:', order._openid || order.openid);
+                const clientId = getCurrentClientId();
+                if (!orderBelongsToClient(order, openid, clientId)) {
+                    console.warn('Notice: ID mismatch. Client ID:', clientId, 'OpenID:', openid, 'Order client_id:', order.client_id, 'Order OpenID:', order._openid || order.openid);
                 }
 
-                // 核心修改：价格显示逻辑
                 let finalFee = parseFloat(order.final_price) || 0;
                 let isFinalPrice = order.status >= 35;
                 order.is_final_price = isFinalPrice;
@@ -172,7 +176,7 @@ Page({
                         order.status_tip = `${order.master_info || '家政人员'}已上门，正在提供服务中。`;
                         break;
                     case 35:
-                        order.status_text = '待确认金额'; // 新状态
+                        order.status_text = '待确认金额';
                         order.status_tip = `${order.master_info || '家政人员'}已服务完毕并提交报价，请您确认最终金额。`;
                         break;
                     case 40:
@@ -200,7 +204,6 @@ Page({
                         order.status_tip = '订单状态异常，请联系客服。';
                 }
 
-                // 【修复】生成时间轴和格式化下单时间
                 order.timeline = buildTimeline(order);
                 order.created_at_fmt = formatTimestamp(order.created_at);
 
@@ -226,11 +229,15 @@ Page({
         }
         wx.makePhoneCall({
             phoneNumber: phone.toString(),
-            fail: () => wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' })
+            fail: (err) => {
+                // Don't show error if user canceled the call
+                if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+                    wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' });
+                }
+            }
         });
     },
 
-    // 复制订单编号功能
     copyContent: function (e) {
         const content = e.currentTarget.dataset.content;
         wx.setClipboardData({

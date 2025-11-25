@@ -196,22 +196,36 @@ Page({
 
   contactMasterFromList(orderId) {
     const order = this.data.filteredOrders.find(item => item._id === orderId);
+  
     if (!order) {
       wx.showToast({ title: '订单不存在', icon: 'none' });
       return;
     }
+  
     const phone = order?.master_phone || order?.masterPhone;
+  
     if (!phone) {
       wx.showToast({ title: '暂无师傅电话', icon: 'none' });
       return;
     }
+  
     wx.makePhoneCall({
-      phoneNumber: phone.toString(),
-      fail: () => {
-        wx.showToast({ title: '拨号失败，请稍后再试', icon: 'none' });
+      phoneNumber: String(phone),
+      fail: (err) => {
+        // 用户主动取消，不提示
+        if (err && err.errMsg && err.errMsg.includes('cancel')) {
+          return;
+        }
+  
+        // 其他失败才提示
+        wx.showToast({
+          title: '拨号失败，请稍后再试',
+          icon: 'none'
+        });
       }
     });
   },
+  
 
   async goToReview(orderId) {
     wx.navigateTo({
