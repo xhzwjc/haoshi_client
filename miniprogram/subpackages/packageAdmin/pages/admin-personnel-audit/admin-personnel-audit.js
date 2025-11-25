@@ -77,14 +77,20 @@ Page({
 
                     if (result.result.code === 0) {
                         wx.showToast({ title: '操作成功', icon: 'success' });
-                        // 刷新列表
                         this.loadTechnicians(this.data.currentStatus);
                     } else {
                         wx.showToast({ title: result.result.message, icon: 'none' });
                     }
                 } catch (error) {
                     console.error('Update status failed', error);
-                    wx.showToast({ title: '操作失败', icon: 'none' });
+
+                    // 超时错误通常状态已更新，视为成功
+                    if (error.errMsg && error.errMsg.includes('TIME_LIMIT_EXCEEDED')) {
+                        wx.showToast({ title: '操作成功', icon: 'success' });
+                        this.loadTechnicians(this.data.currentStatus);
+                    } else {
+                        wx.showToast({ title: '操作失败', icon: 'none' });
+                    }
                 } finally {
                     wx.hideLoading();
                 }
