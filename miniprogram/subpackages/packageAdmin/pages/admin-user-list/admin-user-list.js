@@ -11,19 +11,26 @@ Page({
     },
 
     onTabChange(e) {
-        const index = e.currentTarget.dataset.index;
+        const index = parseInt(e.currentTarget.dataset.index);
+        console.log('Tab changed to:', index);
+
         this.setData({ currentTab: index });
 
         if (index === 0) {
-            this.loadClients();
-        } else {
-            this.loadTechnicians();
+            if (this.data.clients.length === 0) {
+                this.loadClients();
+            }
+        } else if (index === 1) {
+            if (this.data.technicians.length === 0) {
+                this.loadTechnicians();
+            }
         }
     },
 
     async loadClients() {
         try {
             this.setData({ loading: true });
+
             const res = await wx.cloud.callFunction({
                 name: 'adminManageUsers',
                 data: {
@@ -33,10 +40,12 @@ Page({
                 }
             });
 
-            if (res.result.code === 0) {
+            console.log('Load clients result:', res);
+
+            if (res.result && res.result.code === 0) {
                 this.setData({ clients: res.result.data.list || [] });
             } else {
-                wx.showToast({ title: res.result.message, icon: 'none' });
+                wx.showToast({ title: res.result?.message || '加载失败', icon: 'none' });
             }
         } catch (error) {
             console.error('Load clients failed', error);
@@ -49,6 +58,7 @@ Page({
     async loadTechnicians() {
         try {
             this.setData({ loading: true });
+
             const res = await wx.cloud.callFunction({
                 name: 'adminManageUsers',
                 data: {
@@ -58,10 +68,12 @@ Page({
                 }
             });
 
-            if (res.result.code === 0) {
+            console.log('Load technicians result:', res);
+
+            if (res.result && res.result.code === 0) {
                 this.setData({ technicians: res.result.data.list || [] });
             } else {
-                wx.showToast({ title: res.result.message, icon: 'none' });
+                wx.showToast({ title: res.result?.message || '加载失败', icon: 'none' });
             }
         } catch (error) {
             console.error('Load technicians failed', error);

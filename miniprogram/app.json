@@ -89,7 +89,8 @@
         "pages/admin-user-list/admin-user-list",
         "pages/admin-personnel-audit/admin-personnel-audit",
         "pages/admin-order-list/admin-order-list",
-        "pages/admin-service-list/admin-service-list"
+        "pages/admin-service-list/admin-service-list",
+        "pages/admin-service-edit/admin-service-edit"
       ]
     }
   ],

@@ -1,48 +1,84 @@
-page {
-  background: #f5f7fb;
-}
-
+/* Admin User List Page */
 .user-list-page {
+  background-color: #F7F8FA;
   min-height: 100vh;
 }
 
+/* Tabs */
 .tabs {
   display: flex;
-  background: #ffffff;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  background: #fff;
+  border-bottom: 1rpx solid #E5E5E5;
 }
 
 .tab {
   flex: 1;
-  padding: 32rpx;
   text-align: center;
+  padding: 30rpx 0;
   font-size: 28rpx;
-  color: rgba(31, 41, 51, 0.6);
-  border-bottom: 4rpx solid transparent;
-  transition: all 0.3s ease;
+  color: #666;
+  position: relative;
 }
 
 .tab.active {
-  color: #4a6cf0;
-  border-bottom-color: #4a6cf0;
-  font-weight: 600;
+  color: #667eea;
+  font-weight: bold;
 }
 
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 6rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3rpx;
+}
+
+/* Content */
 .content {
-  padding: 24rpx;
+  padding: 20rpx;
 }
 
-.list {
+/* Loading State - Center of screen */
+.loading-state {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #E5E5E5;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-state text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* List */
+.list {
+  background: #fff;
 }
 
 .list-item {
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  padding: 30rpx;
+  border-bottom: 1rpx solid #F0F0F0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -50,26 +86,25 @@ page {
 
 .item-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
 }
 
 .item-name {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #1f2933;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 10rpx;
 }
 
 .item-phone {
-  font-size: 24rpx;
-  color: rgba(31, 41, 51, 0.6);
+  font-size: 26rpx;
+  color: #666;
+  display: block;
 }
 
-.item-meta,
-.item-orders {
+.item-meta {
   font-size: 24rpx;
-  color: rgba(31, 41, 51, 0.6);
+  color: #999;
 }
 
 .item-status {
@@ -77,30 +112,33 @@ page {
 }
 
 .status-badge {
-  padding: 12rpx 24rpx;
-  border-radius: 999rpx;
-  font-size: 22rpx;
-  font-weight: 600;
+  display: inline-block;
+  padding: 6rpx 16rpx;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  background: #F0F0F0;
+  color: #666;
 }
 
-.status-ACTIVE {
-  background: rgba(67, 233, 123, 0.2);
-  color: #38c172;
+.status-badge.status-ACTIVE {
+  background: #E8F5E9;
+  color: #4CAF50;
 }
 
-.status-PENDING {
-  background: rgba(255, 179, 0, 0.2);
-  color: #f59e0b;
+.status-badge.status-PENDING {
+  background: #FFF3E0;
+  color: #FF9800;
 }
 
-.status-DISABLED {
-  background: rgba(245, 95, 108, 0.2);
-  color: #f56565;
+.status-badge.status-DISABLED {
+  background: #FFEBEE;
+  color: #F44336;
 }
 
+/* Empty State */
 .empty {
   text-align: center;
-  padding: 120rpx 0;
+  padding: 200rpx 0;
+  color: #999;
   font-size: 28rpx;
-  color: rgba(31, 41, 51, 0.5);
 }

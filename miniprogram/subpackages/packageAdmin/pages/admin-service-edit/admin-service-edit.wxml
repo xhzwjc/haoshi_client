@@ -1,0 +1,74 @@
+<view class="page-service-edit">
+  <view class="header">
+    <view class="title">{{mode === 'add' ? '新增服务' : '编辑服务'}}</view>
+  </view>
+
+  <view class="form">
+    <view class="form-item required">
+      <text class="label">服务名称</text>
+      <input 
+        class="input" 
+        placeholder="请输入服务名称" 
+        value="{{name}}" 
+        data-field="name"
+        bindinput="onInputChange"
+      />
+    </view>
+
+    <view class="form-item required">
+      <text class="label">价格范围</text>
+      <input 
+        class="input" 
+        placeholder="例如: 100-200" 
+        value="{{price}}" 
+        data-field="price"
+        bindinput="onInputChange"
+      />
+    </view>
+
+    <view class="form-item required">
+      <text class="label">单位</text>
+      <input 
+        class="input" 
+        placeholder="例如: 次、小时" 
+        value="{{unit}}" 
+        data-field="unit"
+        bindinput="onInputChange"
+      />
+    </view>
+
+    <view class="form-item required">
+      <text class="label">分类</text>
+      <picker wx:if="{{categories.length > 0}}" mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryPickerChange">
+        <view class="picker-view">
+          {{category || '请选择分类'}}
+        </view>
+      </picker>
+      <input wx:else
+        class="input" 
+        placeholder="请输入分类" 
+        value="{{category}}" 
+        data-field="category"
+        bindinput="onInputChange"
+      />
+    </view>
+
+    <view class="form-item required">
+      <text class="label">服务描述</text>
+      <textarea 
+        class="textarea" 
+        placeholder="请输入服务描述" 
+        value="{{desc}}" 
+        data-field="desc"
+        bindinput="onInputChange"
+        maxlength="500"
+      />
+    </view>
+
+    <view class="form-actions">
+      <button class="submit-btn" bindtap="onSubmit">
+        {{mode === 'add' ? '添加' : '保存'}}
+      </button>
+    </view>
+  </view>
+</view>

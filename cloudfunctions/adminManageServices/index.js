@@ -43,20 +43,25 @@ exports.main = async (event = {}) => {
 
         // 新增服务
         if (action === 'addService') {
-            const { name, price_range, service_unit, description, category } = event;
+            const { name, price, unit, desc, category, rate, sold, hot } = event;
 
-            if (!name) {
-                return { code: -1, message: '请输入服务名称' };
-            }
+            if (!name) return { code: -1, message: '请输入服务名称' };
+            if (!price) return { code: -1, message: '请输入价格' };
+            if (!unit) return { code: -1, message: '请输入单位' };
+            if (!desc) return { code: -1, message: '请输入服务介绍' };
+            if (!category) return { code: -1, message: '请选择分类' };
 
             const now = db.serverDate();
             const serviceDoc = {
                 name,
-                price_range: price_range || '',
-                service_unit: service_unit || '',
-                description: description || '',
-                category: category || '',
-                created_at: now,
+                price,
+                unit,
+                desc,
+                category,
+                rate: rate || 5.0,
+                sold: sold || 0,
+                hot: hot || false,
+                enabled: true,
                 updated_at: now
             };
 
@@ -71,7 +76,7 @@ exports.main = async (event = {}) => {
 
         // 修改服务
         if (action === 'updateService') {
-            const { serviceId, name, price_range, service_unit, description, category } = event;
+            const { serviceId, name, price, unit, desc, category } = event;
 
             if (!serviceId) {
                 return { code: -1, message: '缺少服务ID' };
@@ -82,9 +87,9 @@ exports.main = async (event = {}) => {
             };
 
             if (name !== undefined) updateData.name = name;
-            if (price_range !== undefined) updateData.price_range = price_range;
-            if (service_unit !== undefined) updateData.service_unit = service_unit;
-            if (description !== undefined) updateData.description = description;
+            if (price !== undefined) updateData.price = price;
+            if (unit !== undefined) updateData.unit = unit;
+            if (desc !== undefined) updateData.desc = desc;
             if (category !== undefined) updateData.category = category;
 
             await collection.doc(serviceId).update({ data: updateData });
@@ -92,6 +97,28 @@ exports.main = async (event = {}) => {
             return {
                 code: 0,
                 message: '修改成功'
+            };
+        }
+
+        // 切换服务状态（启用/禁用）
+        if (action === 'toggleStatus') {
+            const serviceId = event.serviceId;
+            const enabled = event.enabled; // true or false
+
+            if (!serviceId) {
+                return { code: -1, message: '缺少服务ID' };
+            }
+
+            await collection.doc(serviceId).update({
+                data: {
+                    enabled: enabled,
+                    updated_at: db.serverDate()
+                }
+            });
+
+            return {
+                code: 0,
+                message: enabled ? '服务已启用' : '服务已禁用'
             };
         }
 
