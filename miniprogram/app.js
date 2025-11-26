@@ -27,8 +27,8 @@ App({
     // 加载首页配置
     this.loadHomeSettings();
 
-    // 2. 检查并强制跳转到登录页（如果未登录）
-    this.checkLoginAndRedirect();
+    // 2. 根据缓存的角色自动跳转到对应首页（实现持久化登录）
+    this.autoNavigateByRole();
   },
 
   async loadHomeSettings() {
@@ -50,8 +50,78 @@ App({
   },
 
   onShow(options) {
-    // 确保在每次显示小程序时都检查身份（防止用户在未登录状态下从分享进入）
-    this.checkLoginAndRedirect();
+    // 小程序从后台切换到前台时触发
+    // 注意：不在这里强制检查登录，避免干扰持久化登录
+    // 如果需要检查特定场景（如从分享进入），可在具体页面的 onLoad 中处理
+  },
+
+  /**
+   * 根据缓存的角色自动跳转到对应首页（实现持久化登录）
+   * 这是启动时的核心逻辑，替代原有的强制跳转登录页
+   */
+  async autoNavigateByRole() {
+    const token = wx.getStorageSync('user_token');
+    const role = wx.getStorageSync('user_role');
+
+    // 如果没有登录信息，跳转到登录页
+    if (!token || !role) {
+      console.log('[autoNavigateByRole] 未检测到登录信息，跳转登录页');
+      wx.reLaunch({ url: this.globalData.loginUrl });
+      return;
+    }
+
+    // 【可选】校验 token 有效性
+    // 如果后端提供了 validateToken 云函数，可以取消下面的注释
+    // const isValid = await this.validateToken(token);
+    // if (!isValid) {
+    //   console.log('[autoNavigateByRole] Token 无效，清理缓存并跳转登录页');
+    //   this.logout();
+    //   return;
+    // }
+
+    // 根据角色跳转到对应首页
+    const ROLE_ROUTES = {
+      CLIENT: this.globalData.clientIndexUrl,
+      TECHNICIAN: this.globalData.technicianIndexUrl,
+      ADMIN: '/subpackages/packageAdmin/pages/admin-dashboard/admin-dashboard'
+    };
+
+    const targetUrl = ROLE_ROUTES[role];
+    if (targetUrl) {
+      console.log(`[autoNavigateByRole] 检测到角色 ${role}，跳转到 ${targetUrl}`);
+      wx.reLaunch({ url: targetUrl });
+    } else {
+      // 角色异常，清理并重新登录
+      console.warn('[autoNavigateByRole] 角色无效，清理缓存并跳转登录页');
+      this.logout();
+    }
+  },
+
+  /**
+   * 校验 Token 有效性（可选强化功能）
+   * @param {string} token - 用户 token
+   * @returns {Promise<boolean>} token 是否有效
+   * 
+   * 注意：此功能需要后端提供 validateToken 云函数
+   * 如果暂不可用，可以跳过此步骤，仅依赖客户端缓存判断
+   */
+  async validateToken(token) {
+    if (!token) return false;
+
+    try {
+      // 调用后端云函数校验 token
+      const res = await wx.cloud.callFunction({
+        name: 'validateToken', // 需要后端提供此云函数
+        data: { token }
+      });
+
+      return res.result.code === 0 && res.result.valid === true;
+    } catch (error) {
+      console.error('[validateToken] Token 校验失败', error);
+      // 校验失败（如云函数不存在）视为有效，避免阻断用户
+      // 如果需要严格校验，改为 return false
+      return true;
+    }
   },
 
   /**
