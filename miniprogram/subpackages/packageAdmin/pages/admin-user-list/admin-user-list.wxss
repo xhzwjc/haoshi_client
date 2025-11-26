@@ -112,13 +112,27 @@
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 6rpx 16rpx;
-  border-radius: 6rpx;
-  font-size: 24rpx;
-  background: #F0F0F0;
-  color: #666;
+  padding: 0 20rpx;
+  height: 52rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 112rpx;
+  background-color: #fff7e6;
 }
+
+.status-text {
+  font-size: 26rpx;
+  line-height: 1;
+  position: relative;
+  top: -12rpx;     /* ↑ 只移动文字，不动背景 */
+}
+
+
+
+
 
 .status-badge.status-ACTIVE {
   background: #E8F5E9;
