@@ -67,7 +67,7 @@ function formatReview(doc) {
   const score = normalizeRatingValue(doc.rating);
   return {
     id: doc._id,
-    avatar: doc.client_avatar || DEFAULT_AVATAR,
+    avatar: doc.client_avatar || '',
     nickname: buildNickname(doc),
     score,
     time: formatDateTime(doc.created_at),
