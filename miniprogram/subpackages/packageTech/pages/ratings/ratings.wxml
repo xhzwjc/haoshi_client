@@ -48,7 +48,7 @@
       <view class="rating-item" wx:for="{{ratings}}" wx:key="id">
         <view class="item-header">
           <view class="header-left">
-            <image class="avatar" src="{{item.avatar}}"></image>
+            <image class="avatar" src="{{item.avatar || '../../../../packageCommon/images/app-logo.png'}}"></image>
             <view class="user-info">
               <text class="nickname">{{item.nickname}}</text>
               <view class="stars-time">

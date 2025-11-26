@@ -54,17 +54,22 @@ exports.main = async (event, context) => {
           .where({ master_id: masterId, status: 60 })
           .count();
 
-        // 计算平均评分
-        const reviewedOrders = await db.collection('bookings')
-          .where({ master_id: masterId, rating: _.exists(true) })
-          .field({ rating: true })
-          .limit(100)
-          .get();
+        // 计算平均评分 (改为从 service_reviews 集合获取，保持与评价列表一致)
+        let avgRating = 0.0;
+        try {
+          const reviewsResult = await db.collection('service_reviews').aggregate()
+            .match({ technician_id: masterId })
+            .group({
+              _id: null,
+              avgRating: db.command.aggregate.avg('$rating')
+            })
+            .end();
 
-        let avgRating = 5.0;
-        if (reviewedOrders.data && reviewedOrders.data.length > 0) {
-          const totalRating = reviewedOrders.data.reduce((sum, order) => sum + (parseFloat(order.rating) || 0), 0);
-          avgRating = (totalRating / reviewedOrders.data.length).toFixed(1);
+          if (reviewsResult.list && reviewsResult.list.length > 0) {
+            avgRating = reviewsResult.list[0].avgRating.toFixed(1);
+          }
+        } catch (err) {
+          console.warn('获取评价统计失败', err);
         }
 
         technicianInfo = {

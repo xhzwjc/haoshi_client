@@ -76,10 +76,6 @@ Page({
             console.warn('技师端登出兜底逻辑异常', err);
         }
 
-        wx.showToast({ title: '已退出登录', icon: 'none' });
-        setTimeout(() => {
-            wx.reLaunch({ url: app?.globalData?.loginUrl || '/pages/login/login' });
-        }, 300);
     },
 
     async loadDashboardData() {
@@ -89,6 +85,7 @@ Page({
             const masterId = wx.getStorageSync('master_id');
             if (!masterId) {
                 wx.hideLoading();
+                wx.stopPullDownRefresh();
                 wx.showToast({ title: '未找到师傅ID，请重新登录', icon: 'none' });
                 setTimeout(() => {
                     wx.reLaunch({ url: '/pages/login/login' });
@@ -103,6 +100,7 @@ Page({
             });
 
             wx.hideLoading();
+            wx.stopPullDownRefresh();
 
             if (res.result && res.result.code === 0) {
                 const data = res.result.data;
@@ -145,12 +143,17 @@ Page({
             }
         } catch (err) {
             wx.hideLoading();
+            wx.stopPullDownRefresh();
             console.error('Failed to load dashboard data:', err);
             wx.showToast({
                 title: err.message && err.message.includes('初始化') ? '系统初始化中' : '网络错误，请稍后重试',
                 icon: 'none'
             });
         }
+    },
+
+    onPullDownRefresh: function () {
+        this.loadDashboardData();
     },
 
     goToTaskCenter: function () {
