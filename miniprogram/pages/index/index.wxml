@@ -9,7 +9,7 @@
 
   <view class="notification-bar">
     <image class="noti-icon" src="/packageCommon/images/icon_notification.png" mode="widthFix"></image>
-    <text>温馨提示：请保持电话畅通，便于师傅联系您。</text>
+    <text>温馨提示：目前仅支持湖北省京山市内上门服务，其他地区暂不支持。后续会逐渐开放！</text>
   </view>
 
   <view class="service-section">

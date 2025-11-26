@@ -16,6 +16,10 @@
     </view>
   </view>
 
+  <view class="area-warning" style="background: rgba(255, 169, 64, 0.1); color: #FAAD14; padding: 24rpx 32rpx; font-size: 26rpx; border-radius: 16rpx; margin: 24rpx 32rpx 0; display: flex; align-items: center;">
+    <text>温馨提示：目前仅支持湖北省京山市内上门服务，其他地区暂不支持。后续会逐渐开放！</text>
+  </view>
+
   <view class="service-info-card">
     <view class="card-header">
       <view class="card-title">{{service.name || '加载中...'}}</view>
