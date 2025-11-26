@@ -1,0 +1,45 @@
+<view class="page-container">
+  <!-- 公告管理 -->
+  <view class="card">
+    <view class="card-header">
+      <view class="title">公告管理</view>
+      <view class="subtitle">显示在首页、预约页和时间选择页</view>
+    </view>
+    <view class="card-content">
+      <textarea 
+        class="notice-input" 
+        placeholder="请输入公告内容，留空则不显示" 
+        value="{{notice}}" 
+        bindinput="onNoticeInput"
+        maxlength="200"
+        auto-height
+      />
+      <view class="char-count">{{notice.length || 0}}/200</view>
+    </view>
+  </view>
+
+  <!-- 轮播图管理 -->
+  <view class="card">
+    <view class="card-header">
+      <view class="title">轮播图管理</view>
+      <view class="subtitle">建议尺寸 750x350，留空则显示默认</view>
+    </view>
+    <view class="card-content">
+      <view class="banner-list">
+        <view class="banner-item" wx:for="{{banners}}" wx:key="index">
+          <image class="banner-img" src="{{item}}" mode="aspectFill"></image>
+          <view class="delete-btn" bindtap="deleteBanner" data-index="{{index}}">×</view>
+        </view>
+        <view class="add-btn" bindtap="addBanner" wx:if="{{banners.length < 5}}">
+          <view class="add-icon">+</view>
+          <text>上传图片</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="footer">
+    <button class="save-btn" bindtap="saveSettings" loading="{{saving}}">保存配置</button>
+  </view>
+</view>

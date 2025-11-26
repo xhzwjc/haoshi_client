@@ -1,5 +1,17 @@
 // app.js
 App({
+  globalData: {
+    // 默认的客户端首页和家政端首页路径
+    clientIndexUrl: '/pages/index/index',
+    technicianIndexUrl: '/subpackages/packageTech/pages/technician-index/technician-index',
+    loginUrl: '/pages/login/login', // 统一登录页
+    servicePhone: '400-889-8898',
+    homeSettings: {
+      notice: '',
+      banners: []
+    }
+  },
+
   onLaunch() {
     // 1. 初始化云开发
     if (!wx.cloud) {
@@ -7,26 +19,39 @@ App({
     } else {
       wx.cloud.init({
         // 替换为你的环境ID
-        env: 'cloud1-7g9gxakebe8535a6', 
+        env: 'cloud1-7g9gxakebe8535a6',
         traceUser: true,
       });
     }
+
+    // 加载首页配置
+    this.loadHomeSettings();
 
     // 2. 检查并强制跳转到登录页（如果未登录）
     this.checkLoginAndRedirect();
   },
 
+  async loadHomeSettings() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'getGlobalConfig',
+        data: { key: 'home_settings' }
+      });
+      if (res.result.code === 0 && res.result.data) {
+        this.globalData.homeSettings = res.result.data;
+        // 通知首页更新（如果有回调）
+        if (this.homeSettingsCallback) {
+          this.homeSettingsCallback(res.result.data);
+        }
+      }
+    } catch (err) {
+      console.error('Load home settings failed', err);
+    }
+  },
+
   onShow(options) {
     // 确保在每次显示小程序时都检查身份（防止用户在未登录状态下从分享进入）
     this.checkLoginAndRedirect();
-  },
-
-  globalData: {
-    // 默认的客户端首页和家政端首页路径
-    clientIndexUrl: '/pages/index/index',
-    technicianIndexUrl: '/subpackages/packageTech/pages/technician-index/technician-index',
-    loginUrl: '/pages/login/login', // 统一登录页
-    servicePhone: '400-889-8898',
   },
 
   /**
@@ -37,11 +62,11 @@ App({
     const role = wx.getStorageSync('user_role');
 
     if (isLoginPageRedirect) return;
-    
+
     // 获取当前页面路径
     const pages = getCurrentPages();
     const currentPath = pages.length > 0 ? `/${pages[pages.length - 1].route}` : this.globalData.loginUrl;
-    
+
     // 如果没有 Token (未登录)，且当前不在登录页，强制跳转到登录页
     if (!token && currentPath !== this.globalData.loginUrl) {
       wx.reLaunch({ url: this.globalData.loginUrl });
@@ -120,4 +145,4 @@ App({
       wx.reLaunch({ url: this.globalData.loginUrl });
     }, 300);
   }
-})
+});

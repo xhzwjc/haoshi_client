@@ -1,15 +1,28 @@
+
 <view class="page-index">
+  <!-- 轮播图区域 -->
   <view class="banner-container">
-    <image class="banner-bg" src="/packageCommon/images/icon_banner_notification.png" mode="aspectFill"></image>
-    <view class="banner-content">
-      <view class="banner-title">精选优质家政人员，上门更安心</view>
-      <view class="banner-sub">专业服务，透明报价，满意为止</view>
-    </view>
+    <swiper class="banner-swiper" indicator-dots="true" autoplay="true" interval="5000" duration="500" circular="true">
+      <block wx:if="{{banners && banners.length > 0}}">
+        <swiper-item wx:for="{{banners}}" wx:key="*this">
+          <image src="{{item}}" class="banner-image" mode="aspectFill"></image>
+        </swiper-item>
+      </block>
+      <block wx:else>
+        <!-- 默认 Banner -->
+        <swiper-item>
+          <image src="/packageCommon/images/icon_banner_notification.png" class="banner-image" mode="aspectFill"></image>
+        </swiper-item>
+      </block>
+    </swiper>
   </view>
 
-  <view class="notification-bar">
-    <image class="noti-icon" src="/packageCommon/images/icon_notification.png" mode="widthFix"></image>
-    <text>温馨提示：目前仅支持湖北省京山市内上门服务，其他地区暂不支持。后续会逐渐开放！</text>
+  <!-- 通知栏 (仅当有内容时显示) -->
+  <view class="notice-bar" wx:if="{{notice}}">
+    <image class="notice-icon" src="/packageCommon/images/icon_notification.png" mode="aspectFit"></image>
+    <view class="notice-content">
+      <text class="notice-text">{{notice}}</text>
+    </view>
   </view>
 
   <view class="service-section">

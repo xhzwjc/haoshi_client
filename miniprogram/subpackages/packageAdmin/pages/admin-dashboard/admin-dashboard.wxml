@@ -77,6 +77,12 @@
         <text class="function-title">人员管理</text>
         <text class="function-desc">审核和管理师傅</text>
       </view>
+
+      <view class="function-card" bindtap="goToHomeSettings">
+        <view class="function-icon">🏠</view>
+        <text class="function-title">首页配置</text>
+        <text class="function-desc">轮播图与公告</text>
+      </view>
     </view>
   </view>
 

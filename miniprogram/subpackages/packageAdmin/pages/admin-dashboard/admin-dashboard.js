@@ -81,5 +81,11 @@ Page({
         wx.navigateTo({
             url: '/subpackages/packageAdmin/pages/admin-personnel-audit/admin-personnel-audit'
         });
+    },
+
+    goToHomeSettings() {
+        wx.navigateTo({
+            url: '/subpackages/packageAdmin/pages/admin-home-settings/admin-home-settings'
+        });
     }
 });

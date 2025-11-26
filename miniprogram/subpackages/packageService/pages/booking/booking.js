@@ -16,7 +16,8 @@ Page({
         address: '',
         contact_name: '',
         contact_phone: '',
-        savedAddresses: []
+        savedAddresses: [],
+        notice: ''
     },
 
     onLoad: function (options) {
@@ -33,6 +34,14 @@ Page({
 
     onShow() {
         this.loadSavedAddresses();
+        this.loadNotice();
+    },
+
+    loadNotice() {
+        const app = getApp();
+        if (app && app.globalData.homeSettings && app.globalData.homeSettings.notice) {
+            this.setData({ notice: app.globalData.homeSettings.notice });
+        }
     },
 
     /**

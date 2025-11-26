@@ -1,0 +1,76 @@
+﻿<view class="page-booking">
+  <view class="progress-bar">
+    <view class="step active">
+      <view class="step-num">1</view>
+      <view class="step-text">濉啓淇℃伅</view>
+    </view>
+    <view class="step-line"></view>
+    <view class="step">
+      <view class="step-num">2</view>
+      <view class="step-text">閫夋嫨鏃堕棿</view>
+    </view>
+    <view class="step-line"></view>
+    <view class="step">
+      <view class="step-num">3</view>
+      <view class="step-text">纭棰勭害</view>
+    </view>
+  </view>
+
+  <view class="area-warning" style="background: rgba(255, 169, 64, 0.1); color: #FAAD14; padding: 24rpx 32rpx; font-size: 26rpx; border-radius: 16rpx; margin: 24rpx 32rpx 0; display: flex; align-items: center;">
+    <text>娓╅Θ鎻愮ず锛氱洰鍓嶄粎鏀寔婀栧寳鐪佷含灞卞競鍐呬笂闂ㄦ湇鍔★紝鍏朵粬鍦板尯鏆備笉鏀寔銆傚悗缁細閫愭笎寮€鏀撅紒</text>
+  </view>
+
+  <view class="service-info-card">
+    <view class="card-header">
+      <view class="card-title">{{service.name || '鍔犺浇涓?..'}}</view>
+      <view class="price-wrap">
+        <text class="price">{{service.price || '...'}}</text>
+        <text class="price-unit">/{{service.unit}}</text>
+      </view>
+    </view>
+    <view class="card-desc">{{service.description || '涓撲笟鍥㈤槦, 鍝佽川淇濊瘉'}}</view>
+  </view>
+
+  <form bindsubmit="formSubmit">
+    <view class="address-toolbar">
+      <button class="tool-btn" type="default" bindtap="openAddressPicker">閫夋嫨甯哥敤鍦板潃</button>
+      <button class="tool-btn secondary" type="default" bindtap="goManageAddress">绠＄悊鍦板潃</button>
+    </view>
+
+    <view class="form-section">
+      <view class="form-item">
+        <view class="item-label required">鏈嶅姟鍦板潃</view>
+        <view class="item-content location">
+          <input name="address" placeholder="璇疯緭鍏ヨ缁嗗湴鍧€" placeholder-class="ph" maxlength="100" value="{{address}}" data-field="address" bindinput="onFieldInput" />
+          <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix" bindtap="chooseAddress"></image>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="item-label required">鑱旂郴浜?/view>
+        <view class="item-content">
+          <input name="contact_name" placeholder="璇疯緭鍏ヨ仈绯讳汉濮撳悕" placeholder-class="ph" maxlength="10" value="{{contact_name}}" data-field="contact_name" bindinput="onFieldInput" />
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="item-label required">鑱旂郴鐢佃瘽</view>
+        <view class="item-content">
+          <input name="contact_phone" type="number" placeholder="璇疯緭鍏ユ墜鏈哄彿鐮? placeholder-class="ph" value="{{contact_phone}}" data-field="contact_phone" bindinput="onFieldInput" maxlength="11" />
+        </view>
+      </view>
+
+      <view class="form-item remark">
+        <view class="item-label">鏈嶅姟澶囨敞</view>
+        <view class="item-content">
+          <textarea name="remarks" placeholder="璇疯緭鍏ョ壒娈婇渶姹傛垨澶囨敞淇℃伅 (閫夊～)" placeholder-class="ph" auto-height maxlength="100" />
+        </view>
+      </view>
+    </view>
+
+    <view class="bottom-bar">
+      <button class="submit-btn" form-type="submit">涓嬩竴姝?/button>
+    </view>
+  </form>
+  
+</view>

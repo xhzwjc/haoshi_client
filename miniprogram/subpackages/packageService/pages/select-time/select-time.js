@@ -20,7 +20,8 @@ Page({
             { time: '14:00-16:00', available: true },
             { time: '16:00-18:00', available: true },
             { time: '18:00-20:00', available: true },
-        ]
+        ],
+        notice: ''
     },
 
     onLoad: function (options) {
@@ -37,6 +38,17 @@ Page({
                     description: bookingData.service_description || '专业团队,  品质保证'
                 }
             });
+        }
+    },
+
+    onShow() {
+        this.loadNotice();
+    },
+
+    loadNotice() {
+        const app = getApp();
+        if (app && app.globalData.homeSettings && app.globalData.homeSettings.notice) {
+            this.setData({ notice: app.globalData.homeSettings.notice });
         }
     },
 

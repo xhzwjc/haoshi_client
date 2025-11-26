@@ -8,12 +8,18 @@
 /* 1. 顶部Banner */
 .banner-container {
   width: 100%;
-  height: 256rpx;
-  background: linear-gradient(180deg, #5A9BFF 0%, #409EFF 100%);
-  padding: 32rpx;
-  box-sizing: border-box;
-  position: relative; /* ✅ 为背景图定位做准备 */
-  overflow: hidden;   /* ✅ 避免图片超出边界 */
+  height: 360rpx; /* 增加高度 */
+  position: relative;
+}
+
+.banner-swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
 }
 
 .banner-bg {
