@@ -21,6 +21,26 @@ Page({
         loginMethod: 'code' // 'code' or 'password'
     },
 
+    onLoad() {
+
+      const token = wx.getStorageSync('user_token');
+      const role = wx.getStorageSync('user_role');
+
+      if (token && role) {
+          const ROLE_ROUTES = {
+              CLIENT: '/pages/index/index',
+              TECHNICIAN: '/subpackages/packageTech/pages/technician-index/technician-index',
+              ADMIN: '/subpackages/packageAdmin/pages/admin-dashboard/admin-dashboard'
+          };
+
+          const target = ROLE_ROUTES[role];
+          if (target) {
+              wx.reLaunch({ url: target });
+              return;
+          }
+      }
+    },
+
     onSelectRole(e) {
         const role = e.currentTarget.dataset.role;
         this.openLoginModal(role);
