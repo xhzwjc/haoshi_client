@@ -1,3 +1,19 @@
+<view class="admin-nav">
+
+<!-- 左侧退出按钮 -->
+<view class="nav-left">
+  <text class="nav-exit" bindtap="onLogout">退出</text>
+</view>
+
+<!-- 标题放中间（真正居中） -->
+<view class="nav-center">
+  <text class="nav-title">管理员后台</text>
+</view>
+
+<!-- 右侧留空，用来撑平结构（保证标题居中） -->
+<view class="nav-right"></view>
+
+</view>
 <view class="admin-dashboard">
   <view class="header">
     <text class="title">管理员后台</text>

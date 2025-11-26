@@ -87,5 +87,32 @@ Page({
         wx.navigateTo({
             url: '/subpackages/packageAdmin/pages/admin-home-settings/admin-home-settings'
         });
+    },
+
+    // ================== 退出登录 ==================
+    onLogout() {
+      wx.showModal({
+          title: '退出登录',
+          content: '确定要退出管理员账号吗？',
+          success: (res) => {
+              if (res.confirm) {
+                  this.doLogout();
+              }
+          }
+      });
+    },
+
+    doLogout() {
+      // 清除所有登录相关缓存
+      wx.removeStorageSync('user_token');
+      wx.removeStorageSync('user_role');
+      wx.removeStorageSync('user_openid');
+      wx.removeStorageSync('user_info');
+
+      // 强制跳回登录页（避免自动登录）
+      wx.reLaunch({
+          url: '/pages/login/login'
+      });
     }
+
 });

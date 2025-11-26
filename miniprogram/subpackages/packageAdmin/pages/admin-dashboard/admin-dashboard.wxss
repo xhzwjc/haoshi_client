@@ -158,3 +158,49 @@ page {
   font-size: 22rpx;
   color: rgba(31, 41, 51, 0.6);
 }
+
+/* 顶部导航栏 */
+.admin-nav {
+  height: 120rpx;
+  padding-top: 40rpx; /* 状态栏适配 */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+
+/* 左侧按钮区域 */
+.nav-left {
+  width: 160rpx; /* 这个宽度保证标题能在屏幕中心 */
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 20rpx;
+}
+
+/* 中央标题区域 */
+.nav-center {
+  flex: 1; 
+  display: flex;
+  justify-content: center;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+/* 右侧留空区域，让标题真正居中 */
+.nav-right {
+  width: 160rpx; /* 和左边对称，保证视觉居中 */
+}
+
+/* 退出按钮样式 */
+.nav-exit {
+  font-size: 28rpx;
+  color: #ff4d4f;
+  padding: 10rpx 16rpx;
+  border: 2rpx solid #ff4d4f;
+  border-radius: 10rpx;
+}

@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "管理员后台",
   "navigationBarBackgroundColor": "#4a6cf0",
-  "navigationBarTextStyle": "white"
+  "navigationBarTextStyle": "white",
+  "navigationStyle": "custom"
 }
