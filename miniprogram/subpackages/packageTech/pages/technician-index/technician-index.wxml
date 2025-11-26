@@ -17,7 +17,7 @@
           <text class="served">· 已服务{{technicianInfo.servedOrders || 0}}单</text>
         </view>
       </view>
-      <image class="avatar" src="{{technicianInfo.avatar || '/images/icon_profile_white.png'}}"></image>
+      <image class="avatar" src="{{'../../../../packageCommon/images/app-logo.png'}}"></image>
     </view>
     <view class="header-stats">
       <view class="stat-item">

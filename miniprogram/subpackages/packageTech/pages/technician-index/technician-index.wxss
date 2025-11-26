@@ -64,7 +64,7 @@ page { background-color: #F7F8FA; }
 .info-left .badge { background: #FFC107; color: #333; font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 6rpx; font-weight: bold; }
 .info-left .rating-served { font-size: 26rpx; opacity: 0.9; }
 .info-left .rating { margin-right: 10rpx; }
-.avatar { width: 120rpx; height: 120rpx; border-radius: 50%; border: 4rpx solid rgba(255,255,255,0.6); }
+.avatar { width: 120rpx; height: 120rpx; border-radius: 50%;}
 .header-stats {
   display: flex;
   justify-content: space-around;
