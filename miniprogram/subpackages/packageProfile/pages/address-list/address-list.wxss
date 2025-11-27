@@ -268,3 +268,45 @@ page {
 .ghost-btn:active {
   opacity: 0.88;
 }
+
+/* 全屏遮罩 */
+.ios-loading-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+
+  background: rgba(255, 255, 255, 0.6);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ios-loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 8rpx solid #d1d1d6;
+  border-top-color: #007aff; 
+  border-radius: 50%;
+  animation: ios-spin 0.7s linear infinite;
+}
+
+@keyframes ios-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 文案 */
+.ios-loading-text {
+  font-size: 26rpx;
+  color: #666;
+  margin-top: 20rpx;
+}

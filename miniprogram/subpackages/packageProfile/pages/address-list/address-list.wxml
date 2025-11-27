@@ -73,3 +73,8 @@
     <button class="submit-btn" bindtap="submitForm" loading="{{saving}}">保存</button>
   </view>
 </view>
+<!-- iOS 风格 Loading（大圆圈） -->
+<view wx:if="{{loading}}" class="ios-loading-mask">
+  <view class="ios-loading-spinner"></view>
+  <text class="ios-loading-text">加载中...</text>
+</view>
