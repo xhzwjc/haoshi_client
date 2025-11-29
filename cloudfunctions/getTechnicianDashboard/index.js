@@ -101,7 +101,7 @@ exports.main = async (event, context) => {
     }).count();
 
     const totalCompletedRes = await db.collection('bookings').where({
-      status: 60,
+      status: _.in([50, 60]),
       master_id: masterId
     }).count();
 

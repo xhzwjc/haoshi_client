@@ -10,24 +10,31 @@ const _ = db.command;
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
   const tech_openid = wxContext.OPENID; // 当前登录的微信OPENID
-  const { orderId } = event;
+  const { orderId, masterId } = event;
 
   if (!orderId) {
     return { code: -1, message: '缺少订单ID' };
   }
 
   try {
-    // 1. 通过当前OPENID查询师傅的master_id
+    // 1. 查询师傅信息
+    // 如果前端传递了 masterId，优先使用 masterId + OpenID 精确匹配
+    // 解决同一个微信 OpenID 关联多个师傅账号时的混淆问题
+    let query = { technician_openid: tech_openid };
+    if (masterId) {
+      query._id = masterId;
+    }
+
     const techRes = await db.collection('technicians')
-      .where({ technician_openid: tech_openid })
+      .where(query)
       .limit(1)
       .get();
 
     if (!techRes.data || techRes.data.length === 0) {
-      return { code: -1, message: '未找到师傅信息' };
+      return { code: -1, message: '未找到师傅信息或身份不匹配' };
     }
 
-    const masterId = techRes.data[0]._id;
+    const currentMasterId = techRes.data[0]._id;
     const masterPhone = techRes.data[0].phone;
     const masterName = techRes.data[0].name;
 
@@ -41,7 +48,7 @@ exports.main = async (event, context) => {
       .update({
         data: {
           status: 20,
-          master_id: masterId, // 设置师傅ID
+          master_id: currentMasterId, // 设置师傅ID
           master_phone: masterPhone, // 设置师傅手机号（兼容现有字段）
           master_info: masterName, // 设置师傅姓名
           accepted_at: db.serverDate(),

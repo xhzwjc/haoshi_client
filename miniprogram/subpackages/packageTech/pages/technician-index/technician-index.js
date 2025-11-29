@@ -213,9 +213,13 @@ Page({
 
         try {
             const clientCloud = await app.waitClientCloudReady();
+            const masterId = wx.getStorageSync('master_id');
             const res = await clientCloud.callFunction({
                 name: 'acceptOrder',
-                data: { orderId: orderId }
+                data: {
+                    orderId: orderId,
+                    masterId: masterId
+                }
             });
 
             wx.hideLoading();

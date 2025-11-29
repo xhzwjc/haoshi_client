@@ -277,7 +277,8 @@ Page({
 
     acceptOrder: function (e) {
         const orderId = e.currentTarget.dataset.id;
-        this.callCloudFunction('acceptOrder', { orderId: orderId }, '接单成功', '接单失败');
+        const masterId = wx.getStorageSync('master_id');
+        this.callCloudFunction('acceptOrder', { orderId, masterId }, '接单成功', '接单失败');
     },
 
     startService: function (e) {
@@ -294,7 +295,8 @@ Page({
     },
 
     acceptOrderFromModal: function (e) {
-        this.callCloudFunction('acceptOrder', { orderId: e.detail.orderId }, '接单成功', '接单失败', true);
+        const masterId = wx.getStorageSync('master_id');
+        this.callCloudFunction('acceptOrder', { orderId: e.detail.orderId, masterId }, '接单成功', '接单失败', true);
     },
 
     rejectOrderFromModal: function (e) {
