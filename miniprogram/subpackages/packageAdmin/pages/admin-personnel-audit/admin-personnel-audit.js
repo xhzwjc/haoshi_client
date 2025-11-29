@@ -1,30 +1,65 @@
+// admin-personnel-audit.js
+const app = getApp();
+
 Page({
     data: {
-        currentStatus: 'all', // all, PENDING, ACTIVE, DISABLED
+        statusBarHeight: 44, // 默认安全高度
+        currentStatus: 'all', // 筛选状态
         technicians: [],
-        loading: false
+        loading: false,
+        // 映射筛选器的索引到具体状态值
+        tabs: [
+            { label: '全部', value: 'all' },
+            { label: '待审核', value: 'PENDING' },
+            { label: '正常', value: 'ACTIVE' },
+            { label: '已禁用', value: 'DISABLED' }
+        ],
+        activeTabIndex: 0
     },
 
     onLoad() {
+        // 1. 获取系统信息以适配导航栏
+        try {
+            const sysInfo = wx.getSystemInfoSync();
+            if (sysInfo.statusBarHeight) {
+                this.setData({ statusBarHeight: sysInfo.statusBarHeight });
+            }
+        } catch (e) {
+            console.error('系统信息获取失败', e);
+        }
+
         this.loadTechnicians('all');
     },
 
-    onStatusChange(e) {
-        const status = e.currentTarget.dataset.status;
-        this.setData({ currentStatus: status });
+    // 返回上一页
+    onBack() {
+        wx.navigateBack();
+    },
+
+    // 切换 Tab
+    onTabChange(e) {
+        const index = e.currentTarget.dataset.index;
+        const status = this.data.tabs[index].value;
+        
+        if (this.data.activeTabIndex === index) return;
+
+        this.setData({ 
+            activeTabIndex: index,
+            currentStatus: status 
+        });
         this.loadTechnicians(status);
     },
 
     async loadTechnicians(status) {
-        try {
-            this.setData({ loading: true });
+        if (this.data.loading) return;
+        this.setData({ loading: true });
 
+        try {
             const params = {
                 action: 'getTechnicians',
                 page: 1,
                 pageSize: 100
             };
-
             if (status !== 'all') {
                 params.status = status;
             }
@@ -47,25 +82,31 @@ Page({
         }
     },
 
-    async updateStatus(e) {
+    updateStatus(e) {
         const { id, status } = e.currentTarget.dataset;
+        let title = '提示';
+        let content = '确认执行此操作？';
+        let confirmColor = '#007AFF';
 
-        let title = '';
         if (status === 'ACTIVE') {
-            title = '确认通过审核？';
+            title = '通过审核';
+            content = '确认批准该师傅加入平台？';
+            confirmColor = '#34C759'; // Green
         } else if (status === 'DISABLED') {
-            title = '确认禁用该师傅？';
+            title = '禁用账号';
+            content = '禁用后该师傅将无法接单，确认操作？';
+            confirmColor = '#FF3B30'; // Red
         }
 
         wx.showModal({
-            title: title,
-            content: '此操作将改变师傅的状态',
+            title,
+            content,
+            confirmColor,
             success: async (res) => {
                 if (!res.confirm) return;
-
+                
+                wx.showLoading({ title: '处理中...' });
                 try {
-                    wx.showLoading({ title: '处理中...' });
-
                     const result = await wx.cloud.callFunction({
                         name: 'adminManageUsers',
                         data: {
@@ -75,24 +116,23 @@ Page({
                         }
                     });
 
+                    wx.hideLoading();
                     if (result.result.code === 0) {
                         wx.showToast({ title: '操作成功', icon: 'success' });
+                        // 重新加载当前列表
                         this.loadTechnicians(this.data.currentStatus);
                     } else {
                         wx.showToast({ title: result.result.message, icon: 'none' });
                     }
                 } catch (error) {
-                    console.error('Update status failed', error);
-
-                    // 超时错误通常状态已更新，视为成功
+                    wx.hideLoading();
+                    // 处理云函数超时但实际成功的情况
                     if (error.errMsg && error.errMsg.includes('TIME_LIMIT_EXCEEDED')) {
                         wx.showToast({ title: '操作成功', icon: 'success' });
                         this.loadTechnicians(this.data.currentStatus);
                     } else {
                         wx.showToast({ title: '操作失败', icon: 'none' });
                     }
-                } finally {
-                    wx.hideLoading();
                 }
             }
         });
