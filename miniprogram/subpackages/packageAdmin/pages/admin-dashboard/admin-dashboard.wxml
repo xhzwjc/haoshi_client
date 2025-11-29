@@ -52,7 +52,7 @@
       <view class="widget-icon orange-bg">👷</view>
       <text class="widget-val">{{stats.totalTechs}}</text>
       <text class="widget-label">服务人员</text>
-      <text class="widget-sub">审核中 0</text>
+      <text class="widget-sub">审核中 ∞</text>
     </view>
   </view>
 

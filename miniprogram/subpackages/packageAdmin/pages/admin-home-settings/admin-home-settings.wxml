@@ -1,45 +1,61 @@
-<view class="page-container">
-  <!-- 公告管理 -->
-  <view class="card">
-    <view class="card-header">
-      <view class="title">公告管理</view>
-      <view class="subtitle">显示在首页、预约页和时间选择页</view>
+<view class="x-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-left" bindtap="onBack">
+      <view class="close-icon">×</view>
     </view>
-    <view class="card-content">
+    <view class="nav-title">首页配置</view>
+    <view class="nav-right"></view>
+  </view>
+</view>
+
+<scroll-view class="page-content" scroll-y>
+  <view style="height: {{statusBarHeight + 44 + 10}}px;"></view>
+
+  <view class="section-container">
+    <view class="section-label">
+      <text class="label-text">系统公告</text>
+      <text class="char-count {{notice.length > 180 ? 'warn' : ''}}">{{notice.length || 0}}/200</text>
+    </view>
+    
+    <view class="input-wrapper">
       <textarea 
-        class="notice-input" 
-        placeholder="请输入公告内容，留空则不显示" 
+        class="simple-textarea" 
+        placeholder="请输入要在首页滚动的公告内容..." 
+        placeholder-class="ph-style"
         value="{{notice}}" 
         bindinput="onNoticeInput"
         maxlength="200"
-        auto-height
+        disable-default-padding
       />
-      <view class="char-count">{{notice.length || 0}}/200</view>
     </view>
   </view>
 
-  <!-- 轮播图管理 -->
-  <view class="card">
-    <view class="card-header">
-      <view class="title">轮播图管理</view>
-      <view class="subtitle">建议尺寸 750x350，留空则显示默认</view>
+  <view class="divider"></view>
+
+  <view class="section-container">
+    <view class="section-label">
+      <text class="label-text">轮播展示</text>
+      <text class="sub-label">最多5张 ({{banners.length}}/5)</text>
     </view>
-    <view class="card-content">
-      <view class="banner-list">
-        <view class="banner-item" wx:for="{{banners}}" wx:key="index">
-          <image class="banner-img" src="{{item}}" mode="aspectFill"></image>
-          <view class="delete-btn" bindtap="deleteBanner" data-index="{{index}}">×</view>
-        </view>
-        <view class="add-btn" bindtap="addBanner" wx:if="{{banners.length < 5}}">
-          <view class="add-icon">+</view>
-          <text>上传图片</text>
-        </view>
+    
+    <view class="banner-grid">
+      <view class="grid-item" wx:for="{{banners}}" wx:key="index">
+        <image class="grid-img" src="{{item}}" mode="aspectFill"></image>
+        <view class="delete-tag" bindtap="deleteBanner" data-index="{{index}}">删除</view>
+      </view>
+      
+      <view class="grid-item upload-item" bindtap="addBanner" wx:if="{{banners.length < 5}}">
+        <text class="plus-icon">+</text>
+        <text class="upload-text">上传图片</text>
       </view>
     </view>
   </view>
 
-  <!-- 保存按钮 -->
-  <view class="footer">
-    <button class="save-btn" bindtap="saveSettings" loading="{{saving}}">保存配置</button>
-  </view>
+  <view style="height: 120px;"></view>
+</scroll-view>
+
+<view class="fab-container">
+  <button class="x-fab-btn" bindtap="saveSettings" disabled="{{saving}}">
+    {{saving ? '保存中...' : '保存更改'}}
+  </button>
 </view>

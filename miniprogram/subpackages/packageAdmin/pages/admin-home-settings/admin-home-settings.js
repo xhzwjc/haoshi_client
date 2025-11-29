@@ -1,12 +1,30 @@
+// admin-home-settings.js
+const app = getApp();
+
 Page({
     data: {
+        statusBarHeight: 44, // 默认安全高度
         notice: '',
         banners: [],
         saving: false
     },
 
     onLoad() {
+        // 1. 适配导航栏
+        try {
+            const sysInfo = wx.getSystemInfoSync();
+            if (sysInfo.statusBarHeight) {
+                this.setData({ statusBarHeight: sysInfo.statusBarHeight });
+            }
+        } catch (e) {
+            console.error('系统信息获取失败', e);
+        }
+
         this.loadSettings();
+    },
+
+    onBack() {
+        wx.navigateBack();
     },
 
     async loadSettings() {
@@ -77,14 +95,6 @@ Page({
         this.setData({ saving: true });
 
         try {
-            console.log('Calling updateGlobalConfig with:', {
-                key: 'home_settings',
-                data: {
-                    notice: this.data.notice,
-                    banners: this.data.banners
-                }
-            });
-
             const res = await wx.cloud.callFunction({
                 name: 'updateGlobalConfig',
                 data: {
@@ -96,11 +106,9 @@ Page({
                 }
             });
 
-            console.log('Cloud function response:', res);
-
             if (res.result && res.result.code === 0) {
-                wx.showToast({ title: '保存成功', icon: 'success' });
-                // 更新 globalData，以便返回首页时立即生效
+                wx.showToast({ title: '已保存', icon: 'success' });
+                // 更新全局状态
                 const app = getApp();
                 if (app) {
                     app.globalData.homeSettings = {
@@ -108,18 +116,16 @@ Page({
                         banners: this.data.banners
                     };
                 }
+                // 延迟返回，给用户反馈时间
+                setTimeout(() => {
+                    wx.navigateBack();
+                }, 800);
             } else {
-                const errorMsg = res.result ? res.result.message : '未知错误';
-                console.error('Cloud function returned error:', res.result);
-                throw new Error(errorMsg);
+                throw new Error(res.result ? res.result.message : '保存异常');
             }
         } catch (err) {
-            console.error('Save settings failed', err);
-            wx.showToast({
-                title: `保存失败: ${err.message || '请检查云函数是否已部署'}`,
-                icon: 'none',
-                duration: 3000
-            });
+            console.error('Save failed', err);
+            wx.showToast({ title: '保存失败', icon: 'none' });
         } finally {
             this.setData({ saving: false });
         }
