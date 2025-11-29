@@ -1,55 +1,69 @@
-<view class="user-list-page">
-  <view class="tabs">
-    <view class="tab {{currentTab === 0 ? 'active' : ''}}" bindtap="onTabChange" data-index="0">
-      <text>客户列表</text>
+<view class="ios-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-left" bindtap="onBack">
+      <view class="back-icon"></view>
+      <text class="back-text">返回</text>
     </view>
-    <view class="tab {{currentTab === 1 ? 'active' : ''}}" bindtap="onTabChange" data-index="1">
-      <text>服务人员列表</text>
-    </view>
-  </view>
-
-  <view class="content">
-    <!-- Loading state -->
-    <view class="loading-state" wx:if="{{loading}}">
-      <view class="loading-spinner"></view>
-      <text>加载中...</text>
-    </view>
-
-    <!-- 客户列表 -->
-    <view class="list" wx:if="{{!loading && currentTab === 0 && clients.length > 0}}">
-      <view class="list-item" wx:for="{{clients}}" wx:key="_id">
-        <view class="item-info">
-          <text class="item-name">{{item.name || '未设置'}}</text>
-          <text class="item-phone">{{item.phone || '无'}}</text>
-        </view>
-        <view class="item-meta">
-          <text class="item-orders">订单: {{item.historyOrders || 0}}</text>
-        </view>
-      </view>
-    </view>
-    <view class="empty" wx:if="{{!loading && currentTab === 0 && clients.length === 0}}">
-      <text>暂无客户数据</text>
-    </view>
-
-    <!-- 服务人员列表 -->
-    <view class="list" wx:if="{{!loading && currentTab === 1 && technicians.length > 0}}">
-      <view class="list-item" wx:for="{{technicians}}" wx:key="_id">
-        <view class="item-info">
-          <text class="item-name">{{item.name}}</text>
-          <text class="item-phone">{{item.phone}}</text>
-        </view>
-        <view class="item-status">
-          <view class="status-badge status-{{item.status}}">
-            <text class="status-text">
-              {{ item.status === 'ACTIVE' ? '正常' : item.status === 'PENDING' ? '待审核' : '已禁用' }}
-            </text>
-          </view>
-        </view>
-
-      </view>
-    </view>
-    <view class="empty" wx:if="{{!loading && currentTab === 1 && technicians.length === 0}}">
-      <text>暂无服务人员数据</text>
-    </view>
+    <view class="nav-title">用户管理</view>
+    <view class="nav-right"></view>
   </view>
 </view>
+
+<scroll-view class="page-content" scroll-y>
+  <view style="height: {{statusBarHeight + 44 + 10}}px;"></view>
+
+  <view class="segmented-control-container">
+    <view class="ios-segmented-control">
+      <view class="segment-item {{currentTab === 0 ? 'active' : ''}}" bindtap="onTabChange" data-index="0">客户列表</view>
+      <view class="segment-item {{currentTab === 1 ? 'active' : ''}}" bindtap="onTabChange" data-index="1">服务人员</view>
+    </view>
+  </view>
+
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="spinner"></view>
+  </view>
+
+  <block wx:else>
+    
+    <view class="ios-list-group" wx:if="{{currentTab === 0 && clients.length > 0}}">
+      <view class="list-cell" wx:for="{{clients}}" wx:key="_id">
+        <view class="cell-icon blue-bg">👤</view>
+        
+        <view class="cell-content">
+          <view class="cell-main">
+            <text class="cell-title">{{item.name || '未命名客户'}}</text>
+            <text class="cell-sub">{{item.phone || '暂无电话'}}</text>
+          </view>
+          <view class="cell-right">
+            <text class="cell-detail">订单 {{item.historyOrders || 0}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="ios-list-group" wx:if="{{currentTab === 1 && technicians.length > 0}}">
+      <view class="list-cell" wx:for="{{technicians}}" wx:key="_id">
+        <view class="cell-icon orange-bg">👷</view>
+        
+        <view class="cell-content">
+          <view class="cell-main">
+            <text class="cell-title">{{item.name}}</text>
+            <text class="cell-sub">{{item.phone}}</text>
+          </view>
+          <view class="cell-right">
+            <view class="status-capsule status-{{item.status}}">
+              {{ item.status === 'ACTIVE' ? '正常' : (item.status === 'PENDING' ? '待审核' : '已禁用') }}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{(currentTab === 0 && clients.length === 0) || (currentTab === 1 && technicians.length === 0)}}">
+      <text>暂无数据</text>
+    </view>
+
+  </block>
+
+  <view style="height: calc(20px + env(safe-area-inset-bottom));"></view>
+</scroll-view>
