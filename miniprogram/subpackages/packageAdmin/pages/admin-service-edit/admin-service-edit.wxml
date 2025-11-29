@@ -1,74 +1,99 @@
-<view class="page-service-edit">
-  <view class="header">
-    <view class="title">{{mode === 'add' ? '新增服务' : '编辑服务'}}</view>
+<view class="ios-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-left" bindtap="onBack">
+      <view class="back-icon"></view>
+      <text class="back-text">返回</text>
+    </view>
+    <view class="nav-title">{{pageTitle}}</view>
+    <view class="nav-right"></view>
+  </view>
+</view>
+
+<scroll-view class="page-content" scroll-y>
+  <view style="height: {{statusBarHeight + 44 + 20}}px;"></view>
+
+  <view class="ios-group-list">
+    <view class="group-header">基本信息</view>
+    
+    <view class="list-cell">
+      <view class="cell-label">服务名称</view>
+      <input 
+        class="cell-input" 
+        placeholder="例如：深度保洁" 
+        value="{{name}}" 
+        data-field="name" 
+        bindinput="onInputChange"
+      />
+    </view>
+    
+    <view class="divider"></view>
+
+    <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryPickerChange">
+      <view class="list-cell link-cell">
+        <view class="cell-label">所属分类</view>
+        <view class="cell-value {{category ? '' : 'placeholder'}}">
+          {{category || '请选择'}}
+        </view>
+        <view class="arrow">></view>
+      </view>
+    </picker>
+    <view class="divider" wx:if="{{!categories.length}}"></view>
+    <view class="list-cell" wx:if="{{!categories.length}}">
+      <view class="cell-label">手动分类</view>
+      <input class="cell-input" placeholder="输入新分类" value="{{category}}" data-field="category" bindinput="onInputChange"/>
+    </view>
+
   </view>
 
-  <view class="form">
-    <view class="form-item required">
-      <text class="label">服务名称</text>
+  <view class="ios-group-list">
+    <view class="group-header">价格设定</view>
+    
+    <view class="list-cell">
+      <view class="cell-label">价格范围</view>
       <input 
-        class="input" 
-        placeholder="请输入服务名称" 
-        value="{{name}}" 
-        data-field="name"
-        bindinput="onInputChange"
-      />
-    </view>
-
-    <view class="form-item required">
-      <text class="label">价格范围</text>
-      <input 
-        class="input" 
-        placeholder="例如: 100-200" 
+        class="cell-input" 
+        placeholder="例如：100-200" 
         value="{{price}}" 
-        data-field="price"
+        data-field="price" 
         bindinput="onInputChange"
       />
     </view>
+    
+    <view class="divider"></view>
 
-    <view class="form-item required">
-      <text class="label">单位</text>
+    <view class="list-cell">
+      <view class="cell-label">计费单位</view>
       <input 
-        class="input" 
-        placeholder="例如: 次、小时" 
+        class="cell-input" 
+        placeholder="例如：次、小时、平米" 
         value="{{unit}}" 
-        data-field="unit"
+        data-field="unit" 
         bindinput="onInputChange"
       />
     </view>
+  </view>
 
-    <view class="form-item required">
-      <text class="label">分类</text>
-      <picker wx:if="{{categories.length > 0}}" mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryPickerChange">
-        <view class="picker-view">
-          {{category || '请选择分类'}}
-        </view>
-      </picker>
-      <input wx:else
-        class="input" 
-        placeholder="请输入分类" 
-        value="{{category}}" 
-        data-field="category"
-        bindinput="onInputChange"
-      />
-    </view>
-
-    <view class="form-item required">
-      <text class="label">服务描述</text>
+  <view class="ios-group-list">
+    <view class="group-header">详细描述</view>
+    <view class="list-cell textarea-cell">
       <textarea 
-        class="textarea" 
-        placeholder="请输入服务描述" 
+        class="cell-textarea" 
+        placeholder="请输入服务内容的详细说明..." 
+        placeholder-class="ph-style"
         value="{{desc}}" 
-        data-field="desc"
+        data-field="desc" 
         bindinput="onInputChange"
         maxlength="500"
+        disable-default-padding
       />
     </view>
-
-    <view class="form-actions">
-      <button class="submit-btn" bindtap="onSubmit">
-        {{mode === 'add' ? '添加' : '保存'}}
-      </button>
-    </view>
   </view>
+
+  <view style="height: 120px;"></view>
+</scroll-view>
+
+<view class="footer-action">
+  <button class="save-btn" bindtap="onSubmit" disabled="{{saving}}">
+    {{saving ? '保存中...' : '保存配置'}}
+  </button>
 </view>
