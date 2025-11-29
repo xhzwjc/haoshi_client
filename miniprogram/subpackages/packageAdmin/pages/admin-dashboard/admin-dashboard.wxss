@@ -1,206 +1,164 @@
+/* 全局设置 */
 page {
-  background: #f5f7fb;
+  background-color: #F2F2F7; /* iOS 设置页背景色 */
+  --system-gray: #8E8E93;
+  --card-bg: #FFFFFF;
+  --text-primary: #000000;
+  --ios-red: #FF3B30;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  overflow: hidden; /* 锁定页面，只允许 scroll-view 滚动 */
 }
 
-.admin-dashboard {
-  padding: 32rpx;
+/* === 1. 顶部导航 (纯净版) === */
+.ios-nav {
+  position: fixed;
+  top: 0; left: 0; width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 999;
+  border-bottom: 0.5px solid rgba(0,0,0,0.1);
+}
+.nav-content {
+  height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px;
+}
+.nav-side { width: 60px; } /* 占位，保证标题居中 */
+.nav-title { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+
+/* === 2. 滚动容器 === */
+.page-content {
+  width: 100%; height: 100vh;
+  box-sizing: border-box;
+  padding-left: 20px; padding-right: 20px;
+}
+.nav-placeholder { width: 100%; /* 高度由 WXML 动态控制 */ }
+
+/* === 大标题 === */
+.large-title-area {
+  margin-bottom: 20px;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.large-title {
+  font-size: 34px; font-weight: 700; color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+.date-tag {
+  font-size: 14px; color: var(--system-gray); font-weight: 600; text-transform: uppercase;
 }
 
-.header {
-  margin-bottom: 40rpx;
+/* === 核心卡片 (Black Style) === */
+.hero-card {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+  border-radius: 22px; /* 更大的圆角 */
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+  color: #fff;
+  position: relative; overflow: hidden;
+  margin-bottom: 35px;
+}
+.card-inner {
+  padding: 24px; height: 100%; box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; z-index: 2;
+}
+/* 极光背景装饰 */
+.hero-card::after {
+  content: ''; position: absolute;
+  top: -50%; right: -50%; width: 100%; height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+  z-index: 1;
+}
+.card-label { font-size: 14px; opacity: 0.7; font-weight: 500; }
+.card-main-value { display: flex; align-items: baseline; margin-top: 5px; }
+.card-main-value .currency { font-size: 24px; font-weight: 600; margin-right: 4px; opacity: 0.9; }
+.card-main-value .amount { font-size: 42px; font-weight: 700; letter-spacing: -1px; }
+.card-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 0.5px solid rgba(255,255,255,0.15); padding-top: 15px;
+}
+.footer-text { font-size: 13px; opacity: 0.8; }
+.trend-tag {
+  background: rgba(48, 209, 88, 0.2); color: #30d158;
+  font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 600;
 }
 
-.title {
-  font-size: 48rpx;
-  font-weight: 700;
-  color: #1f2933;
-  display: block;
-  margin-bottom: 8rpx;
+/* === 数据小组件 === */
+.section-header {
+  font-size: 20px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 15px; margin-left: 4px;
 }
-
-.subtitle {
-  font-size: 28rpx;
-  color: rgba(31, 41, 51, 0.6);
-  display: block;
+.widget-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 35px;
 }
+.widget-box {
+  background: var(--card-bg); border-radius: 18px; padding: 16px;
+  display: flex; flex-direction: column; align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.widget-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 12px;
+}
+.blue-bg { background: #EBF3FF; }
+.purple-bg { background: #F2EBFF; }
+.orange-bg { background: #FFF4E5; }
+.widget-val { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.widget-label { font-size: 12px; color: var(--system-gray); margin-top: 4px; }
+.widget-sub { font-size: 10px; color: #30d158; font-weight: 600; margin-top: 4px; }
 
-.section-title {
-  font-size: 32rpx;
+/* === 功能菜单 (Settings Style) === */
+.ios-menu-group {
+  background: var(--card-bg); border-radius: 14px; overflow: hidden; margin-bottom: 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.menu-item { display: flex; align-items: center; padding: 16px; background: #fff; }
+.menu-item:active { background-color: #F2F2F7; }
+.menu-icon-wrap {
+  width: 30px; height: 30px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 14px; font-size: 16px;
+}
+.green-bg { background: #34C759; color: #fff; }
+.yellow-bg { background: #FF9500; color: #fff; }
+.pink-bg { background: #FF2D55; color: #fff; }
+.menu-icon-wrap.blue-bg { background: #007AFF; color: #fff; }
+.menu-icon-wrap.purple-bg { background: #5856D6; color: #fff; }
+.menu-text { flex: 1; font-size: 16px; color: var(--text-primary); font-weight: 400; }
+.arrow { color: #C7C7CC; font-size: 14px; font-weight: 600; font-family: monospace; }
+.divider { height: 0.5px; background-color: #C6C6C8; margin-left: 60px; opacity: 0.5; }
+
+/* === 3. 底部退出按钮 (Redesign) === */
+.logout-section {
+  padding: 0 10px;
+  margin-bottom: 20px;
+}
+.btn-logout {
+  background-color: #FFFFFF;
+  color: var(--ios-red);
+  font-size: 17px;
   font-weight: 600;
-  color: #1f2933;
-  display: block;
-  margin-bottom: 24rpx;
-}
+  height: 56px;
+  border-radius: 14px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 
-/* Stats Section */
-.stats-section {
-  margin-bottom: 40rpx;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24rpx;
-}
-
-.stat-card {
-  background: #ffffff;
-  border-radius: 24rpx;
-  padding: 32rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  /* === 新增：Flex 布局控制文字位置 === */
   display: flex;
-  align-items: center;
-  gap: 24rpx;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直方向：基于中心 */
+  padding-top: 20rpx;      /* 关键：增加顶部内边距，把文字硬挤下去 (数值越大越靠下) */
+  box-sizing: border-box;  /* 确保 padding 不会撑大按钮高度 */
 }
-
-.stat-icon {
-  width: 80rpx; height: 80rpx;
-  border-radius: 20rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40rpx;
+.btn-logout:active {
+  background-color: #F2F2F7;
+  opacity: 0.8;
 }
-
-.stat-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.stat-label {
-  font-size: 24rpx;
-  color: rgba(31, 41, 51, 0.6);
-}
-
-.stat-value {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1f2933;
-}
-
-/* Functions Section */
-.functions-section {
-  margin-bottom: 40rpx;
-}
-
-.function-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24rpx;
-}
-
-.function-card {
-  background: #ffffff;
-  border-radius: 24rpx;
-  padding: 32rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16rpx;
-  transition: all 0.3s ease;
-}
-
-.function-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
-}
-
-.function-icon {
-  font-size: 64rpx;
-  margin-bottom: 8rpx;
-}
-
-.function-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #1f2933;
-}
-
-.function-desc {
-  font-size: 24rpx;
-  color: rgba(31, 41, 51, 0.6);
+.version-info {
   text-align: center;
-}
-
-/* Today Section */
-.today-section {
-  margin-bottom: 40rpx;
-}
-
-.today-grid {
-  background: #ffffff;
-  border-radius: 24rpx;
-  padding: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16rpx;
-}
-
-.today-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8rpx;
-  padding: 16rpx 0;
-}
-
-.today-value {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #4a6cf0;
-}
-
-.today-label {
-  font-size: 22rpx;
-  color: rgba(31, 41, 51, 0.6);
-}
-
-/* 顶部导航栏 */
-.admin-nav {
-  height: 120rpx;
-  padding-top: 40rpx; /* 状态栏适配 */
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #ffffff;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
-}
-
-/* 左侧按钮区域 */
-.nav-left {
-  width: 160rpx; /* 这个宽度保证标题能在屏幕中心 */
-  display: flex;
-  justify-content: flex-start;
-  padding-left: 20rpx;
-}
-
-/* 中央标题区域 */
-.nav-center {
-  flex: 1; 
-  display: flex;
-  justify-content: center;
-}
-
-.nav-title {
-  font-size: 34rpx;
-  font-weight: bold;
-}
-
-/* 右侧留空区域，让标题真正居中 */
-.nav-right {
-  width: 160rpx; /* 和左边对称，保证视觉居中 */
-}
-
-/* 退出按钮样式 */
-.nav-exit {
-  font-size: 28rpx;
-  color: #ff4d4f;
-  padding: 10rpx 16rpx;
-  border: 2rpx solid #ff4d4f;
-  border-radius: 10rpx;
+  font-size: 12px;
+  color: #C7C7CC;
+  margin-top: 16px;
 }

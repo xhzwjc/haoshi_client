@@ -1,127 +1,104 @@
-<view class="admin-nav">
-
-<!-- 左侧退出按钮 -->
-<view class="nav-left">
-  <text class="nav-exit" bindtap="onLogout">退出</text>
+<view class="ios-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-side"></view> 
+    <view class="nav-title">管理员后台</view>
+    <view class="nav-side"></view>
+  </view>
 </view>
 
-<!-- 标题放中间（真正居中） -->
-<view class="nav-center">
-  <text class="nav-title">管理员后台</text>
-</view>
+<scroll-view class="page-content" scroll-y>
+  
+  <view class="nav-placeholder" style="height: {{statusBarHeight + 44 + 10}}px;"></view>
 
-<!-- 右侧留空，用来撑平结构（保证标题居中） -->
-<view class="nav-right"></view>
-
-</view>
-<view class="admin-dashboard">
-  <view class="header">
-    <text class="title">管理员后台</text>
-    <text class="subtitle">数据统计与管理</text>
+  <view class="large-title-area">
+    <text class="large-title">概览</text>
+    <text class="date-tag">{{todayDate}}</text>
   </view>
 
-  <!-- 总体统计 -->
-  <view class="stats-section">
-    <text class="section-title">总体数据</text>
-    <view class="stats-grid">
-      <view class="stat-card">
-        <view class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-          <text>👥</text>
-        </view>
-        <view class="stat-info">
-          <text class="stat-label">总用户数</text>
-          <text class="stat-value">{{stats.totalUsers}}</text>
-        </view>
+  <view class="hero-card">
+    <view class="card-inner">
+      <view class="card-header">
+        <text class="card-label">累计总收入</text>
+        <view class="icon-blur">¥</view>
       </view>
-
-      <view class="stat-card">
-        <view class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-          <text>📦</text>
-        </view>
-        <view class="stat-info">
-          <text class="stat-label">总订单数</text>
-          <text class="stat-value">{{stats.totalOrders}}</text>
-        </view>
+      <view class="card-main-value">
+        <text class="currency">¥</text>
+        <text class="amount">{{stats.totalRevenue || '0.00'}}</text>
       </view>
-
-      <view class="stat-card">
-        <view class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-          <text>👷</text>
-        </view>
-        <view class="stat-info">
-          <text class="stat-label">服务人员</text>
-          <text class="stat-value">{{stats.totalTechs}}</text>
-        </view>
-      </view>
-
-      <view class="stat-card">
-        <view class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-          <text>💰</text>
-        </view>
-        <view class="stat-info">
-          <text class="stat-label">总收入</text>
-          <text class="stat-value">¥{{stats.totalRevenue}}</text>
-        </view>
+      <view class="card-footer">
+        <text class="footer-text">今日营收 +{{todayStats.revenue}}</text>
+        <view class="trend-tag">↗ +2.4%</view>
       </view>
     </view>
   </view>
 
-  <!-- 管理功能 -->
-  <view class="functions-section">
-    <text class="section-title">管理功能</text>
-    <view class="function-grid">
-      <view class="function-card" bindtap="goToUserManagement">
-        <view class="function-icon">👥</view>
-        <text class="function-title">用户管理</text>
-        <text class="function-desc">管理客户和服务人员</text>
-      </view>
+  <view class="section-header">数据统计</view>
+  <view class="widget-grid">
+    <view class="widget-box">
+      <view class="widget-icon blue-bg">📦</view>
+      <text class="widget-val">{{stats.totalOrders}}</text>
+      <text class="widget-label">总订单量</text>
+      <text class="widget-sub">今日 +{{todayStats.newOrders}}</text>
+    </view>
+    
+    <view class="widget-box">
+      <view class="widget-icon purple-bg">👥</view>
+      <text class="widget-val">{{stats.totalUsers}}</text>
+      <text class="widget-label">总用户</text>
+      <text class="widget-sub">今日 +{{todayStats.newUsers}}</text>
+    </view>
 
-      <view class="function-card" bindtap="goToOrderManagement">
-        <view class="function-icon">📋</view>
-        <text class="function-title">订单管理</text>
-        <text class="function-desc">查看和处理订单</text>
-      </view>
-
-      <view class="function-card" bindtap="goToServiceManagement">
-        <view class="function-icon">⚙️</view>
-        <text class="function-title">服务管理</text>
-        <text class="function-desc">管理服务类目</text>
-      </view>
-
-      <view class="function-card" bindtap="goToPersonnelAudit">
-        <view class="function-icon">✅</view>
-        <text class="function-title">人员管理</text>
-        <text class="function-desc">审核和管理师傅</text>
-      </view>
-
-      <view class="function-card" bindtap="goToHomeSettings">
-        <view class="function-icon">🏠</view>
-        <text class="function-title">首页配置</text>
-        <text class="function-desc">轮播图与公告</text>
-      </view>
+    <view class="widget-box">
+      <view class="widget-icon orange-bg">👷</view>
+      <text class="widget-val">{{stats.totalTechs}}</text>
+      <text class="widget-label">服务人员</text>
+      <text class="widget-sub">审核中 0</text>
     </view>
   </view>
 
-  <!-- 今日数据 -->
-  <view class="today-section">
-    <text class="section-title">今日数据</text>
-    <view class="today-grid">
-      <view class="today-card">
-        <text class="today-value">{{todayStats.newOrders}}</text>
-        <text class="today-label">新增订单</text>
-      </view>
-      <view class="today-card">
-        <text class="today-value">{{todayStats.completedOrders}}</text>
-        <text class="today-label">已完成</text>
-      </view>
-      <view class="today-card">
-        <text class="today-value">¥{{todayStats.revenue}}</text>
-        <text class="today-label">营业额</text>
-      </view>
-      <view class="today-card">
-        <text class="today-value">{{todayStats.newUsers}}</text>
-        <text class="today-label">新增用户</text>
-      </view>
+  <view class="section-header">管理工具</view>
+  <view class="ios-menu-group">
+    
+    <view class="menu-item" bindtap="goToUserManagement">
+      <view class="menu-icon-wrap blue-bg"><text>👥</text></view>
+      <text class="menu-text">用户管理</text>
+      <text class="arrow">></text>
     </view>
+    <view class="divider"></view>
+
+    <view class="menu-item" bindtap="goToOrderManagement">
+      <view class="menu-icon-wrap purple-bg"><text>📝</text></view>
+      <text class="menu-text">订单管理</text>
+      <text class="arrow">></text>
+    </view>
+    <view class="divider"></view>
+
+    <view class="menu-item" bindtap="goToServiceManagement">
+      <view class="menu-icon-wrap green-bg"><text>🛠</text></view>
+      <text class="menu-text">服务配置</text>
+      <text class="arrow">></text>
+    </view>
+    <view class="divider"></view>
+
+    <view class="menu-item" bindtap="goToPersonnelAudit">
+      <view class="menu-icon-wrap yellow-bg"><text>🛡</text></view>
+      <text class="menu-text">人员审核</text>
+      <text class="arrow">></text>
+    </view>
+    <view class="divider"></view>
+
+    <view class="menu-item" bindtap="goToHomeSettings">
+      <view class="menu-icon-wrap pink-bg"><text>🖼</text></view>
+      <text class="menu-text">首页装修</text>
+      <text class="arrow">></text>
+    </view>
+
   </view>
-</view>
+
+  <view class="logout-section">
+    <button class="btn-logout" bindtap="onLogout">退出登录</button>
+    <view class="version-info">Admin System v1.0.0</view>
+  </view>
+
+  <view style="height: calc(20px + env(safe-area-inset-bottom));"></view>
+</scroll-view>
