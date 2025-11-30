@@ -43,7 +43,14 @@
       <view class="form-item">
         <view class="item-label required">服务地址</view>
         <view class="item-content location">
-          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" maxlength="100" value="{{address}}" data-field="address" bindinput="onFieldInput" />
+          <input 
+            name="address" 
+            placeholder="选择服务地址" 
+            placeholder-class="ph" 
+            value="{{address}}" 
+            disabled="true"
+            bindtap="chooseAddress"
+          />
           <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix" bindtap="chooseAddress"></image>
         </view>
       </view>

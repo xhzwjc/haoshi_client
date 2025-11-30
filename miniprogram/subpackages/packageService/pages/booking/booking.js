@@ -16,6 +16,8 @@ Page({
         address: '',
         contact_name: '',
         contact_phone: '',
+        latitude: null,    // 新增：地址纬度
+        longitude: null,   // 新增：地址经度
         savedAddresses: [],
         notice: ''
     },
@@ -80,7 +82,9 @@ Page({
                 // 将地址名称和详细地址拼接，方便用户查看
                 const fullAddress = res.name ? (res.name + ' ' + res.address) : res.address;
                 this.setData({
-                    address: fullAddress
+                    address: fullAddress,
+                    latitude: res.latitude,   // 新增：保存纬度用于导航
+                    longitude: res.longitude  // 新增：保存经度用于导航
                 });
             },
             fail: (err) => {
@@ -102,10 +106,17 @@ Page({
                 const list = res.result.data || [];
                 this.setData({ savedAddresses: list });
 
+                // 自动填入默认地址（如果存在且当前地址为空）
                 if (!this.data.address && list.length) {
                     const defaultAddress = list.find(item => item.is_default) || list[0];
                     if (defaultAddress) {
-                        this.applyAddress(defaultAddress);
+                        this.setData({
+                            address: defaultAddress.address || '',
+                            latitude: defaultAddress.latitude || null,
+                            longitude: defaultAddress.longitude || null,
+                            contact_name: defaultAddress.contact_name || '',
+                            contact_phone: defaultAddress.contact_phone || ''
+                        });
                     }
                 }
             }
@@ -140,6 +151,8 @@ Page({
     applyAddress(address) {
         this.setData({
             address: address.address || '',
+            latitude: address.latitude || null,   // 新增：应用经纬度
+            longitude: address.longitude || null, // 新增：应用经纬度
             contact_name: address.contact_name || '',
             contact_phone: address.contact_phone || ''
         });
@@ -173,6 +186,14 @@ Page({
         if (!formData.address) {
             return wx.showToast({ title: '请输入服务地址', icon: 'none' });
         }
+        // 新增：必须有经纬度（防止手动输入地址）
+        if (!this.data.latitude || !this.data.longitude) {
+            return wx.showToast({
+                title: '请从地址列表中选择或使用地图选择',
+                icon: 'none',
+                duration: 2000
+            });
+        }
         if (!formData.contact_name) {
             return wx.showToast({ title: '请输入联系人姓名', icon: 'none' });
         }
@@ -189,6 +210,8 @@ Page({
             service_description: serviceData.description, // 传入描述
 
             address: formData.address,
+            latitude: this.data.latitude,   // 新增：传递纬度
+            longitude: this.data.longitude, // 新增：传递经度
             contact_name: formData.contact_name,
             contact_phone: formData.contact_phone,
             remarks: formData.remarks || ''

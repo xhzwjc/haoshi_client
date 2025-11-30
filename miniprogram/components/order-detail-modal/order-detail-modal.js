@@ -27,8 +27,43 @@ Component({
       this.triggerEvent('accept', { orderId: this.data.order._id });
     },
     rejectOrder() {
-       // Trigger reject event, passing orderId back
+      // Trigger reject event, passing orderId back
       this.triggerEvent('reject', { orderId: this.data.order._id });
+    },
+    /**
+     * 导航到服务地址
+     * 调起微信地图导航功能
+     */
+    navigateToAddress() {
+      const { order } = this.data;
+
+      // 安全检查：确保有经纬度数据
+      if (!order || !order.latitude || !order.longitude) {
+        wx.showToast({
+          title: '该订单缺少位置信息',
+          icon: 'none'
+        });
+        return;
+      }
+
+      // 调用微信地图导航
+      wx.openLocation({
+        latitude: parseFloat(order.latitude),
+        longitude: parseFloat(order.longitude),
+        name: order.address || '服务地址',
+        address: '服务地址', // 详细地址栏显示"服务地址"作为说明，或者留空
+        scale: 15, // 地图缩放级别（1-28）
+        success: () => {
+          console.log('导航成功');
+        },
+        fail: (err) => {
+          console.error('导航失败:', err);
+          wx.showToast({
+            title: '打开地图失败',
+            icon: 'none'
+          });
+        }
+      });
     },
     buildTimeline(order = {}) {
       const items = [];

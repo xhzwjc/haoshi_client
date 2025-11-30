@@ -247,6 +247,44 @@ page {
   color: rgba(74, 108, 240, 0.55);
 }
 
+/* 地址输入样式 */
+.address-field {
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.address-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.search-box .input {
+  flex: 1;
+}
+
+.search-box .map-btn {
+  padding: 16rpx 24rpx !important;
+  height: auto !important;
+  line-height: 1;
+  font-size: 28rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12rpx;
+  border: none;
+  min-width: 88rpx;
+  flex-shrink: 0;
+}
+
+.search-box .map-btn::after {
+  border: none;
+}
+
 .panel-footer {
   margin-top: 36rpx;
 }

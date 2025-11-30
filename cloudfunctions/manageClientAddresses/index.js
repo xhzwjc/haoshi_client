@@ -37,6 +37,8 @@ async function saveAddress(clientId, payload = {}) {
     contact_name,
     contact_phone,
     address,
+    latitude,    // 新增：纬度
+    longitude,   // 新增：经度
     tag = '',
     is_default = false
   } = payload;
@@ -59,6 +61,8 @@ async function saveAddress(clientId, payload = {}) {
     contact_name: String(contact_name).trim(),
     contact_phone: String(contact_phone).trim(),
     address: String(address).trim(),
+    latitude: latitude || null,    // 新增：保存纬度
+    longitude: longitude || null,  // 新增：保存经度
     tag: String(tag || '').trim(),
     is_default: Boolean(is_default),
     updated_at: db.serverDate(),

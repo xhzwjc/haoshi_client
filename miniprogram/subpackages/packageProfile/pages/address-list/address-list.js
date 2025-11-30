@@ -4,8 +4,10 @@ const defaultForm = () => ({
   contact_name: '',
   contact_phone: '',
   address: '',
+  latitude: null,   // 新增：地址纬度
+  longitude: null,  // 新增：地址经度
   tag: '',
-  is_default: false
+  is_default: false,
 });
 
 Page({
@@ -83,8 +85,10 @@ Page({
         contact_name: target.contact_name || '',
         contact_phone: target.contact_phone || '',
         address: target.address || '',
+        latitude: target.latitude || null,
+        longitude: target.longitude || null,
         tag: target.tag || '',
-        is_default: !!target.is_default
+        is_default: !!target.is_default,
       }
     });
   },
@@ -107,6 +111,29 @@ Page({
     this.setData({ [`form.${field}`]: e.detail.value });
   },
 
+  /**
+   * 调起地图选择地址（修改）
+   * 同时获取地址文本和经纬度
+   */
+  chooseLocation() {
+    wx.chooseLocation({
+      success: (res) => {
+        const fullAddress = res.name ? (res.name + ' ' + res.address) : res.address;
+        this.setData({
+          'form.address': fullAddress,
+          'form.latitude': res.latitude,
+          'form.longitude': res.longitude,
+        });
+      },
+      fail: (err) => {
+        console.error('选择地址失败:', err);
+        if (err.errMsg && err.errMsg.includes('auth deny')) {
+          wx.showToast({ title: '请授权位置权限', icon: 'none' });
+        }
+      }
+    });
+  },
+
   async submitForm() {
     if (this.data.saving) return;
     const { contact_name, contact_phone, address } = this.data.form;
@@ -126,20 +153,36 @@ Page({
       return;
     }
 
+    // 新增：必须有经纬度
+    if (!this.data.form.latitude || !this.data.form.longitude) {
+      wx.showToast({
+        title: '请从地址列表中选择或使用地图选择',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
     this.setData({ saving: true });
     wx.showLoading({ title: '保存中', mask: true });
 
     try {
       const clientCloud = await app.waitClientCloudReady();
-      const clientId = wx.getStorageSync('client_id');  // 【添加】获取client_id
+      const clientId = wx.getStorageSync('client_id');
       const res = await clientCloud.callFunction({
         name: 'manageClientAddresses',
         data: {
           action: 'save',
-          clientId: clientId,  // 【添加】传入client_id
+          clientId: clientId,
           data: {
             id: this.data.editingId,
-            ...this.data.form
+            contact_name: this.data.form.contact_name,
+            contact_phone: this.data.form.contact_phone,
+            address: this.data.form.address,
+            latitude: this.data.form.latitude,   // 确保保存经纬度
+            longitude: this.data.form.longitude, // 确保保存经纬度
+            tag: this.data.form.tag,
+            is_default: this.data.form.is_default
           }
         }
       });
