@@ -1,0 +1,48 @@
+<view class="after-sale-page">
+  <view class="page-heading">
+    <view class="heading-title">{{sceneTitle}}</view>
+    <view class="heading-sub">我们会在1个工作日内联系您确认处理方案</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">问题类型</view>
+    <radio-group class="reason-list" bindchange="onReasonChange">
+      <label class="reason-item" wx:for="{{reasonOptions}}" wx:key="index">
+        <radio value="{{item}}" checked="{{selectedReason === item}}" />
+        <text>{{item}}</text>
+      </label>
+    </radio-group>
+  </view>
+
+  <view class="card">
+    <view class="card-title">问题描述</view>
+    <textarea
+      class="description"
+      placeholder="请详细描述遇到的问题，以便我们快速处理"
+      auto-height
+      maxlength="500"
+      value="{{description}}"
+      bindinput="onDescriptionInput"
+    />
+  </view>
+
+  <view class="card">
+    <view class="card-title">联系电话</view>
+    <input
+      class="phone-input"
+      placeholder="请输入便于联系的手机号"
+      type="number"
+      value="{{contactPhone}}"
+      bindinput="onPhoneInput"
+    />
+  </view>
+
+  <view class="order-brief" wx:if="{{order}}">
+    <view class="brief-title">关联订单</view>
+    <view class="brief-line">服务：{{order.service_name || '家政服务'}} </view>
+    <view class="brief-line">预约时间：{{order.service_date}} {{order.service_time_slot}}</view>
+    <view class="brief-line">地址：{{order.address}}</view>
+  </view>
+
+  <button class="submit-btn" type="primary" loading="{{submitting}}" bindtap="submitRequest">提交申请</button>
+</view>

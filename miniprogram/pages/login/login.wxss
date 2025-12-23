@@ -1,203 +1,238 @@
-/* 引入外部图标库（需要您在项目 app.wxss 或公共wxss中配置实际路径） */
-/* @import "/style/iconfont.wxss"; */
-
 page {
-  background-color: #f7f9fb;
+  background: #f5f7fb;
+  min-height: 100vh;
+  color: #1f2933;
 }
 
 .login-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+
+.light-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(93, 135, 255, 0.12) 0%, rgba(255, 255, 255, 0.86) 45%, #f5f7fb 100%);
+  z-index: 0;
+}
+
+.login-container {
+  position: relative;
+  z-index: 1;
+  padding: 120rpx 48rpx 100rpx;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0 40rpx;
+  gap: 56rpx;
 }
 
-/* 头部 */
-.header-box {
-  width: 100%;
+.brand-block {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 80rpx 0 100rpx;
+  gap: 24rpx;
 }
 
-.app-logo {
-  width: 160rpx;
-  height: 160rpx;
-  border-radius: 32rpx;
-  box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
-  margin-bottom: 20rpx;
-  /* ⚠️ 请替换为您自己的 logo 图片路径 */
-  background-color: #409EFF; 
-}
-
-.app-title {
+.brand-badge {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-shadow: 0 18rpx 40rpx rgba(71, 122, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 48rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10rpx;
+  font-weight: 600;
+  color: #4a6cf0;
 }
 
-.app-slogan {
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.brand-title {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.brand-subtitle {
   font-size: 28rpx;
-  color: #999;
+  color: rgba(31, 41, 51, 0.6);
 }
 
-/* 身份选择区域 */
-.role-selection-area {
-  width: 100%;
+.headline {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
-.selection-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 30rpx;
-  display: block;
+.headline-main {
+  font-size: 42rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.headline-sub {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: rgba(31, 41, 51, 0.6);
+}
+
+.role-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
 }
 
 .role-card {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  padding: 30rpx 40rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-  margin-bottom: 30rpx;
-  transition: transform 0.2s;
-}
-.role-card:active {
-  transform: scale(0.98);
+  position: relative;
+  padding: 44rpx 40rpx;
+  border-radius: 32rpx;
+  background: #ffffff;
+  border: 1rpx solid rgba(74, 108, 240, 0.08);
+  box-shadow: 0 24rpx 60rpx rgba(32, 59, 126, 0.08);
+  transition: all 0.2s ease;
 }
 
-.icon-circle {
-  width: 90rpx;
-  height: 90rpx;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 30rpx;
-  background-color: #f0f8ff;
+.role-card.active {
+  border-color: rgba(74, 108, 240, 0.45);
+  box-shadow: 0 30rpx 80rpx rgba(74, 108, 240, 0.16);
 }
 
-.role-card .iconfont {
-  font-size: 48rpx;
-  color: #409EFF; /* 默认蓝色 */
-}
-
-/* 客户端颜色 */
-.client-card .icon-circle { background-color: #e6f7ff; }
-.client-card .iconfont { color: #409EFF; } 
-
-/* 家政端颜色 */
-.technician-card .icon-circle { background-color: #fffbe6; }
-.technician-card .iconfont { color: #fcc200; } 
-
-.role-info {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.role-name {
+.role-title {
   font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  color: #1f2933;
 }
 
 .role-desc {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 28rpx;
+  color: rgba(31, 41, 51, 0.6);
+  line-height: 1.6;
+  margin-right: 64rpx;
 }
 
-.role-card .icon-arrow-right {
-  font-size: 32rpx;
-  color: #ccc;
-  margin-left: 20rpx;
+.role-arrow {
+  position: absolute;
+  right: 40rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 44rpx;
+  color: rgba(74, 108, 240, 0.5);
 }
 
-/* === 模态框样式（自定义，替代 wx.showModal） === */
+.statement {
+  font-size: 24rpx;
+  color: rgba(31, 41, 51, 0.55);
+  line-height: 1.6;
+}
 
 .modal-mask {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(6px);
+  z-index: 10;
 }
 
 .login-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600rpx;
-  background-color: #fff;
-  border-radius: 16rpx;
-  z-index: 1001;
-  overflow: hidden;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+  padding: 0 48rpx;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 640rpx;
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 48rpx 40rpx 40rpx;
+  box-shadow: 0 40rpx 90rpx rgba(17, 25, 40, 0.18);
+}
+
+.modal-header {
+  margin-bottom: 36rpx;
 }
 
 .modal-title {
-  text-align: center;
-  padding: 30rpx 0;
-  font-size: 34rpx;
-  font-weight: bold;
-  color: #333;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.modal-subtitle {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: rgba(31, 41, 51, 0.55);
+  line-height: 1.5;
 }
 
 .modal-body {
-  padding: 20rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
 .input-group {
   display: flex;
-  align-items: center;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #eee;
-  margin-bottom: 20rpx;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
 .input-label {
-  font-size: 30rpx;
-  color: #666;
-  width: 100rpx;
-  flex-shrink: 0;
+  font-size: 26rpx;
+  color: rgba(31, 41, 51, 0.7);
 }
 
-.modal-body input {
-  flex-grow: 1;
-  height: 70rpx;
-  font-size: 32rpx;
-  color: #333;
+input {
+  background: #f3f6fd;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  color: #1f2933;
+  border: 1rpx solid rgba(74, 108, 240, 0.16);
+  font-size: 28rpx;
 }
 
 .input-placeholder {
-  color: #ccc;
+  color: rgba(74, 108, 240, 0.55);
 }
 
-.modal-footer {
+.modal-actions {
   display: flex;
-  border-top: 1rpx solid #eee;
+  justify-content: flex-end;
+  gap: 24rpx;
+  margin-top: 40rpx;
 }
 
 .modal-btn {
-  flex: 1;
-  text-align: center;
-  padding: 25rpx 0;
-  font-size: 32rpx;
+  min-width: 160rpx;
+  padding: 20rpx 0;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
 }
 
-.cancel-btn {
-  color: #999;
-  border-right: 1rpx solid #eee;
+.modal-btn.ghost {
+  background: #f5f7fb;
+  color: rgba(31, 41, 51, 0.65);
+  border: 1rpx solid rgba(74, 108, 240, 0.16);
 }
 
-.confirm-btn {
-  color: #409EFF;
-  font-weight: bold;
+.modal-btn.primary {
+  background: #4a6cf0;
+  color: #ffffff;
+}
+
+.modal-btn:active {
+  opacity: 0.85;
 }

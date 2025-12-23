@@ -4,8 +4,9 @@ Page({
     data: {
         showLoginModal: false,
         modalTitle: '客户登录',
-        inputPlaceholder: '请输入手机号',
+        inputPlaceholder: '请输入手机号或万能账号',
         currentRole: '', // 'CLIENT' or 'TECHNICIAN'
+        selectedRole: '',
         account: '',
         password: ''
     },
@@ -13,13 +14,20 @@ Page({
     // 1. Select Role
     onSelectRole(e) {
         const role = e.currentTarget.dataset.role;
+        const cachedPhone = role === 'CLIENT' ? (wx.getStorageSync('client_account_phone') || '') : '';
+        const lastAccount = role === 'CLIENT' ? (wx.getStorageSync('client_last_account') || '') : '';
+        const defaultAccount = role === 'CLIENT'
+            ? (lastAccount || cachedPhone || '1')
+            : '';
+
         this.setData({
             currentRole: role,
             modalTitle: role === 'CLIENT' ? '客户登录' : '家政人员登录',
-            inputPlaceholder: role === 'CLIENT' ? '请输入任意手机号' : '请输入任意工号/手机号',
+            inputPlaceholder: role === 'CLIENT' ? '请输入手机号或万能账号' : '请输入工号/手机号',
             showLoginModal: true,
-            account: '',
-            password: ''
+            selectedRole: role,
+            account: defaultAccount,
+            password: role === 'CLIENT' ? '6666' : ''
         });
     },
 
@@ -27,42 +35,95 @@ Page({
     onInputAccount(e) { this.setData({ account: e.detail.value }); },
     onInputPassword(e) { this.setData({ password: e.detail.value }); },
 
-    onCancelLogin() { this.setData({ showLoginModal: false }); },
+    onCancelLogin() { this.setData({ showLoginModal: false, selectedRole: '' }); },
 
     // 3. [Core Logic] Confirm Login (Simulated Success)
     async onConfirmLogin() {
-        const { currentRole, account, password } = this.data;
+        const { currentRole } = this.data;
+        const account = String(this.data.account || '').trim();
+        const password = String(this.data.password || '').trim();
+        const isUniversalAccount = account === '1';
 
-        // Validation: Requires any account and password input
+        if (!currentRole) {
+            return wx.showToast({ title: '请选择登录身份', icon: 'none' });
+        }
+
         if (!account || !password) {
             return wx.showToast({ title: '请输入账号和密码', icon: 'none' });
         }
 
-        this.setData({ showLoginModal: false }); // Hide modal
+        if (currentRole === 'CLIENT' && !isUniversalAccount && !/^1\d{10}$/.test(account)) {
+            return wx.showToast({ title: '请输入11位手机号或万能账号', icon: 'none' });
+        }
+
         wx.showLoading({ title: '登录中...', mask: true });
 
-        // --- Simulate Login Success ---
-        
-        // Mock OpenID and Token (In real app, these come from backend/Cloud)
-        const mockOpenid = `mock_openid_${currentRole}_${Date.now()}`;
-        const mockToken = `MOCK_TOKEN_${currentRole}`;
+        try {
+            if (currentRole === 'CLIENT') {
+                const clientCloud = await app.waitClientCloudReady();
+                const res = await clientCloud.callFunction({
+                    name: 'getClientProfile',
+                    data: {
+                        action: 'login',
+                        account,
+                        password
+                    }
+                });
 
-        // Simulate network request delay
-        await new Promise(resolve => setTimeout(resolve, 500)); 
-        
-        wx.hideLoading();
+                if (!res.result || res.result.code !== 0) {
+                    throw new Error((res.result && res.result.message) || '登录失败');
+                }
 
-        // Store identity info locally
-        wx.setStorageSync('user_token', mockToken);
-        wx.setStorageSync('user_role', currentRole); // 'CLIENT' or 'TECHNICIAN'
-        wx.setStorageSync('user_openid', mockOpenid); 
-        
-        wx.showToast({ title: '登录成功 (测试模式)', icon: 'success' });
-        
-        // 4. Redirect to the corresponding home page based on role
-        this.redirectToHomePage(currentRole);
+                const { token, openid, profile } = res.result.data || {};
+                if (!token || !openid) {
+                    throw new Error('登录信息不完整');
+                }
 
-        // ------------------------------------
+                wx.setStorageSync('user_token', token);
+                wx.setStorageSync('user_role', currentRole);
+                wx.setStorageSync('user_openid', openid);
+                wx.setStorageSync('client_last_account', account);
+
+                if (profile) {
+                    wx.setStorageSync('client_profile_cache', profile);
+                    if (profile.phone) {
+                        wx.setStorageSync('client_account_phone', profile.phone);
+                    }
+                }
+
+                if (!profile || !profile.phone) {
+                    if (!isUniversalAccount && /^1\d{10}$/.test(account)) {
+                        wx.setStorageSync('client_account_phone', account);
+                    }
+                }
+
+                wx.showToast({ title: '登录成功', icon: 'success' });
+            } else {
+                // 家政端仍使用模拟登录，后续可接入真实认证
+                const mockOpenid = `mock_openid_${currentRole}_${Date.now()}`;
+                const mockToken = `MOCK_TOKEN_${currentRole}`;
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                wx.setStorageSync('user_token', mockToken);
+                wx.setStorageSync('user_role', currentRole);
+                wx.setStorageSync('user_openid', mockOpenid);
+
+                wx.showToast({ title: '登录成功', icon: 'success' });
+            }
+
+            this.setData({
+                showLoginModal: false,
+                selectedRole: ''
+            });
+
+            this.redirectToHomePage(currentRole);
+        } catch (error) {
+            console.error('登录失败', error);
+            wx.showToast({ title: error.message || '登录失败', icon: 'none' });
+        } finally {
+            wx.hideLoading();
+        }
     },
     
     // 5. Redirection Logic (Relies on app.js globalData)

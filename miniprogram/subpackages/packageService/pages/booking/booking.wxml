@@ -28,26 +28,31 @@
   </view>
 
   <form bindsubmit="formSubmit">
+    <view class="address-toolbar">
+      <button class="tool-btn" type="default" bindtap="openAddressPicker">选择常用地址</button>
+      <button class="tool-btn secondary" type="default" bindtap="goManageAddress">管理地址</button>
+    </view>
+
     <view class="form-section">
       <view class="form-item">
         <view class="item-label required">服务地址</view>
         <view class="item-content location">
-          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" maxlength="100" />
-          <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix"></image>
+          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" maxlength="100" value="{{address}}" data-field="address" bindinput="onFieldInput" />
+          <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix" bindtap="chooseAddress"></image>
         </view>
       </view>
 
       <view class="form-item">
         <view class="item-label required">联系人</view>
         <view class="item-content">
-          <input name="contact_name" placeholder="请输入联系人姓名" placeholder-class="ph" maxlength="10" />
+          <input name="contact_name" placeholder="请输入联系人姓名" placeholder-class="ph" maxlength="10" value="{{contact_name}}" data-field="contact_name" bindinput="onFieldInput" />
         </view>
       </view>
 
       <view class="form-item">
         <view class="item-label required">联系电话</view>
         <view class="item-content">
-          <input name="contact_phone" type="number" placeholder="请输入手机号码" placeholder-class="ph" />
+          <input name="contact_phone" type="number" placeholder="请输入手机号码" placeholder-class="ph" value="{{contact_phone}}" data-field="contact_phone" bindinput="onFieldInput" maxlength="11" />
         </view>
       </view>
 
@@ -64,5 +69,4 @@
     </view>
   </form>
   
-  <image class="help-btn" src="/packageCommon/images/icon_help.png"></image>
 </view>

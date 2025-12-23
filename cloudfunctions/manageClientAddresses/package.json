@@ -1,0 +1,13 @@
+{
+  "name": "manageClientAddresses",
+  "version": "1.0.0",
+  "description": "Manage client saved service addresses",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "^3.0.1"
+  }
+}

@@ -1,5 +1,5 @@
 // /subpackages/packageService/pages/confirm-pay/confirm-pay.js
-const db = wx.cloud.database();
+const app = getApp();
 
 Page({
     data: {
@@ -68,7 +68,7 @@ Page({
     /**
      * 【修改】 确认预约 (核心逻辑: 保存订单为 待接单)
      */
-    onConfirmPay: function() {
+    onConfirmPay: async function() {
         if (!this.data.bookingData) {
             return wx.showToast({ title: '订单数据丢失', icon: 'error' });
         }
@@ -78,27 +78,37 @@ Page({
         // 构造要写入数据库的最终数据
         const finalData = {
             ...this.data.bookingData,
-            
+            client_openid: wx.getStorageSync('user_openid') || '',
+
             // 【修改】 记录价格范围，而非固定价格
             price_range: this.data.orderSummary.total_price_display, // e.g., "100-250"
             service_unit: this.data.orderSummary.service_unit,
-            
+
             final_price: null, // 【新增】 最终价格尚未确定
-            
+
             status: 10, // 【核心修改】 状态设为 10 (待接单)
-            
-            created_at: db.serverDate()
+
+            order_source: 'client_app'
         };
 
         // (清理 bookingData 中可能存在的、与 service 相关的冗余字段，如 service_price)
-        delete finalData.service_price; 
+        delete finalData.service_price;
         // ... (其他清理)
 
-        db.collection('bookings').add({
-            data: finalData
-        }).then(res => {
+        try {
+            const cloud = await app.waitClientCloudReady();
+            const res = await cloud.callFunction({
+                name: 'createBooking',
+                data: { action: 'create', booking: finalData }
+            });
+
+            const result = (res && res.result) || {};
+            if (result.code !== 0) {
+                throw new Error(result.message || '预约提交失败');
+            }
+
             wx.hideLoading();
-            
+
             wx.showModal({
                 title: '预约成功',
                 content: '您的预约已提交，请等待家政接单！',
@@ -107,17 +117,17 @@ Page({
                 success: (modalRes) => {
                     if (modalRes.confirm) {
                         // 【修改】 跳转到订单列表页，并选中 '进行中' Tab (因为 10 属于进行中)
-                        wx.reLaunch({ 
-                            url: `/pages/order/order?status=running` 
+                        wx.reLaunch({
+                            url: `/pages/order/order?status=running`
                         });
                     }
                 }
             });
-
-        }).catch(err => {
-            wx.hideLoading();
-            wx.showToast({ title: '预约提交失败', icon: 'none' });
+        } catch (err) {
             console.error('提交订单失败:', err);
-        });
-    }
+            wx.hideLoading();
+            const message = err && err.message ? err.message : '预约提交失败';
+            wx.showToast({ title: message, icon: 'none' });
+        }
+    },
 });

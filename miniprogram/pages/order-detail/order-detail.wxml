@@ -73,6 +73,19 @@
             </view>
         </view>
 
+        <view class="section-card order-timeline" wx:if="{{orderDetail.timeline && orderDetail.timeline.length}}">
+            <view class="section-title">订单进度</view>
+            <view class="timeline-list">
+                <view class="timeline-item" wx:for="{{orderDetail.timeline}}" wx:key="{{item.label}}-{{index}}">
+                    <view class="timeline-dot"></view>
+                    <view class="timeline-content">
+                        <text class="timeline-label">{{item.label}}</text>
+                        <text class="timeline-value">{{item.value}}</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+
         <view class="section-card order-data">
             <view class="section-title">订单信息</view>
             <view class="info-list">
