@@ -167,7 +167,7 @@ page {
 
 .info-line {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   font-size: 26rpx;
   color: #333;
   margin-bottom: 16rpx;
@@ -178,6 +178,8 @@ page {
   height: 28rpx;
   margin-right: 16rpx;
   opacity: 0.6;
+  flex-shrink: 0;
+  margin-top: 6rpx;
 }
 
 .remark-box {
@@ -228,6 +230,11 @@ page {
   margin-left: 6rpx;
 }
 
+.payment-info .price .currency {
+  font-size: 24rpx;
+  margin-right: 4rpx;
+}
+
 .card-actions {
   display: flex;
   flex-shrink: 0;
@@ -236,26 +243,50 @@ page {
   justify-content: flex-end;
 }
 
+/* 按钮样式 - X/Twitter 风格优化 */
 .btn {
   font-size: 26rpx;
-  height: 60rpx;
-  line-height: 60rpx;
+  font-weight: 600;
+  height: 64rpx;
   padding: 0 28rpx;
-  border-radius: 30rpx;
+  border-radius: 32rpx;
   margin: 0;
-  width: 160rpx !important
+  width: 160rpx !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.25s ease;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.08);
+}
+
+.btn::after {
+  border: none;
 }
 
 .btn-plain {
-  background: #fff !important;
-  border: 1rpx solid #ccc !important;
-  color: #333 !important;
+  background: #ffffff !important;
+  border: 2rpx solid #e1e8ed !important;
+  color: #536471 !important;
+}
+
+.btn-plain:active {
+  background: #f7f9fa !important;
+  border-color: #cbd5e0 !important;
+  transform: scale(0.96);
 }
 
 .btn-dark {
-  background: #333 !important;
-  color: #fff !important;
-  border: 1rpx solid #333 !important;
+  background: linear-gradient(135deg, #0f1419 0%, #1c2938 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2rpx 8rpx rgba(15, 20, 25, 0.2),
+              0 4rpx 12rpx rgba(15, 20, 25, 0.12);
+}
+
+.btn-dark:active {
+  transform: scale(0.96);
+  box-shadow: 0 1rpx 4rpx rgba(15, 20, 25, 0.15);
 }
 
 /* Loading and Empty States */

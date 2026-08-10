@@ -168,10 +168,11 @@ page { background-color: #F7F8FA; }
 .reply-btn {
   font-size: 24rpx;
   height: 56rpx;
+  width: 111rpx !important;
   line-height: 56rpx;
   padding: 0 26rpx;
   border-radius: 30rpx;
-  background-color: #f5f7fa;
+  background-color: #b7c0a6;
   color: #333;
   border: 1rpx solid #dcdfe6;
   flex-shrink: 0;

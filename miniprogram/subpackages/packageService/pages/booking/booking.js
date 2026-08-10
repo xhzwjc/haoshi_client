@@ -16,7 +16,10 @@ Page({
         address: '',
         contact_name: '',
         contact_phone: '',
-        savedAddresses: []
+        latitude: null,    // 新增：地址纬度
+        longitude: null,   // 新增：地址经度
+        savedAddresses: [],
+        notice: ''
     },
 
     onLoad: function (options) {
@@ -33,12 +36,20 @@ Page({
 
     onShow() {
         this.loadSavedAddresses();
+        this.loadNotice();
+    },
+
+    loadNotice() {
+        const app = getApp();
+        if (app && app.globalData.homeSettings && app.globalData.homeSettings.notice) {
+            this.setData({ notice: app.globalData.homeSettings.notice });
+        }
     },
 
     /**
      * 根据ID获取服务详情 (增加字段映射)
      */
-    getServiceDetails: function(serviceId) {
+    getServiceDetails: function (serviceId) {
         wx.showLoading({ title: '加载中...' });
         db.collection('services').doc(serviceId).get({
             success: res => {
@@ -48,7 +59,7 @@ Page({
                     // 核心映射：将数据库的 desc 字段映射为前端的 description
                     description: dbData.desc || dbData.description || '专业团队, 品质保证'
                 };
-                
+
                 this.setData({
                     service: serviceData
                 });
@@ -65,19 +76,19 @@ Page({
     /**
      * 调起微信地址选择器
      */
-    chooseAddress: function() {
+    chooseAddress: function () {
         wx.chooseLocation({
             success: (res) => {
                 // 将地址名称和详细地址拼接，方便用户查看
                 const fullAddress = res.name ? (res.name + ' ' + res.address) : res.address;
                 this.setData({
-                    address: fullAddress
+                    address: fullAddress,
+                    latitude: res.latitude,   // 新增：保存纬度用于导航
+                    longitude: res.longitude  // 新增：保存经度用于导航
                 });
             },
             fail: (err) => {
-                // 如果用户拒绝授权，可以提示手动输入
                 console.error('选择地址失败:', err);
-                // 这里不做 toast 提示，用户可选择手动输入
             }
         });
     },
@@ -85,19 +96,27 @@ Page({
     async loadSavedAddresses() {
         try {
             const clientCloud = await app.waitClientCloudReady();
+            const clientId = wx.getStorageSync('client_id');
             const res = await clientCloud.callFunction({
                 name: 'manageClientAddresses',
-                data: { action: 'list' }
+                data: { action: 'list', clientId }
             });
 
             if (res.result && res.result.code === 0) {
                 const list = res.result.data || [];
                 this.setData({ savedAddresses: list });
 
+                // 自动填入默认地址（如果存在且当前地址为空）
                 if (!this.data.address && list.length) {
                     const defaultAddress = list.find(item => item.is_default) || list[0];
                     if (defaultAddress) {
-                        this.applyAddress(defaultAddress);
+                        this.setData({
+                            address: defaultAddress.address || '',
+                            latitude: defaultAddress.latitude || null,
+                            longitude: defaultAddress.longitude || null,
+                            contact_name: defaultAddress.contact_name || '',
+                            contact_phone: defaultAddress.contact_phone || ''
+                        });
                     }
                 }
             }
@@ -132,6 +151,8 @@ Page({
     applyAddress(address) {
         this.setData({
             address: address.address || '',
+            latitude: address.latitude || null,   // 新增：应用经纬度
+            longitude: address.longitude || null, // 新增：应用经纬度
             contact_name: address.contact_name || '',
             contact_phone: address.contact_phone || ''
         });
@@ -152,7 +173,7 @@ Page({
     /**
      * 表单提交 (仅校验和跳转到第二步)
      */
-    formSubmit: function(e) {
+    formSubmit: function (e) {
         const formData = {
             address: this.data.address,
             contact_name: this.data.contact_name,
@@ -160,11 +181,18 @@ Page({
             remarks: e.detail.value.remarks || ''
         };
         const serviceData = this.data.service;
-        // const phoneReg = /^1[3-9]\d{9}$/;
 
         // 基础校验 (使用表单数据，而不是 this.data)
         if (!formData.address) {
             return wx.showToast({ title: '请输入服务地址', icon: 'none' });
+        }
+        // 新增：必须有经纬度（防止手动输入地址）
+        if (!this.data.latitude || !this.data.longitude) {
+            return wx.showToast({
+                title: '请从地址列表中选择或使用地图选择',
+                icon: 'none',
+                duration: 2000
+            });
         }
         if (!formData.contact_name) {
             return wx.showToast({ title: '请输入联系人姓名', icon: 'none' });
@@ -173,14 +201,6 @@ Page({
             return wx.showToast({ title: '请输入联系电话', icon: 'none' });
         }
 
-        // 手机号码格式校验
-        // if (!phoneReg.test(formData.contact_phone)) {
-        //     return wx.showToast({ title: '联系电话格式不正确', icon: 'none' });
-        // }
-        
-        // 确保 price 是数字类型
-        // const servicePrice = parseFloat(serviceData.price);
-
         // 1. 构建要传递到下一步的订单基础数据
         const bookingBaseData = {
             service_id: this.data.serviceId,
@@ -188,8 +208,10 @@ Page({
             service_price: serviceData.price,
             service_unit: serviceData.unit,
             service_description: serviceData.description, // 传入描述
-            
+
             address: formData.address,
+            latitude: this.data.latitude,   // 新增：传递纬度
+            longitude: this.data.longitude, // 新增：传递经度
             contact_name: formData.contact_name,
             contact_phone: formData.contact_phone,
             remarks: formData.remarks || ''
@@ -197,11 +219,9 @@ Page({
 
         // 2. 将数据编码后跳转到第二步页面
         const bookingDataJson = JSON.stringify(bookingBaseData);
-        
+
         wx.navigateTo({
             url: `/subpackages/packageService/pages/select-time/select-time?data=${encodeURIComponent(bookingDataJson)}`
         });
-
-        // 🚨 订单写入数据库的逻辑已移动到第三步（确认支付）页面
     }
 });

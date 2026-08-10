@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/launch/launch",
     "pages/login/login",
     "pages/index/index",
     "pages/service-list/service-list",
@@ -80,6 +81,18 @@
         "pages/settings/settings",
         "pages/feedback/feedback",
         "pages/address-list/address-list"
+      ]
+    },
+    {
+      "root": "subpackages/packageAdmin",
+      "pages": [
+        "pages/admin-dashboard/admin-dashboard",
+        "pages/admin-user-list/admin-user-list",
+        "pages/admin-personnel-audit/admin-personnel-audit",
+        "pages/admin-order-list/admin-order-list",
+        "pages/admin-service-list/admin-service-list",
+        "pages/admin-service-edit/admin-service-edit",
+        "pages/admin-home-settings/admin-home-settings"
       ]
     }
   ],

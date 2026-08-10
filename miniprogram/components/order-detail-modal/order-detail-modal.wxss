@@ -54,6 +54,39 @@
 .value.price { color: #FF5722; font-weight: bold; font-size: 32rpx;}
 .value.placeholder { color: #ccc; }
 
+/* 新增：地址行带导航按钮布局 */
+.value-with-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  gap: 16rpx;
+}
+
+.value-with-action .value {
+  flex: 1;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 新增：导航按钮样式 */
+.btn-navigate {
+  padding: 8rpx 24rpx !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+  font-size: 24rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8rpx;
+  border: none;
+  flex-shrink: 0;
+}
+
+.btn-navigate::after {
+  border: none;
+}
+
+
 .remark-item { align-items: flex-start; } /* Override default alignment */
 .remark-box {
     background-color: #FFFBEB;

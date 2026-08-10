@@ -25,7 +25,12 @@ async function ensureCollection(name) {
 }
 
 exports.main = async (event, context) => {
-  const { action, booking } = event || {};
+  const { action, booking, clientId } = event || {};  // 【修改】接收clientId
+  const { OPENID } = cloud.getWXContext();
+
+  if (!OPENID) {
+    return { code: -1, message: '未登录用户无法创建订单' };
+  }
 
   if (action !== 'create') {
     return { code: -1, message: 'unsupported action' };
@@ -42,6 +47,11 @@ exports.main = async (event, context) => {
   bookingDoc.status = typeof bookingDoc.status === 'number' ? bookingDoc.status : 10;
   bookingDoc.created_at = now;
   bookingDoc.updated_at = now;
+  bookingDoc.client_openid = OPENID;  // 保留向后兼容
+  bookingDoc.client_id = clientId || '';  // 【核心修改】存储client_id
+  if (!bookingDoc.client_phone && bookingDoc.contact_phone) {
+    bookingDoc.client_phone = bookingDoc.contact_phone;
+  }
   bookingDoc.timeline = Array.isArray(bookingDoc.timeline) ? bookingDoc.timeline : [];
   bookingDoc.timeline.push({
     status: bookingDoc.status,

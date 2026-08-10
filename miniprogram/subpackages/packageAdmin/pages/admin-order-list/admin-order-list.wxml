@@ -1,0 +1,74 @@
+<view class="page-admin-order">
+  <view class="tabs-container">
+    <scroll-view scroll-x class="tabs-scroll">
+      <view class="tabs">
+        <view
+          class="tab-item {{activeTab === index ? 'active' : ''}}"
+          wx:for="{{tabs}}"
+          wx:key="index"
+          bindtap="onTabClick"
+          data-index="{{index}}"
+        >
+          {{item.name}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="content">
+    <view class="loading-state" wx:if="{{loading && orders.length === 0}}">
+      <view class="loading-spinner"></view>
+      <text>加载中...</text>
+    </view>
+
+    <block wx:elif="{{orders.length > 0}}">
+      <view class="order-list">
+        <view
+          class="order-card"
+          wx:for="{{orders}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="toOrderDetail"
+        >
+          <view class="card-header">
+            <view class="service-name">{{item.service_name}}</view>
+            <view class="status-tag status-{{item.status}}">{{item.status_text}}</view>
+          </view>
+          <view class="order-no">订单编号: {{item._id}}</view>
+          <view class="card-body">
+            <view class="info-line" wx:if="{{item.contact_name || item.contact_phone}}">
+              <text class="info-label">客户：</text>
+              <text>{{item.contact_name}} {{item.contact_phone}}</text>
+            </view>
+            <view class="info-line" wx:if="{{item.address}}">
+              <text class="info-label">地址：</text>
+              <text>{{item.address}}</text>
+            </view>
+            <view class="info-line" wx:if="{{item.service_date && item.service_time_slot}}">
+              <text class="info-label">时间：</text>
+              <text>{{item.service_date}} {{item.service_time_slot}}</text>
+            </view>
+            <view class="info-line" wx:if="{{item.master_info && item.master_info !== '待分配'}}">
+              <text class="info-label">师傅：</text>
+              <text>{{item.master_info}}</text>
+            </view>
+            <view class="remark-box" wx:if="{{item.remarks}}">
+              <text class="remark-label">备注：</text>
+              <text class="remark-content">{{item.remarks}}</text>
+            </view>
+          </view>
+          <view class="card-footer">
+            <view class="payment-info">
+              <text class="label">{{item.is_range ? '价格范围' : '实付'}}</text>
+              <text class="price">{{item.price_display}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="empty" wx:else>
+      <text>暂无订单数据</text>
+    </view>
+  </view>
+</view>

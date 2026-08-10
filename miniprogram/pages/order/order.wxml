@@ -23,7 +23,6 @@
   >
     <view class="list-container">
       <view class="loading-state" wx:if="{{loading && filteredOrders.length === 0}}">
-        <text>加载中...</text>
       </view>
 
       <block wx:elif="{{filteredOrders.length > 0}}">
@@ -61,9 +60,7 @@
             <view class="payment-info">
               <text wx:if="{{item.is_range}}">报价:</text>
               <text wx:else>实付:</text>
-              <text class="price">
-                <text wx:if="{{!item.is_range}}">¥</text>{{item.payment_fmt}}
-              </text>
+              <text class="price">{{item.payment_fmt}}</text>
             </view>
             <view class="card-actions">
               <block wx:if="{{item.status === 10}}">
@@ -77,18 +74,18 @@
                 <button class="btn btn-plain" data-action="联系师傅" data-id="{{item._id}}" catchtap="handleListAction">联系师傅</button>
               </block>
               <block wx:if="{{item.status === 35}}">
-                <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" catchtap="handleListAction">金额有误</button>
+                <!-- <button class="btn btn-plain" data-action="金额有误" data-id="{{item._id}}" catchtap="handleListAction">金额有误</button> -->
                 <button class="btn btn-dark" data-action="确认金额" data-id="{{item._id}}" data-price="{{item.payment_fmt}}" catchtap="handleListAction">确认金额</button>
               </block>
               <block wx:if="{{item.status === 40}}">
                 <button class="btn btn-dark" data-action="立即支付" data-id="{{item._id}}" catchtap="handleListAction">立即支付</button>
               </block>
               <block wx:if="{{item.status === 50}}">
-                 <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button>
+                 <!-- <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button> -->
                 <button class="btn btn-dark" data-action="评价服务" data-id="{{item._id}}" catchtap="handleListAction">评价服务</button>
               </block>
               <block wx:if="{{item.status === 60}}">
-                <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button>
+                <!-- <button class="btn btn-plain" data-action="申请售后" data-id="{{item._id}}" catchtap="handleListAction">申请售后</button> -->
                 <button class="btn btn-plain" data-action="查看详情" data-id="{{item._id}}" catchtap="handleListAction">查看详情</button>
               </block>
             </view>

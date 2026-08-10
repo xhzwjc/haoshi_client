@@ -1,0 +1,210 @@
+/* Admin Service List Page */
+.page-admin-service {
+  background-color: #F7F8FA;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: #fff;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid #E5E5E5;
+}
+
+.header .title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-btn {
+  padding: 16rpx 32rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 32rpx;
+  border: none;
+}
+
+.add-btn::after {
+  border: none;
+}
+
+/* Content */
+.content {
+  padding: 20rpx;
+}
+
+/* Loading State - Center of screen */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #E5E5E5;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-state text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* Service List */
+.service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* Service Card */
+.service-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.service-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.status-badge {
+  flex-shrink: 0;
+  padding: 6rpx 16rpx;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  margin-left: 16rpx;
+}
+
+.status-badge.enabled {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.status-badge.disabled {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+.card-body {
+  margin-bottom: 20rpx;
+}
+
+.info-row {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  display: flex;
+}
+
+.info-row .label {
+  color: #999;
+  flex-shrink: 0;
+  margin-right: 10rpx;
+  min-width: 80rpx;
+}
+
+.info-row .value {
+  flex: 1;
+  word-break: break-all;
+}
+
+.info-row .value.desc {
+  color: #666;
+  line-height: 1.6;
+}
+
+.card-footer {
+  display: flex;
+  gap: 16rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.action-btn {
+  flex: 1;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 26rpx;
+  border-radius: 32rpx;
+  border: 1rpx solid #E5E5E5;
+  background: #fff;
+  color: #666;
+  padding: 0;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.action-btn.edit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+}
+
+.action-btn.disable {
+  background: #FFEBEE;
+  color: #F44336;
+  border-color: #FFCDD2;
+}
+
+.action-btn.enable {
+  background: #E8F5E9;
+  color: #4CAF50;
+  border-color: #C8E6C9;
+}
+
+/* Empty State */
+.empty {
+  text-align: center;
+  padding: 200rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.empty-add-btn {
+  margin-top: 40rpx;
+  padding: 20rpx 60rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 44rpx;
+  border: none;
+  display: inline-block;
+}
+
+.empty-add-btn::after {
+  border: none;
+}

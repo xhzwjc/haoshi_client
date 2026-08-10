@@ -1,32 +1,50 @@
-<view class="page-index">
-  <view class="banner-container">
-    <image class="banner-bg" src="/packageCommon/images/icon_banner_notification.png" mode="aspectFill"></image>
-    <view class="banner-content">
-      <view class="banner-title">精选优质家政人员，上门更安心</view>
-      <view class="banner-sub">专业服务，透明报价，满意为止</view>
+
+<view class="page-index page-enter">
+  <!-- 1. Glass Header Container (Banners + Notice) -->
+  <view class="glass-header-container">
+    <view class="banner-container">
+      <swiper class="banner-swiper" indicator-dots="true" autoplay="true" interval="5000" duration="500" circular="true" indicator-color="rgba(255,255,255,0.4)" indicator-active-color="#ffffff">
+        <block wx:if="{{banners && banners.length > 0}}">
+          <swiper-item wx:for="{{banners}}" wx:key="*this">
+            <image src="{{item}}" class="banner-image" mode="aspectFill"></image>
+            <view class="banner-overlay"></view> <!-- Gradient overlay for text readability -->
+          </swiper-item>
+        </block>
+        <block wx:else>
+          <swiper-item>
+            <image src="/packageCommon/images/icon_banner_notification.png" class="banner-image" mode="aspectFill"></image>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+
+    <!-- Notice Bar (Floating Glass) -->
+    <view class="notice-bar-glass ios-touchable" wx:if="{{notice}}">
+      <view class="notice-icon-circle">
+        <image class="notice-icon" src="/packageCommon/images/icon_notification.png" mode="aspectFit"></image>
+      </view>
+      <view class="notice-scroll-wrap">
+        <text class="notice-text">{{notice}}</text>
+      </view>
     </view>
   </view>
 
-  <view class="notification-bar">
-    <image class="noti-icon" src="/packageCommon/images/icon_notification.png" mode="widthFix"></image>
-    <text>温馨提示：请保持电话畅通，便于师傅联系您。</text>
-  </view>
-
-  <view class="service-section">
+  <!-- 2. Service Grid (Glass Tiles) -->
+  <view class="section-container">
     <view class="section-header">
       <view class="section-title">家政服务</view>
     </view>
 
     <view class="service-grid">
-      <view class="grid-item" wx:for="{{serviceGrid}}" wx:key="index" bindtap="onGridItemTap" data-service-id="{{item.serviceId}}" data-name="{{item.name}}">
-        <view class="grid-icon-wrap" style="background-color: {{item.bgColor}}">
+      <view class="grid-item ios-touchable" wx:for="{{serviceGrid}}" wx:key="index" bindtap="onGridItemTap" data-service-id="{{item.serviceId}}" data-name="{{item.name}}">
+        <view class="glass-icon-wrap">
           <image class="grid-icon" src="{{item.icon}}" mode="aspectFit"></image>
         </view>
         <text class="grid-text">{{item.name}}</text>
       </view>
 
-      <view class="grid-item" bindtap="onMoreServiceTap">
-        <view class="grid-icon-wrap" style="background-color: #ffffff">
+      <view class="grid-item ios-touchable" bindtap="onMoreServiceTap">
+        <view class="glass-icon-wrap more-icon-wrap">
           <image class="grid-icon" src="/packageCommon/images/icon_more.png" mode="aspectFit"></image>
         </view>
         <text class="grid-text">更多服务</text>
@@ -34,29 +52,28 @@
     </view>
   </view>
 
-  <view class="recommend-section">
+  <!-- 3. Recommendations (Glass List) -->
+  <view class="section-container">
     <view class="section-header">
       <view class="section-title">热门推荐</view>
-      <view class="section-more" bindtap="onViewAllTap">
+      <view class="section-more ios-touchable" bindtap="onViewAllTap">
         查看全部
         <image class="arrow-icon" src="/packageCommon/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
     </view>
 
     <view class="recommend-list">
-      <view class="service-card" wx:for="{{hotServices}}" wx:key="_id">
+      <view class="service-glass-card ios-touchable" wx:for="{{hotServices}}" wx:key="_id" bindtap="onBookNowTap" data-service-id="{{item._id}}">
         <view class="card-left">
-          <view class="card-title">
-            {{item.name}}
+          <view class="card-title-row">
+            <text class="card-title">{{item.name}}</text>
             <text class="hot-tag" wx:if="{{item.is_hot}}">热门</text>
           </view>
           <view class="card-desc">{{item.description}}</view>
-          <view class="card-footer">
-            <view class="rating-box">
-              <text class="rating-star">★</text>
-              <text class="rating-text">{{item.rating}}</text>
-              <text>已售 {{item.sales}}</text>
-            </view>
+          <view class="rating-box">
+            <text class="rating-star">★</text>
+            <text class="rating-text">{{item.rating}}</text>
+            <text class="rating-count">已售 {{item.sales}}</text>
           </view>
         </view>
         <view class="card-right">
@@ -64,10 +81,9 @@
             <text class="price">{{item.price}}</text>
             <text class="price-unit">/{{item.unit}}</text>
           </view>
-          <button class="book-btn" bindtap="onBookNowTap" data-service-id="{{item._id}}">预约</button>
+          <view class="book-btn-glass">预约</view>
         </view>
       </view>
     </view>
   </view>
-  
 </view>

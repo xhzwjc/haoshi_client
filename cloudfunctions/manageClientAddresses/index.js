@@ -16,16 +16,13 @@ async function ensureCollection() {
   }
 }
 
-function ownerMatcher(openid) {
-  return _.or([
-    { _openid: openid },
-    { client_openid: openid }
-  ]);
+function ownerMatcher(clientId) {
+  return { client_id: clientId };
 }
 
-async function listAddresses(openid) {
+async function listAddresses(clientId) {
   await ensureCollection();
-  const matcher = ownerMatcher(openid);
+  const matcher = ownerMatcher(clientId);
   const res = await db.collection(COLLECTION)
     .where(matcher)
     .orderBy('is_default', 'desc')
@@ -34,12 +31,14 @@ async function listAddresses(openid) {
   return res.data || [];
 }
 
-async function saveAddress(openid, payload = {}) {
+async function saveAddress(clientId, payload = {}) {
   const {
     id,
     contact_name,
     contact_phone,
     address,
+    latitude,    // 新增：纬度
+    longitude,   // 新增：经度
     tag = '',
     is_default = false
   } = payload;
@@ -62,10 +61,12 @@ async function saveAddress(openid, payload = {}) {
     contact_name: String(contact_name).trim(),
     contact_phone: String(contact_phone).trim(),
     address: String(address).trim(),
+    latitude: latitude || null,    // 新增：保存纬度
+    longitude: longitude || null,  // 新增：保存经度
     tag: String(tag || '').trim(),
     is_default: Boolean(is_default),
     updated_at: db.serverDate(),
-    client_openid: openid
+    client_id: clientId
   };
 
   let docId = id;
@@ -75,7 +76,7 @@ async function saveAddress(openid, payload = {}) {
       .where(
         _.and([
           { _id: id },
-          ownerMatcher(openid)
+          ownerMatcher(clientId)
         ])
       )
       .update({ data: normalized });
@@ -97,7 +98,7 @@ async function saveAddress(openid, payload = {}) {
     await db.collection(COLLECTION)
       .where(
         _.and([
-          ownerMatcher(openid),
+          ownerMatcher(clientId),
           { _id: _.neq(docId) }
         ])
       )
@@ -107,7 +108,7 @@ async function saveAddress(openid, payload = {}) {
   return { code: 0, message: 'success', data: { id: docId } };
 }
 
-async function deleteAddress(openid, id) {
+async function deleteAddress(clientId, id) {
   if (!id) {
     return { code: -1, message: '地址ID缺失' };
   }
@@ -116,7 +117,7 @@ async function deleteAddress(openid, id) {
     .where(
       _.and([
         { _id: id },
-        ownerMatcher(openid)
+        ownerMatcher(clientId)
       ])
     )
     .remove();
@@ -126,7 +127,7 @@ async function deleteAddress(openid, id) {
   return { code: 0, message: 'success' };
 }
 
-async function setDefault(openid, id) {
+async function setDefault(clientId, id) {
   if (!id) {
     return { code: -1, message: '地址ID缺失' };
   }
@@ -135,7 +136,7 @@ async function setDefault(openid, id) {
     .where(
       _.and([
         { _id: id },
-        ownerMatcher(openid)
+        ownerMatcher(clientId)
       ])
     )
     .update({ data: { is_default: true, updated_at: db.serverDate() } });
@@ -147,7 +148,7 @@ async function setDefault(openid, id) {
   await db.collection(COLLECTION)
     .where(
       _.and([
-        ownerMatcher(openid),
+        ownerMatcher(clientId),
         { _id: _.neq(id) }
       ])
     )
@@ -157,10 +158,10 @@ async function setDefault(openid, id) {
 }
 
 exports.main = async (event = {}) => {
-  const { OPENID } = cloud.getWXContext();
+  const clientId = event.clientId;
 
-  if (!OPENID) {
-    return { code: -1, message: '未登录' };
+  if (!clientId) {
+    return { code: -1, message: '缺少客户ID' };
   }
 
   const action = event.action || 'list';
@@ -168,15 +169,15 @@ exports.main = async (event = {}) => {
   try {
     switch (action) {
       case 'list': {
-        const list = await listAddresses(OPENID);
+        const list = await listAddresses(clientId);
         return { code: 0, data: list };
       }
       case 'save':
-        return await saveAddress(OPENID, event.data || {});
+        return await saveAddress(clientId, event.data || {});
       case 'delete':
-        return await deleteAddress(OPENID, event.id);
+        return await deleteAddress(clientId, event.id);
       case 'setDefault':
-        return await setDefault(OPENID, event.id);
+        return await setDefault(clientId, event.id);
       default:
         return { code: -1, message: '未知操作' };
     }

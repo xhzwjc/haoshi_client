@@ -1,0 +1,61 @@
+<view class="x-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-left" bindtap="onBack">
+      <view class="close-icon">×</view>
+    </view>
+    <view class="nav-title">首页配置</view>
+    <view class="nav-right"></view>
+  </view>
+</view>
+
+<scroll-view class="page-content" scroll-y>
+  <view style="height: {{statusBarHeight + 44 + 10}}px;"></view>
+
+  <view class="section-container">
+    <view class="section-label">
+      <text class="label-text">系统公告</text>
+      <text class="char-count {{notice.length > 180 ? 'warn' : ''}}">{{notice.length || 0}}/200</text>
+    </view>
+    
+    <view class="input-wrapper">
+      <textarea 
+        class="simple-textarea" 
+        placeholder="请输入要在首页滚动的公告内容..." 
+        placeholder-class="ph-style"
+        value="{{notice}}" 
+        bindinput="onNoticeInput"
+        maxlength="200"
+        disable-default-padding
+      />
+    </view>
+  </view>
+
+  <view class="divider"></view>
+
+  <view class="section-container">
+    <view class="section-label">
+      <text class="label-text">轮播展示</text>
+      <text class="sub-label">最多5张 ({{banners.length}}/5)</text>
+    </view>
+    
+    <view class="banner-grid">
+      <view class="grid-item" wx:for="{{banners}}" wx:key="index">
+        <image class="grid-img" src="{{item}}" mode="aspectFill"></image>
+        <view class="delete-tag" bindtap="deleteBanner" data-index="{{index}}">删除</view>
+      </view>
+      
+      <view class="grid-item upload-item" bindtap="addBanner" wx:if="{{banners.length < 5}}">
+        <text class="plus-icon">+</text>
+        <text class="upload-text">上传图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: 120px;"></view>
+</scroll-view>
+
+<view class="fab-container">
+  <button class="x-fab-btn" bindtap="saveSettings" disabled="{{saving}}">
+    {{saving ? '保存中...' : '保存更改'}}
+  </button>
+</view>

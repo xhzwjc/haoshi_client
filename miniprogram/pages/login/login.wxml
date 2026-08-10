@@ -12,7 +12,7 @@
 
     <view class="headline">
       <text class="headline-main">选择你的角色</text>
-      <text class="headline-sub">登录后即可同步个人资料、常用地址与全部订单数据。</text>
+      <text class="headline-sub">客户可通过手机号验证码登录，家政端需审核通过后登录。</text>
     </view>
 
     <view class="role-panel">
@@ -28,7 +28,12 @@
       </view>
     </view>
 
-    <view class="statement">模拟登录仅用于产品演示，不会产生真实扣费。新客户首次登录请使用默认密码 6666。</view>
+    <view class="statement">授权或登录仅用于身份验证，系统会按手机号隔离客户数据。</view>
+    
+    <!-- Admin Entry -->
+    <view class="admin-entry" bindtap="onAdminLoginEntry">
+      <text>管理员登录</text>
+    </view>
   </view>
 </view>
 
@@ -37,21 +42,105 @@
   <view class="modal-card">
     <view class="modal-header">
       <text class="modal-title">{{modalTitle}}</text>
-      <text class="modal-subtitle">账号需为已填写资料的手机号，首次登录默认密码 6666</text>
+      <text class="modal-subtitle" wx:if="{{modalSubtitle}}">{{modalSubtitle}}</text>
     </view>
     <view class="modal-body">
-      <view class="input-group">
-        <text class="input-label">账号</text>
-        <input placeholder="{{inputPlaceholder}}" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
-      </view>
-      <view class="input-group">
-        <text class="input-label">密码</text>
-        <input placeholder="请输入密码（默认为6666）" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
-      </view>
+      <!-- Client Login: Phone + Code -->
+      <block wx:if="{{currentRole === 'CLIENT'}}">
+        <view class="input-group">
+          <text class="input-label">手机号</text>
+          <input placeholder="请输入手机号" type="number" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+        </view>
+        <view class="input-group code-group">
+          <text class="input-label">验证码</text>
+          <view class="code-input-wrapper">
+            <input placeholder="请输入验证码" type="number" bindinput="onInputCode" value="{{verificationCode}}" placeholder-class="input-placeholder" />
+            <view class="get-code-btn {{countdown > 0 ? 'disabled' : ''}}" bindtap="onGetCode">
+              {{countdown > 0 ? countdown + 's' : '获取验证码'}}
+            </view>
+          </view>
+        </view>
+        <view class="privacy-hint">未注册手机号验证通过后将自动注册</view>
+      </block>
+
+      <!-- Technician Login/Register -->
+      <block wx:elif="{{currentRole === 'TECHNICIAN'}}">
+        <block wx:if="{{isRegistering}}">
+           <view class="input-group">
+            <text class="input-label">姓名</text>
+            <input placeholder="请输入真实姓名" bindinput="onInputName" value="{{registerName}}" placeholder-class="input-placeholder" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">手机号</text>
+            <input placeholder="请输入手机号" type="number" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+          </view>
+          <view class="input-group">
+            <text class="input-label">设置密码</text>
+            <input placeholder="请设置登录密码" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+          </view>
+        </block>
+        <block wx:else>
+          <!-- Login Method Switch -->
+          <view class="login-method-switch">
+            <view class="method-option {{loginMethod === 'password' ? 'active' : ''}}" bindtap="onSwitchLoginMethod" data-method="password">
+              <text>密码登录</text>
+            </view>
+            <view class="method-option {{loginMethod === 'code' ? 'active' : ''}}" bindtap="onSwitchLoginMethod" data-method="code">
+              <text>验证码登录</text>
+            </view>
+          </view>
+
+          <view class="input-group">
+            <text class="input-label">手机号</text>
+            <input placeholder="请输入手机号" type="number" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+          </view>
+          
+          <block wx:if="{{loginMethod === 'password'}}">
+            <view class="input-group">
+              <text class="input-label">密码</text>
+              <input placeholder="请输入密码" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+            </view>
+          </block>
+          <block wx:else>
+            <view class="input-group code-group">
+              <text class="input-label">验证码</text>
+              <view class="code-input-wrapper">
+                <input placeholder="请输入验证码" type="number" bindinput="onInputCode" value="{{verificationCode}}" placeholder-class="input-placeholder" />
+                <view class="get-code-btn {{countdown > 0 ? 'disabled' : ''}}" bindtap="onGetCode">
+                  {{countdown > 0 ? countdown + 's' : '获取验证码'}}
+                </view>
+              </view>
+            </view>
+          </block>
+
+          <view class="register-link" bindtap="onToggleRegister">
+            <text>还没有账号？去注册</text>
+          </view>
+        </block>
+      </block>
+
+      <!-- Admin Login -->
+      <block wx:elif="{{currentRole === 'ADMIN'}}">
+        <view class="input-group">
+          <text class="input-label">账号</text>
+          <input placeholder="请输入管理员账号" bindinput="onInputAccount" value="{{account}}" placeholder-class="input-placeholder" />
+        </view>
+        <view class="input-group">
+          <text class="input-label">密码</text>
+          <input placeholder="请输入管理员密码" password bindinput="onInputPassword" value="{{password}}" placeholder-class="input-placeholder" />
+        </view>
+      </block>
     </view>
+
     <view class="modal-actions">
       <button class="modal-btn ghost" bindtap="onCancelLogin">取消</button>
-      <button class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
+      
+      <block wx:if="{{currentRole === 'TECHNICIAN' && isRegistering}}">
+         <button class="modal-btn primary" bindtap="onConfirmRegister">提交注册</button>
+      </block>
+      <block wx:else>
+         <button class="modal-btn primary" bindtap="onConfirmLogin">登录</button>
+      </block>
     </view>
   </view>
 </view>

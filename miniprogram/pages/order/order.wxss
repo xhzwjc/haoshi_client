@@ -105,7 +105,7 @@ page {
 }
 .info-line {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* 改为顶部对齐，适应多行文本 */
   font-size: 26rpx;
   color: #333;
   margin-bottom: 16rpx;
@@ -118,6 +118,8 @@ page {
   height: 28rpx;
   margin-right: 16rpx;
   opacity: 0.6;
+  flex-shrink: 0; /* 关键：防止图标被压缩 */
+  margin-top: 6rpx; /* 微调顶部间距，使其与第一行文字对齐 */
 }
 
 /* 【新增：备注信息样式】 */

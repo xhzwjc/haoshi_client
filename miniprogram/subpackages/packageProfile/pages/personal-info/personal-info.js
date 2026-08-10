@@ -3,7 +3,7 @@ const app = getApp();
 const DEFAULT_PROFILE = {
   name: '',
   phone: '',
-  gender: '保密',
+  gender: '不愿透露',
   birthday: '',
   address: '',
   avatar: ''
@@ -12,7 +12,7 @@ const DEFAULT_PROFILE = {
 Page({
   data: {
     profile: { ...DEFAULT_PROFILE },
-    genderOptions: ['保密', '女士', '先生'],
+    genderOptions: ['不愿透露', '女士', '先生'],
     genderIndex: 0,
     saving: false,
     defaultAvatar: '/packageCommon/images/default_avatar.png'
@@ -26,10 +26,14 @@ Page({
     wx.showLoading({ title: '加载中', mask: true });
     try {
       const clientCloud = await app.waitClientCloudReady();
-      const res = await clientCloud.callFunction({ name: 'getClientProfile' });
+      const clientId = wx.getStorageSync('client_id');
+      const res = await clientCloud.callFunction({
+        name: 'getClientProfile',
+        data: { clientId } // 【关键修改】传入 clientId
+      });
       if (res.result && res.result.code === 0) {
         const profile = { ...DEFAULT_PROFILE, ...(res.result.data || {}) };
-        const genderIndex = this.data.genderOptions.indexOf(profile.gender || '保密');
+        const genderIndex = this.data.genderOptions.indexOf(profile.gender || '不愿透露');
         this.setData({
           profile,
           genderIndex: genderIndex >= 0 ? genderIndex : 0
@@ -52,7 +56,7 @@ Page({
 
   onGenderChange(e) {
     const index = Number(e.detail.value || 0);
-    const gender = this.data.genderOptions[index] || '保密';
+    const gender = this.data.genderOptions[index] || '不愿透露';
     this.setData({
       genderIndex: index,
       'profile.gender': gender
@@ -117,7 +121,9 @@ Page({
 
     try {
       const clientCloud = await app.waitClientCloudReady();
-      const payload = { ...this.data.profile };
+      const clientId = wx.getStorageSync('client_id');
+      const payload = { clientId, ...this.data.profile };
+
       const res = await clientCloud.callFunction({
         name: 'saveClientProfile',
         data: payload
@@ -128,7 +134,7 @@ Page({
           const latest = await clientCloud.callFunction({ name: 'getClientProfile' });
           if (latest.result && latest.result.code === 0) {
             const freshProfile = { ...DEFAULT_PROFILE, ...(latest.result.data || {}) };
-            const genderIndex = this.data.genderOptions.indexOf(freshProfile.gender || '保密');
+            const genderIndex = this.data.genderOptions.indexOf(freshProfile.gender || '不愿透露');
             this.setData({
               profile: freshProfile,
               genderIndex: genderIndex >= 0 ? genderIndex : 0
@@ -140,7 +146,7 @@ Page({
           } else {
             const cached = wx.getStorageSync('client_profile_cache') || {};
             const merged = { ...cached, ...payload };
-            const genderIndex = this.data.genderOptions.indexOf(merged.gender || '保密');
+            const genderIndex = this.data.genderOptions.indexOf(merged.gender || '不愿透露');
             this.setData({
               profile: merged,
               genderIndex: genderIndex >= 0 ? genderIndex : 0
@@ -151,7 +157,7 @@ Page({
           console.warn('刷新个人资料缓存失败', refreshErr);
           const cached = wx.getStorageSync('client_profile_cache') || {};
           const merged = { ...cached, ...payload };
-          const genderIndex = this.data.genderOptions.indexOf(merged.gender || '保密');
+          const genderIndex = this.data.genderOptions.indexOf(merged.gender || '不愿透露');
           this.setData({
             profile: merged,
             genderIndex: genderIndex >= 0 ? genderIndex : 0

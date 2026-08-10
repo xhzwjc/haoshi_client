@@ -3,5 +3,6 @@
     "order-detail-modal": "/components/order-detail-modal/order-detail-modal"
   },
   "navigationBarTitleText": "师傅首页",
+  "enablePullDownRefresh": true,
   "navigationStyle": "custom"
 }

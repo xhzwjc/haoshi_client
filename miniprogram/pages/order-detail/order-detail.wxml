@@ -44,6 +44,7 @@
             </view>
         </view>
         
+        <!-- 师傅信息 - 修复拨打按钮顶出去问题 -->
         <view class="section-card master-info" wx:if="{{orderDetail.status >= 20}}">
             <view class="section-title">师傅信息</view>
             <view class="info-list">
@@ -51,10 +52,14 @@
                     <text class="label">师傅姓名</text>
                     <text class="value">{{orderDetail.master_info || '等待分配'}}</text>
                 </view>
-                <view class="info-item" wx:if="{{orderDetail.master_phone}}">
+
+                <view class="info-item phone-item" wx:if="{{orderDetail.master_phone}}">
                     <text class="label">联系电话</text>
-                    <text class="value">{{orderDetail.master_phone}}</text>
-                    <text class="copy-btn" bindtap="handleAction" data-action="联系师傅">拨打</text> 
+                    <view class="phone-wrapper">
+                        <text class="phone-number">{{orderDetail.master_phone}}</text>
+                        <!-- <button class="call-btn" bindtap="contactMaster">拨打</button> -->
+                        <button class="call-btn primary" bindtap="contactMaster">拨打</button>
+                    </view>
                 </view>
             </view>
         </view>
@@ -81,6 +86,22 @@
                     <view class="timeline-content">
                         <text class="timeline-label">{{item.label}}</text>
                         <text class="timeline-value">{{item.value}}</text>
+                        <view class="timeline-review" wx:if="{{item.comment || item.reply}}">
+                            <view class="review-block" wx:if="{{item.comment}}">
+                                <view class="review-header">
+                                    <text class="review-title">客户评价</text>
+                                    <text class="review-rating" wx:if="{{item.rating !== undefined && item.rating !== ''}}">评分：{{item.rating}}分</text>
+                                </view>
+                                <text class="review-content">{{item.comment}}</text>
+                            </view>
+                            <view class="review-block reply" wx:if="{{item.reply}}">
+                                <view class="review-header">
+                                    <text class="review-title">师傅回复</text>
+                                    <text class="review-time" wx:if="{{item.reply_at}}">{{item.reply_at}}</text>
+                                </view>
+                                <text class="review-content">{{item.reply}}</text>
+                            </view>
+                        </view>
                     </view>
                 </view>
             </view>
@@ -106,15 +127,4 @@
         </view>
     </block>
     
-    <view class="bottom-bar action-bar" wx:if="{{!loading}}">
-        <block wx:for="{{getActions(orderDetail.status)}}" wx:key="text">
-            <button 
-                class="action-btn {{item.type === 'primary' ? 'primary-btn' : (item.type === 'warn' ? 'warn-btn' : 'default-btn')}}"
-                data-action="{{item.text}}"
-                bindtap="handleAction"
-            >
-                {{item.text}}
-            </button>
-        </block>
-    </view>
 </view>

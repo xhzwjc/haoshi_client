@@ -9,9 +9,31 @@ Page({
       cancelText: '取消',
       confirmColor: '#d14343',
       success(res) {
-        if (res.confirm) {
+        if (!res.confirm) return;
+
+        if (app && typeof app.logout === 'function') {
           app.logout();
+          return;
         }
+
+        try {
+          wx.removeStorageSync('user_token');
+          wx.removeStorageSync('user_role');
+          wx.removeStorageSync('user_openid');
+          wx.removeStorageSync('client_profile_cache');
+          wx.removeStorageSync('client_account_phone');
+          wx.removeStorageSync('client_last_account');
+          wx.removeStorageSync('technician_profile_cache');
+          wx.removeStorageSync('technician_account_phone');
+          wx.removeStorageSync('client_id'); // 【核心修改】清除client_id防止数据串号
+        } catch (e) {
+          console.warn('本地登出兜底逻辑异常', e);
+        }
+
+        wx.showToast({ title: '已退出登录', icon: 'none' });
+        setTimeout(() => {
+          wx.reLaunch({ url: app?.globalData?.loginUrl || '/pages/login/login' });
+        }, 300);
       }
     });
   }

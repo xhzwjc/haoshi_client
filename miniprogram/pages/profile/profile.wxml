@@ -7,8 +7,8 @@
       <view class="user-info">
         <image class="avatar" src="{{userInfo.avatar || '/packageCommon/images/default_avatar.png'}}"></image>
         <view class="user-details">
-          <view class="user-name">{{userInfo.name || '张三'}}</view>
-          <view class="user-phone">{{userInfo.phone || '138****5678'}}</view>
+          <view class="user-name">{{userInfo.name || '用户001'}}</view>
+          <view class="user-phone">{{userInfo.phone || '***********'}}</view>
         </view>
       </view>
       <view class="edit-btn" bindtap="onEditProfile">
@@ -62,7 +62,7 @@
         <text class="menu-label">联系客服</text>
       </view>
       <view class="menu-right">
-        <text class="menu-desc">400-123-4567</text>
+        <text class="menu-desc">13677244212</text>
         <image class="arrow-icon" src="/packageCommon/images/icon_arrow_right.png" mode="widthFix"></image>
       </view>
     </view>

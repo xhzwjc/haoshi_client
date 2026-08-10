@@ -33,9 +33,7 @@ function extractMonthKey(value) {
 function formatMonthLabel(monthKey) {
   if (!monthKey) return '';
   const [year, month] = monthKey.split('-');
-  if (!year || !month) {
-    return monthKey;
-  }
+  if (!year || !month) return monthKey;
   return `${year}年${month}月`;
 }
 
@@ -58,18 +56,18 @@ function buildDescription(order) {
 }
 
 exports.main = async (event = {}) => {
-  const { OPENID } = cloud.getWXContext();
-
-  if (!OPENID) {
-    return { code: -1, message: '未登录' };
-  }
-
+  const masterId = event.masterId; // 直接从前端获取
   const requestedMonth = event.month || 'all';
 
+  if (!masterId) {
+    return { code: -1, message: '缺少师傅ID' };
+  }
+
   try {
+    // 查询收入订单（使用master_id）
     const res = await db.collection(COLLECTION)
       .where({
-        technician_openid: OPENID,
+        master_id: masterId,
         status: _.in([50, 60]),
         paid_at: _.exists(true)
       })

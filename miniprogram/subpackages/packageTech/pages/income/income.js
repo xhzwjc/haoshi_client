@@ -35,10 +35,15 @@ Page({
     this.setData({ loading: true, incomeDetails: [] });
 
     try {
+      const masterId = wx.getStorageSync('master_id');
       const clientCloud = await app.waitClientCloudReady();
+
       const res = await clientCloud.callFunction({
         name: 'getTechnicianIncome',
-        data: { month: monthValue }
+        data: {
+          masterId: masterId,
+          month: monthValue
+        }
       });
 
       const result = res && res.result;

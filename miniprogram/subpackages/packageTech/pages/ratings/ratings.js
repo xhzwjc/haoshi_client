@@ -36,10 +36,15 @@ Page({
     this.setData({ loading: true, ratings: [] });
 
     try {
+      const masterId = wx.getStorageSync('master_id');
       const clientCloud = await app.waitClientCloudReady();
+
       const res = await clientCloud.callFunction({
         name: 'getTechnicianRatings',
-        data: { type }
+        data: {
+          masterId: masterId,
+          type
+        }
       });
 
       const result = res && res.result;

@@ -186,8 +186,27 @@ page {
   width: 40rpx;
   height: 40rpx;
   margin-left: 16rpx;
+  flex-shrink: 0;
 }
 
+
+/* 地址输入框样式 */
+.location {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.location input {
+  flex: 1;
+  padding-right: 60rpx;
+}
+
+.location-icon {
+  position: absolute;
+  right: 0;
+  line-height: 1.4;
+}
 /* 4. 提交按钮 */
 .bottom-bar {
   position: fixed;

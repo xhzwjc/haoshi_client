@@ -1,19 +1,20 @@
 /* /subpackages/packageService/pages/select-time/select-time.wxss */
 
-/* === 基础布局和进度条（沿用 booking 样式）=== */
+/* === 基础布局 === */
 .page-booking {
-  padding-bottom: 120rpx; /* 留出底部按钮空间 */
+  padding-bottom: 140rpx; /* 底部安全区 */
+  background-color: #F7F8FA;
+  min-height: 100vh;
 }
 
-/* 进度条样式 (假设与 booking 页面一致) */
+/* === 进度条 (保持原有风格但微调) === */
 .progress-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40rpx 60rpx;
+  padding: 30rpx 60rpx;
   background-color: #fff;
-  font-size: 26rpx;
-  color: #999;
+  margin-bottom: 20rpx;
 }
 .step {
   display: flex;
@@ -23,209 +24,236 @@
   z-index: 10;
 }
 .step-num {
-  width: 40rpx;
-  height: 40rpx;
-  line-height: 40rpx;
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
   text-align: center;
   border-radius: 50%;
-  background-color: #eee;
-  color: #fff;
-  margin-bottom: 10rpx;
+  background-color: #F2F3F5;
+  color: #C8C9CC;
+  margin-bottom: 12rpx;
   font-size: 24rpx;
-}
-.step.active .step-num {
-  background-color: #1677FF; /* 主题蓝色 */
-}
-.step.active .step-text {
-  color: #333;
   font-weight: bold;
 }
-
-/* 修正点：支持 WXML 中的 class="step finished" */
-.step.finished .step-num {
-    background-color: #1677FF;
-    font-size: 26rpx;
-    font-weight: bold;
-}
-/* 确保已完成步骤的数字是白色 */
-.step.finished .step-num {
-    color: #fff;
+.step-text {
+  font-size: 24rpx;
+  color: #969799;
 }
 
+/* 激活/完成状态 */
+.step.active .step-num,
+.step.finished .step-num {
+  background-color: #1677FF;
+  color: #fff;
+}
+.step.active .step-text {
+  color: #323233;
+  font-weight: bold;
+}
+.step.finished .step-text {
+  color: #323233;
+}
 
 .step-line {
   flex-grow: 1;
-  height: 2rpx;
-  background-color: #eee;
-  margin: 0 -30rpx 30rpx -30rpx;
+  height: 4rpx;
+  background-color: #F2F3F5;
+  margin: 0 20rpx 36rpx 20rpx;
+  border-radius: 2rpx;
 }
-.step.active + .step-line,
-/* 修正点：让已完成的步骤连接线也变蓝 (对应 WXML 中的 active-line) */
-.step.finished + .step-line.active-line {
+.step-line.active-line {
   background-color: #1677FF;
 }
 
-/* 第二步：完成第一步，激活第二步 (这段代码通常是重复或不必要的，但保留) */
-.progress-bar .step:nth-child(1) .step-num {
-  /* 移除这段，统一使用 .step.finished */
-  /* background-color: #1677FF; */ 
-}
-.progress-bar .step:nth-child(1) + .step-line {
-  /* 移除这段，统一使用 .step.finished + .active-line */
-  /* background-color: #1677FF; */
-}
-
-
-/* === 服务信息卡片 (沿用 booking 样式) === */
-.service-info-card {
+/* === 服务简略信息 === */
+.service-header {
   background-color: #fff;
   padding: 30rpx;
   margin-bottom: 20rpx;
-  border-bottom: 1px solid #eee;
-}
-.card-header {
   display: flex;
-  justify-content: space-between; /* 标题左、价格右 */
-  align-items: baseline; /* 对齐文字基线，更美观 */
-  margin-bottom: 10rpx;
+  justify-content: space-between;
+  align-items: center;
 }
-.card-title {
+.service-name {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333;
-  /* 防止标题过长挤压价格，最多2行省略 */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  color: #323233;
 }
-
-/* 新增：价格容器样式（核心，与 booking 页面一致） */
-.price-wrap {
-  display: flex; /* 价格+单位同行 */
-  align-items: baseline; /* 垂直对齐 */
-  white-space: nowrap; /* 不换行 */
-  text-align: right; /* 兜底右对齐 */
-}
-.price {
+.service-price {
+  color: #FF5722;
   font-size: 36rpx;
   font-weight: bold;
-  color: #FF5722; /* 保持你当前的橙色价格色 */
 }
-.price-unit { /* 新增单位样式，与 booking 页面一致 */
+.service-price .currency {
   font-size: 24rpx;
-  color: #666;
-  margin-left: 4rpx; /* 价格和单位间距 */
+  margin-right: 4rpx;
+}
+.service-price .unit {
+  font-size: 24rpx;
+  color: #969799;
+  font-weight: normal;
+  margin-left: 4rpx;
 }
 
-.card-desc {
-  font-size: 26rpx;
-  color: #999;
+/* === 通用标题 === */
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 24rpx;
+  padding-left: 10rpx;
+  border-left: 6rpx solid #1677FF;
+  line-height: 1;
 }
 
-/* === 表单部分 (选择日期/时段) === */
-.form-section {
+/* === 日期选择 (横向滚动) === */
+.date-section {
   background-color: #fff;
-  padding: 0 30rpx;
-}
-.form-item {
-  padding: 30rpx 0;
-  border-bottom: 1px solid #eee;
-}
-.item-label {
-  font-size: 28rpx;
-  color: #333;
+  padding: 30rpx 0 30rpx 30rpx; /* 右侧不padding让滚动条通透 */
   margin-bottom: 20rpx;
 }
-
-/* 日期选择器样式 */
-.date-picker {
+.date-scroll {
+  white-space: nowrap;
   display: flex;
-  align-items: center;
-  font-size: 30rpx;
-  color: #333;
+  height: 140rpx;
 }
-.date-picker .ph {
-  color: #ccc;
-}
-.calendar-icon {
-  width: 36rpx;
-  height: 36rpx;
-  margin-left: auto; /* 推到最右边 */
-}
-
-/* === 时段选择样式 (核心部分) === */
-.time-slots-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20rpx; /* 间距 */
-  padding-top: 10rpx;
-}
-.time-slot-item {
-  width: calc(50% - 10rpx); /* 实现两列布局 */
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  background-color: #f4f4f4;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-  color: #333;
-  display: flex;
+.date-card {
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 120rpx;
+  height: 120rpx;
+  background-color: #F7F8FA;
+  border-radius: 16rpx;
+  margin-right: 20rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
-.time-slot-item .clock-icon {
-  width: 32rpx;
-  height: 32rpx;
-  margin-right: 10rpx;
+.date-card .week {
+  font-size: 24rpx;
+  color: #323233;
+  margin-bottom: 8rpx;
+}
+.date-card .day {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #323233;
+}
+/* 选中状态 */
+.date-card.active {
+  background-color: rgba(22, 119, 255, 0.1);
+  border-color: #1677FF;
+}
+.date-card.active .week,
+.date-card.active .day {
+  color: #1677FF;
+}
+
+/* === 时段选择 (Grid布局) === */
+.time-section {
+  background-color: #fff;
+  padding: 30rpx;
+  min-height: 400rpx; /* 撑开高度 */
+}
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3列 */
+  gap: 20rpx;
+}
+.time-item {
+  background-color: #F7F8FA;
+  border-radius: 12rpx;
+  padding: 24rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+.time-item .time-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 6rpx;
+}
+.time-item .status-text {
+  font-size: 22rpx;
+  color: #969799;
 }
 
 /* 选中状态 */
-.time-slot-item.active {
-  background-color: #1677FF; /* 主题色 */
-  color: #fff;
+.time-item.active {
+  background-color: #1677FF;
+  border-color: #1677FF;
+  box-shadow: 0 4rpx 12rpx rgba(22, 119, 255, 0.3);
 }
-.time-slot-item.active .clock-icon {
-  /* 选中后可能需要将时钟图标变白，需要用CSS滤镜或替换图片 */
-  filter: invert(100%); 
+.time-item.active .time-text,
+.time-item.active .status-text {
+  color: #fff;
 }
 
 /* 禁用状态 */
-.time-slot-item.disabled {
-  background-color: #fcfcfc;
-  color: #ccc;
+.time-item.disabled {
+  background-color: #fff;
+  border: 2rpx solid #EBEDF0;
+  opacity: 0.6;
+}
+.time-item.disabled .time-text {
+  color: #C8C9CC;
   text-decoration: line-through;
-  pointer-events: none; /* 禁用点击 */
+}
+.time-item.disabled .status-text {
+  color: #C8C9CC;
 }
 
-/* === 底部操作栏 (沿用 booking 样式) === */
-.bottom-bar.step-nav {
+/* === 底部操作栏 (悬浮) === */
+.bottom-bar-safe {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
-  padding: 20rpx 30rpx;
   background-color: #fff;
-  box-shadow: 0 -2rpx 5rpx rgba(0, 0, 0, 0.05);
-  z-index: 999;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
 }
-.bottom-bar button {
-  height: 88rpx;
-  line-height: 88rpx;
-  font-size: 32rpx;
-  border-radius: 10rpx;
-  margin: 0;
-  padding: 0;
+.bottom-bar-content {
+  height: 110rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  justify-content: space-between;
 }
-.prev-btn {
-  flex: 1;
-  background-color: #f4f4f4;
-  color: #333;
-  margin-right: 20rpx;
+.selected-info {
+  display: flex;
+  flex-direction: column;
 }
+.selected-info text {
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: bold;
+}
+.selected-info.placeholder text {
+  color: #969799;
+  font-weight: normal;
+}
+
 .next-btn {
-  flex: 2;
-  background-color: #1677FF;
+  margin: 0;
+  padding: 0 60rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(90deg, #1677FF 0%, #409EFF 100%);
   color: #fff;
+  font-size: 30rpx;
+  border-radius: 40rpx;
+  font-weight: bold;
+  box-shadow: 0 6rpx 16rpx rgba(22, 119, 255, 0.3);
+}
+.next-btn.disabled {
+  background: #EBEDF0;
+  color: #C8C9CC;
+  box-shadow: none;
 }

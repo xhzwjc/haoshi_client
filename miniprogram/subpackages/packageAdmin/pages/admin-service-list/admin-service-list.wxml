@@ -1,0 +1,64 @@
+<view class="page-admin-service">
+  <view class="header">
+    <view class="title">服务管理</view>
+    <button class="add-btn" bindtap="addService">+ 新增服务</button>
+  </view>
+
+  <view class="content">
+    <view class="loading-state" wx:if="{{loading && services.length === 0}}">
+      <view class="loading-spinner"></view>
+      <text>加载中...</text>
+    </view>
+
+    <block wx:elif="{{services.length > 0}}">
+      <view class="service-list">
+        <view class="service-card" wx:for="{{services}}" wx:key="_id">
+          <view class="card-header">
+            <view class="service-name">{{item.name}}</view>
+            <view class="status-badge {{item.enabled === false ? 'disabled' : 'enabled'}}">
+              {{item.enabled === false ? '已禁用' : '已启用'}}
+            </view>
+          </view>
+          
+          <view class="card-body">
+            <view class="info-row" wx:if="{{item.price_range}}">
+              <text class="label">价格：</text>
+              <text class="value">¥{{item.price_range}}{{item.service_unit ? '/' + item.service_unit : ''}}</text>
+            </view>
+            <view class="info-row" wx:if="{{item.category}}">
+              <text class="label">分类：</text>
+              <text class="value">{{item.category}}</text>
+            </view>
+            <view class="info-row" wx:if="{{item.description}}">
+              <text class="label">描述：</text>
+              <text class="value desc">{{item.description}}</text>
+            </view>
+          </view>
+
+          <view class="card-footer">
+            <button 
+              class="action-btn edit" 
+              bindtap="editService" 
+              data-id="{{item._id}}"
+            >
+              编辑
+            </button>
+            <button 
+              class="action-btn {{item.enabled === false ? 'enable' : 'disable'}}" 
+              bindtap="toggleService" 
+              data-id="{{item._id}}"
+              data-enabled="{{item.enabled !== false}}"
+            >
+              {{item.enabled === false ? '启用' : '禁用'}}
+            </button>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="empty" wx:else>
+      <text>暂无服务数据</text>
+      <button class="empty-add-btn" bindtap="addService">+ 添加第一个服务</button>
+    </view>
+  </view>
+</view>

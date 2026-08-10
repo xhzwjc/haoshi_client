@@ -60,9 +60,21 @@
       <text class="label">地址标签</text>
       <input class="input" placeholder="如：家、父母家、公司" placeholder-class="ph" value="{{form.tag}}" data-field="tag" bindinput="onFieldChange" maxlength="6" />
     </view>
-    <view class="field">
+    <view class="field address-field">
       <text class="label">详细地址</text>
-      <textarea class="textarea" placeholder="请输入详细地址" placeholder-class="ph" value="{{form.address}}" data-field="address" bindinput="onFieldChange" auto-height></textarea>
+      <view class="address-input-container">
+        <view class="search-box">
+          <input 
+            class="input" 
+            placeholder="选择服务地址" 
+            placeholder-class="ph" 
+            value="{{form.address}}" 
+            disabled="true"
+            bindtap="chooseLocation"
+          />
+          <button class="map-btn" bindtap="chooseLocation" size="mini">📍</button>
+        </view>
+      </view>
     </view>
     <view class="field switch">
       <text class="label">设为默认</text>
@@ -72,4 +84,9 @@
   <view class="panel-footer">
     <button class="submit-btn" bindtap="submitForm" loading="{{saving}}">保存</button>
   </view>
+</view>
+<!-- iOS 风格 Loading（大圆圈） -->
+<view wx:if="{{loading}}" class="ios-loading-mask">
+  <view class="ios-loading-spinner"></view>
+  <text class="ios-loading-text">加载中...</text>
 </view>

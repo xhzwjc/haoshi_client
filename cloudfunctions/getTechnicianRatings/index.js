@@ -67,7 +67,7 @@ function formatReview(doc) {
   const score = normalizeRatingValue(doc.rating);
   return {
     id: doc._id,
-    avatar: doc.client_avatar || DEFAULT_AVATAR,
+    avatar: doc.client_avatar || '',
     nickname: buildNickname(doc),
     score,
     time: formatDateTime(doc.created_at),
@@ -79,10 +79,10 @@ function formatReview(doc) {
 }
 
 exports.main = async (event = {}) => {
-  const { OPENID } = cloud.getWXContext();
+  const masterId = event.masterId; // 直接从前端获取
 
-  if (!OPENID) {
-    return { code: -1, message: '未登录' };
+  if (!masterId) {
+    return { code: -1, message: '缺少师傅ID' };
   }
 
   const type = event.type || 'all';
@@ -93,7 +93,10 @@ exports.main = async (event = {}) => {
   try {
     await ensureCollection();
 
-    const baseMatch = { technician_openid: OPENID };
+    const masterIdStr = masterId.toString();
+
+    // 使用master_id查询评价
+    const baseMatch = { technician_id: masterIdStr };
     if (type === 'good') {
       baseMatch.rating = _.gte(4);
     } else if (type === 'neutral') {
@@ -111,7 +114,7 @@ exports.main = async (event = {}) => {
 
     const summaryPromise = db.collection(COLLECTION)
       .aggregate()
-      .match({ technician_openid: OPENID })
+      .match({ technician_id: masterIdStr })
       .group({
         _id: null,
         total: agg.sum(1),
@@ -139,7 +142,7 @@ exports.main = async (event = {}) => {
 
     const recentGoodPromise = db.collection(COLLECTION)
       .where({
-        technician_openid: OPENID,
+        technician_id: masterIdStr,
         rating: _.gte(4),
         created_at: _.gte(thirtyDaysAgo)
       })

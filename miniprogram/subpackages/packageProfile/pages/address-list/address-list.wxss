@@ -247,6 +247,44 @@ page {
   color: rgba(74, 108, 240, 0.55);
 }
 
+/* 地址输入样式 */
+.address-field {
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.address-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.search-box .input {
+  flex: 1;
+}
+
+.search-box .map-btn {
+  padding: 16rpx 24rpx !important;
+  height: auto !important;
+  line-height: 1;
+  font-size: 28rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12rpx;
+  border: none;
+  min-width: 88rpx;
+  flex-shrink: 0;
+}
+
+.search-box .map-btn::after {
+  border: none;
+}
+
 .panel-footer {
   margin-top: 36rpx;
 }
@@ -267,4 +305,46 @@ page {
 .add-btn:active,
 .ghost-btn:active {
   opacity: 0.88;
+}
+
+/* 全屏遮罩 */
+.ios-loading-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+
+  background: rgba(255, 255, 255, 0.6);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ios-loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 8rpx solid #d1d1d6;
+  border-top-color: #007aff; 
+  border-radius: 50%;
+  animation: ios-spin 0.7s linear infinite;
+}
+
+@keyframes ios-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 文案 */
+.ios-loading-text {
+  font-size: 26rpx;
+  color: #666;
+  margin-top: 20rpx;
 }

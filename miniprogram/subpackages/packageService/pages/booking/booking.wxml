@@ -12,8 +12,14 @@
     <view class="step-line"></view>
     <view class="step">
       <view class="step-num">3</view>
-      <view class="step-text">确认支付</view>
+      <view class="step-text">确认预约</view>
     </view>
+  </view>
+
+  <!-- 通知栏 (仅当有内容时显示) -->
+  <view class="notice-bar" wx:if="{{notice}}" style="background: rgba(255, 169, 64, 0.1); color: #FAAD14; padding: 24rpx 32rpx; font-size: 26rpx; border-radius: 16rpx; margin: 24rpx 32rpx 0; display: flex; align-items: center;">
+    <image class="notice-icon" src="/packageCommon/images/icon_notification.png" mode="aspectFit" style="width: 32rpx; height: 32rpx; margin-right: 16rpx;"></image>
+    <text>{{notice}}</text>
   </view>
 
   <view class="service-info-card">
@@ -37,7 +43,14 @@
       <view class="form-item">
         <view class="item-label required">服务地址</view>
         <view class="item-content location">
-          <input name="address" placeholder="请输入详细地址" placeholder-class="ph" maxlength="100" value="{{address}}" data-field="address" bindinput="onFieldInput" />
+          <input 
+            name="address" 
+            placeholder="选择服务地址" 
+            placeholder-class="ph" 
+            value="{{address}}" 
+            disabled="true"
+            bindtap="chooseAddress"
+          />
           <image class="location-icon" src="/packageCommon/images/icon_location.png" mode="widthFix" bindtap="chooseAddress"></image>
         </view>
       </view>

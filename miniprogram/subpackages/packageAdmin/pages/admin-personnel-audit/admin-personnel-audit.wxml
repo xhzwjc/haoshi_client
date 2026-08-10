@@ -1,0 +1,89 @@
+<view class="ios-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-left" bindtap="onBack">
+      <view class="back-icon"></view>
+      <text class="back-text">返回</text>
+    </view>
+    <view class="nav-title">人员管理</view>
+    <view class="nav-right"></view>
+  </view>
+</view>
+
+<scroll-view class="page-content" scroll-y>
+  <view style="height: {{statusBarHeight + 44 + 10}}px;"></view>
+
+  <view class="segmented-control-container">
+    <view class="ios-segmented-control">
+      <view 
+        class="segment-item {{activeTabIndex === index ? 'active' : ''}}" 
+        wx:for="{{tabs}}" 
+        wx:key="value"
+        bindtap="onTabChange" 
+        data-index="{{index}}"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="loading-state" wx:if="{{loading && technicians.length === 0}}">
+    <view class="spinner"></view>
+  </view>
+
+  <block wx:else>
+    <view class="ios-list-group" wx:if="{{technicians.length > 0}}">
+      
+      <view class="tech-card" wx:for="{{technicians}}" wx:key="_id">
+        <view class="card-main">
+          <view class="avatar-wrap">
+            <text class="avatar-text">{{item.name[0]}}</text>
+          </view>
+          
+          <view class="info-content">
+            <view class="info-header">
+              <text class="tech-name">{{item.name}}</text>
+              <view class="status-badge status-{{item.status}}">
+                {{item.status === 'ACTIVE' ? '正常' : (item.status === 'PENDING' ? '待审核' : '已禁用')}}
+              </view>
+            </view>
+            <view class="info-row">
+              <text class="label">手机：</text>
+              <text class="value">{{item.phone}}</text>
+            </view>
+            <view class="info-row" wx:if="{{item.service_type}}">
+              <text class="label">技能：</text>
+              <text class="value">{{item.service_type}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="card-actions">
+          <block wx:if="{{item.status === 'PENDING'}}">
+            <view class="action-item" bindtap="updateStatus" data-id="{{item._id}}" data-status="ACTIVE">
+              <text class="action-text green">通过审核</text>
+            </view>
+            </block>
+
+          <block wx:if="{{item.status === 'ACTIVE'}}">
+            <view class="action-item" bindtap="updateStatus" data-id="{{item._id}}" data-status="DISABLED">
+              <text class="action-text red">禁用账号</text>
+            </view>
+          </block>
+
+          <block wx:if="{{item.status === 'DISABLED'}}">
+            <view class="action-item" bindtap="updateStatus" data-id="{{item._id}}" data-status="ACTIVE">
+              <text class="action-text blue">恢复启用</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+    </view>
+
+    <view class="empty-state" wx:else>
+      <text class="empty-text">暂无相关人员</text>
+    </view>
+  </block>
+
+  <view style="height: calc(20px + env(safe-area-inset-bottom));"></view>
+</scroll-view>

@@ -83,16 +83,16 @@ Page({
     }
   },
 
-  ensureTechnicianOpenid() {
-    if (this._technicianOpenid) {
-      return this._technicianOpenid;
+  ensureTechnicianMasterId() {
+    if (this._masterId) {
+      return this._masterId;
     }
-    const cached = wx.getStorageSync('user_openid');
+    const cached = wx.getStorageSync('master_id');
     if (!cached) {
       wx.showToast({ title: '登录信息已失效', icon: 'none' });
       return '';
     }
-    this._technicianOpenid = cached;
+    this._masterId = cached;
     return cached;
   },
 
@@ -189,8 +189,8 @@ Page({
   },
 
   async loadScheduleData() {
-    const openid = this.ensureTechnicianOpenid();
-    if (!openid) {
+    const masterId = this.ensureTechnicianMasterId();
+    if (!masterId) {
       return;
     }
 
@@ -208,10 +208,10 @@ Page({
     try {
       const [scheduleRes, monthlyOrders] = await Promise.all([
         db.collection('technician_schedules')
-          .where({ technician_openid: openid, month_key: monthKey })
+          .where({ master_id: masterId, month_key: monthKey })
           .limit(200)
           .get(),
-        this.fetchMonthOrderDates(openid, currentYear, currentMonth)
+        this.fetchMonthOrderDates(masterId, currentYear, currentMonth)
       ]);
 
       const scheduleMap = {};
@@ -246,7 +246,7 @@ Page({
     }
   },
 
-  async fetchMonthOrderDates(openid, year, month) {
+  async fetchMonthOrderDates(masterId, year, month) {
     const startKey = `${year}-${pad(month)}-01`;
     const lastDay = new Date(year, month, 0).getDate();
     const endKey = `${year}-${pad(month)}-${pad(lastDay)}`;
@@ -254,7 +254,7 @@ Page({
     try {
       const res = await db.collection('bookings')
         .where({
-          technician_openid: openid,
+          master_id: masterId,
           status: _.nin([0, -1]),
           service_date: _.gte(startKey)
         })
@@ -277,15 +277,15 @@ Page({
   },
 
   async loadDayOrders(dateKey) {
-    const openid = this.ensureTechnicianOpenid();
-    if (!openid || !dateKey) {
+    const masterId = this.ensureTechnicianMasterId();
+    if (!masterId || !dateKey) {
       return;
     }
 
     try {
       const res = await db.collection('bookings')
         .where({
-          technician_openid: openid,
+          master_id: masterId,
           service_date: dateKey,
           status: _.nin([0, -1])
         })
@@ -347,8 +347,8 @@ Page({
   },
 
   async updateScheduleStatus(dateKey, status) {
-    const openid = this.ensureTechnicianOpenid();
-    if (!openid) {
+    const masterId = this.ensureTechnicianMasterId();
+    if (!masterId) {
       return;
     }
 
@@ -364,7 +364,7 @@ Page({
 
     try {
       const existing = await db.collection('technician_schedules')
-        .where({ technician_openid: openid, date_key: dateKey })
+        .where({ master_id: masterId, date_key: dateKey })
         .limit(1)
         .get();
 
@@ -379,7 +379,7 @@ Page({
       } else {
         await db.collection('technician_schedules').add({
           data: {
-            technician_openid: openid,
+            master_id: masterId,
             date_key: dateKey,
             month_key: monthKey,
             status,

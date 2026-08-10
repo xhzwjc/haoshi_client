@@ -25,7 +25,6 @@
     <view class="list-container">
       <view class="loading-state" wx:if="{{loading && orders.length === 0}}">
           <view class="loading-spinner"></view>
-          <text>正在加载订单...</text>
       </view>
 
       <block wx:elif="{{orders.length > 0}}">
@@ -59,15 +58,14 @@
             <view class="payment-info">
               <text wx:if="{{item.status < 35}}">报价:</text>
               <text wx:else>实付:</text>
-              <text class="price">
-                <text wx:if="{{item.status >= 35}}">¥</text>{{item.final_price || item.price_range || '待核价'}}
-              </text>
+              <text class="price">{{item.payment_fmt || '待核价'}}</text>
             </view>
             <view class="card-actions">
               <button class="btn btn-plain" bindtap="viewDetail" data-order="{{item}}">查看详情</button>
               <button class="btn btn-dark" wx:if="{{item.status === 10}}" bindtap="acceptOrder" data-id="{{item._id}}">立即接单</button>
               <button class="btn btn-dark" wx:if="{{item.status === 20}}" bindtap="startService" data-id="{{item._id}}">确认上门</button>
               <button class="btn btn-dark" wx:if="{{item.status === 30}}" bindtap="completeAndQuote" data-id="{{item._id}}">完成服务报价</button>
+              <button class="btn btn-dark" wx:if="{{item.status === 35}}" bindtap="completeAndQuote" data-id="{{item._id}}">修改报价</button>
             </view>
           </view>
         </view>

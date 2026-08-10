@@ -15,7 +15,16 @@
       </view>
       <view class="detail-item">
         <text class="label">服务地址</text>
-        <text class="value">{{order.address}}</text>
+        <view class="value-with-action">
+          <text class="value">{{order.address}}</text>
+          <!-- 新增：导航按钮（仅当有经纬度时显示） -->
+          <button 
+            wx:if="{{order.latitude && order.longitude}}" 
+            class="btn-navigate" 
+            bindtap="navigateToAddress"
+            size="mini"
+          >导航</button>
+        </view>
       </view>
       <view class="detail-item">
         <text class="label">客户信息</text>
@@ -34,7 +43,7 @@
       </view>
       <view class="detail-item fee-item">
         <text class="label">服务费用</text>
-        <text class="value price">¥{{order.final_price || order.price_range || '待核价'}}</text>
+        <text class="value price">￥{{order.price_display || order.final_price || order.price_range || '待核价'}}</text>
       </view>
       <view class="timeline-section" wx:if="{{timeline.length}}">
         <view class="timeline-title">订单进度</view>
@@ -51,11 +60,16 @@
     </view>
     
     <view class="modal-footer" wx:if="{{order.status === 10}}">
-       <button class="btn btn-plain" bindtap="rejectOrder">拒单</button>
+       <button class="btn btn-plain" bindtap="closeModal">关闭</button>
        <button class="btn btn-dark" bindtap="acceptOrder">接单</button>
     </view>
      <view class="modal-footer" wx:else>
-       <button class="btn btn-dark full-width" bindtap="closeModal">关闭</button>
+       <button 
+         wx:if="{{order.latitude && order.longitude}}" 
+         class="btn btn-plain" 
+         bindtap="navigateToAddress"
+       >导航</button>
+       <button class="btn btn-dark" bindtap="closeModal">关闭</button>
      </view>
   </view>
 </view>
