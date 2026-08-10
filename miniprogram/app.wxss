@@ -1,46 +1,124 @@
 /* app.wxss */
 page {
-  background-color: #F7F8FA;
+  /* iOS 26 Design Language System */
+  
+  /* -- Colors: Intelligent Glass -- */
+  --ios-bg-base: #F2F2F7; /* Apple System Gray 6 */
+  --ios-bg-card: rgba(255, 255, 255, 0.72); /* Glass Material */
+  --ios-bg-card-active: rgba(255, 255, 255, 0.9);
+  --ios-bg-glass-strong: rgba(255, 255, 255, 0.88);
+  
+  /* -- Text Colors -- */
+  --ios-text-primary: #000000;
+  --ios-text-secondary: rgba(60, 60, 67, 0.6);
+  --ios-text-tertiary: rgba(60, 60, 67, 0.3);
+  
+  /* -- Apple Vivid Tints -- */
+  --ios-tint-blue: #007AFF;
+  --ios-tint-orange: #FF9500;
+  --ios-tint-red: #FF3B30;
+  --ios-tint-green: #34C759;
+  
+  /* -- Dimensions -- */
+  --ios-radius-s: 16rpx;
+  --ios-radius-m: 24rpx; /* Standard Card (Settings-like) */
+  --ios-radius-l: 36rpx; /* Floating Sheets */
+  
+  /* -- Effects -- */
+  --ios-blur-material: blur(20px) saturate(180%);
+  --ios-shadow-card: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+  --ios-shadow-float: 0 12rpx 32rpx rgba(0, 0, 0, 0.08); /* Higher elevation */
+  --ios-shadow-text: 0 2rpx 4rpx rgba(0,0,0,0.1);
+  
+  /* -- Motion -- */
+  --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-press: cubic-bezier(0.1, 0.1, 0, 1);
+  
+  /* Reset */
+  background-color: var(--ios-bg-base);
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
     Segoe UI, Arial, Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft Yahei',
     sans-serif;
-  color: #333;
+  color: var(--ios-text-primary);
   font-size: 28rpx;
+  -webkit-font-smoothing: antialiased;
 }
 
 .container {
   padding: 0 32rpx;
 }
 
-/* 热门标签 */
-.hot-tag {
-  display: inline-block;
-  background-color: #FFF1F0;
-  color: #FA5151;
-  font-size: 20rpx;
-  padding: 4rpx 8rpx;
-  border-radius: 4rpx;
-  margin-left: 12rpx;
-  font-weight: bold;
+/* -- Global Motion Classes -- */
+
+/* 1. Squish Effect for Touchables */
+.ios-touchable {
+  transition: transform 0.4s var(--ease-spring), opacity 0.2s ease;
+  will-change: transform;
+}
+.ios-touchable:active {
+  transform: scale(0.96);
+  opacity: 0.8;
 }
 
-/* 价格 - 统一通过::before添加￥符号 */
+/* 2. Page Entrance (Slide Up Fade) */
+.page-enter {
+  animation: slideUpFade 0.6s var(--ease-spring) forwards;
+}
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* -- Global Components -- */
+
+/* Glass Card */
+.ios-card {
+  background: var(--ios-bg-card);
+  backdrop-filter: var(--ios-blur-material);
+  -webkit-backdrop-filter: var(--ios-blur-material); /* Webkit support */
+  border-radius: var(--ios-radius-m);
+  box-shadow: var(--ios-shadow-card);
+  border: 1px solid rgba(255,255,255,0.4); /* Inner glow */
+}
+
+/* 热门标签 (保留并优化) */
+.hot-tag {
+  display: inline-block;
+  background-color: rgba(255, 59, 48, 0.1); /* ios-tint-red with opacity */
+  color: var(--ios-tint-red);
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-left: 12rpx;
+  font-weight: 600;
+}
+
+/* 价格 */
 .price {
   display: inline-block;
   white-space: nowrap;
-  font-size: 32rpx;
-  color: #FA5151;
-  font-weight: bold;
+  font-size: 34rpx; /* Slightly larger */
+  color: var(--ios-tint-red);
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 .price::before {
   content: '¥';
   font-size: 24rpx;
-  margin-right: 2rpx;
+  margin-right: 4rpx;
+  font-weight: 600;
 }
 .price-unit {
   font-size: 24rpx;
-  color: #999;
+  color: var(--ios-text-tertiary);
   margin-left: 4rpx;
+  font-weight: 500;
 }
 
 /* 评分 */
@@ -48,18 +126,18 @@ page {
   display: flex;
   align-items: center;
   font-size: 24rpx;
-  color: #999;
+  color: var(--ios-text-secondary);
 }
 .rating-star {
   width: 28rpx;
   height: 28rpx;
   margin-right: 8rpx;
-  /* 实际应使用star图片 */
-  color: #FFB200; 
+  color: var(--ios-tint-orange); 
   font-size: 28rpx;
   line-height: 1;
 }
 .rating-text {
-  color: #FFB200;
+  color: var(--ios-tint-orange);
   margin-right: 12rpx;
+  font-weight: 600;
 }
